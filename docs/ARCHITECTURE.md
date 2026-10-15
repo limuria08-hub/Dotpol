@@ -51,6 +51,7 @@ Dotpol/
 │   ├── manifestos/
 │   ├── media/
 │   ├── research/
+│   ├── fieldops/        # proposed pre-election site/microarea operations
 │   └── warroom/
 ├── agents/
 ├── connectors/
