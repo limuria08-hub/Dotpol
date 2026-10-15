@@ -1,5 +1,7 @@
 # Dotpol Open-Source Donor Matrix v1.0
 
+**IMPLEMENTATION SELECTION:** Follow the [one-stack decision](SINGLE_STACK_SELECTION.md) and [selected_stack.yml](../architecture/selected_stack.yml), not the historical candidate alternatives in this matrix. Proposed [ADR-0002](DECISIONS/0002-one-stack-per-capability.md) controls any deliberate architectural changes.
+
 ## 1. Purpose
 
 Dotpol should aggressively reuse strong open-source engineering while avoiding duplicate frameworks, licence surprises and unnecessary long-term forks.
@@ -18,10 +20,10 @@ This matrix classifies candidates as:
 | Project | Repository | Class | Expected role | Planning licence signal | Decision |
 |---|---|---|---|---|---|
 | Open Politics / OPOL | `open-politics/opol` | FORK/DONOR + REFERENCE | political ingestion, classification, entity/geocoding/domain patterns | MIT at project level; bundled services need separate review | serious political-domain donor, do not wholesale-copy full stack |
-| Vane | `ItzCrazyKns/Vane` | FORK/DONOR | generative search/research patterns | MIT | selectively assimilate search/research UX/backend patterns behind Dotpol Search |
+| Vane | `ItzCrazyKns/Vane` — verified fork `kiranvbiim-coder/Vane` | FORK/DONOR (fork created; not integrated) | generative search/research patterns | MIT root only; component review pending | evaluate scoped UI/search modules behind Dotpol Search; avoid bundling SearXNG/second API; [review](DONOR_EVAL_VANE.md) |
 | Kepler.gl | `keplergl/kepler.gl` | FORK/DONOR when Phase 4 begins | advanced GIS Map Lab | MIT | core maps use MapLibre/deck.gl; Kepler is advanced analyst workspace |
 | Vercel AI Chatbot | `vercel/chatbot` | REFERENCE/DONOR | streaming chat, tool UI, artifact interaction patterns | verify exact repository version | do not make Dotpol product architecture depend on template |
-| LibreChat | `danny-avila/LibreChat` | REFERENCE | chat/agent/MCP/file UX patterns | MIT | reference rich AI workspace behavior; avoid parallel app foundation |
+| LibreChat | `LibreChat-AI/LibreChat` | REFERENCE | chat/agent/MCP/file UX patterns | MIT | reference rich AI workspace behavior; avoid parallel app foundation |
 
 ## 3. Core dependencies
 
@@ -35,7 +37,7 @@ This matrix classifies candidates as:
 | MapLibre GL JS | `maplibre/maplibre-gl-js` | DEPENDENCY | map renderer | BSD-3-Clause planning signal | no mandatory proprietary map provider |
 | deck.gl | `visgl/deck.gl` | DEPENDENCY | large geospatial layers | MIT planning signal | core GIS visualization |
 | H3 | `uber/h3` | DEPENDENCY | spatial indexing | Apache-2.0 planning signal | use official upstream |
-| FINOS Perspective | `finos/perspective` | DEPENDENCY | analytical grid/pivot/workbench | Apache-2.0 planning signal | terminal-grade interactive analytics |
+| FINOS Perspective | `perspective-dev/perspective` | DEPENDENCY | analytical grid/pivot/workbench | Apache-2.0 planning signal | terminal-grade interactive analytics |
 | Statsmodels | `statsmodels/statsmodels` | DEPENDENCY | statistics/econometrics | BSD planning signal | deterministic statistics |
 | PyMC | `pymc-devs/pymc` | DEPENDENCY | Bayesian modelling | Apache-2.0 planning signal | introduce in forecasting/psephology phase |
 | PydanticAI | `pydantic/pydantic-ai` | DEPENDENCY | v1 agent runtime | MIT planning signal | one agent framework in v1 |
@@ -151,3 +153,34 @@ For each fork:
 Do not fork everything immediately.
 
 Phase 0/1 should establish Dotpol's interfaces first. Donor forks should be created/assimilated when the capability's roadmap phase begins, so we do not maintain unused forks or prematurely inherit their architecture.
+
+## 11. Second-pass donor research and coverage audit — 2026-10-15
+
+**Verified fork status:** Vane is forked under [`kiranvbiim-coder/Vane`](https://github.com/kiranvbiim-coder/Vane) as of 2026-10-15, with upstream and fork `master` at the same observed commit `348feca3e378fb4157b217724ed508dc707f853f`. See [Vane evaluation](DONOR_EVAL_VANE.md). This does *not* imply a component licence clearance or Dotpol integration.
+
+
+
+This matrix remains the *architecture-level classification*. See the expanded **[43-candidate research register](DONOR_RESEARCH_2026-10-15.md)** and **[reuse/fork playbook](OSS_REUSE_AND_FORK_POLICY.md)**, backed by the machine-readable **`architecture/donor-candidates.yml`** inventory.
+
+The user's aspirational **90% commodity functionality reuse** target is accepted as a *direction*, not proven code coverage. Track acceptance-tested third-party functionality separately from original political domain models and from the mere existence of forks.
+
+**New donors/alternatives recommended for evaluation (not adopted):**
+
+- Political ingestion/ontology: OpenElections, OpenStates, Popolo data standard (reference only), Splink vs dedupe for entity resolution.
+- Local data/analytics: GeoPandas, PMTiles, Tippecanoe, Apache ECharts, OpenRefine/Datasette reference interfaces.
+- Surveys/field: XLSForm/pyxform plus ODK Collect/Central interoperability instead of creating another offline mobile stack.
+- Narrative/media: BERTopic; RSSHub is AGPL, so external interoperability only until reviewed.
+- Model and privacy tooling: Ollama/llama.cpp optional local runtimes, promptfoo evaluations, OpenTelemetry and Presidio privacy helpers.
+- Policy impact: OpenFisca is AGPL and should remain external/reference until a written licence and architecture decision.
+
+**New risk findings:** OPOL's latest observed GitHub push was 2025-05-06 (low maintenance signal), while Vane and Kepler are active in 2026. Vane advertises MIT but bundles SearXNG, which is AGPL; evaluate exact modules instead of whole-stack assimilation. Open WebUI's newer branding clause makes it unsuitable as an unreviewed permissive-core donor. SurveyJS Form Library remains distinct from commercial Survey Creator. Every repo's code, model weights, map tiles, datasets, services and dependencies have independent rights.
+
+**Canonical upstream URL maintenance:** LibreChat's current upstream is `LibreChat-AI/LibreChat`; FINOS Perspective's current upstream is `perspective-dev/perspective`. Name changes do not approve new versions or mark adoption complete.
+
+**Fork policy retained:** prefer upstream dependencies/adapters; do not create all possible forks upfront. Propose Vane as the first targeted review/fork candidate, Kepler in Phase 4 only if custom modifications are required, and OPOL only after a scoped module/licence audit. Forking a repo is not integrating it.
+
+No roadmap phase or donor was marked complete through this research.
+
+### Vane concrete module outcomes (source screening only)
+
+The [2026-10-15 Vane module-level matrix](VANE_MODULE_DECISION_MATRIX.md) makes narrower donor decisions: **A candidates** for selected UI/progress/citation components, **B references** for classifier/research heuristics, **C optional external** SearXNG/Vane API adapters, and **D excluded as-is** duplicate database/model/tool runtimes, insecure browser scraper and bundled Docker stack. No integration, full dependency review or security testing has occurred. The fork remains under `kiranvbiim-coder/Vane`.

@@ -1,0 +1,488 @@
+# Planning candidates ONLY; do not use as installed dependencies or adoption lock.
+# Canonical adoption records are architecture/donors.lock.yml after exact pin, licence and tests.
+version: "1.0"
+as_of: "2026-10-15"
+status: "candidate-research"
+target_commodity_reuse_share: 0.90
+reuse_target_type: "aspirational_commodity_capabilities_not_verified_code_percent"
+license_approval_granted: false
+forks_created:
+  - "kiranvbiim-coder/Vane"
+candidates:
+  - id: "political-domain"
+    upstream: "open-politics/opol"
+    phase: 2
+    classification: "selective-reference"
+    license_signal: "reported MIT; manifest inconclusive"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Stale since 2025-05; multi-service PG/pgvector/SearXNG architecture; study entity/pipeline patterns, never full stack"
+  - id: "election-ingestion"
+    upstream: "openelections/openelections-core"
+    phase: 5
+    classification: "reference-or-selective-donor"
+    license_signal: "MIT"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "US-focused parsers, older packaging; adapt reusable normalized aggregate result patterns only"
+  - id: "legislation-ingestion"
+    upstream: "openstates/openstates-core"
+    phase: 8
+    classification: "reference"
+    license_signal: "MIT"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "US-only Django/data model; borrow API/scraper mapping patterns, no second backend"
+  - id: "civic-ontology"
+    upstream: "popolo-project/popolo-spec"
+    phase: 2
+    classification: "standards-reference"
+    license_signal: "spec licence review"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Old specification, useful Person/Org/Membership/Vote mapping, not new canonical ontology"
+  - id: "record-linkage"
+    upstream: "moj-analytical-services/splink"
+    phase: 2
+    classification: "dependency-candidate"
+    license_signal: "MIT"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Probabilistic entity matching; avoid merging uncertain political identities; benchmark on synthetic fixtures"
+  - id: "record-linkage-alt"
+    upstream: "dedupeio/dedupe"
+    phase: 2
+    classification: "alternative-reference"
+    license_signal: "MIT"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Alternative to Splink; compare, select one method runtime not both by default"
+  - id: "data-reconciliation"
+    upstream: "OpenRefine/OpenRefine"
+    phase: 2
+    classification: "external-tool-or-reference"
+    license_signal: "BSD-3-Clause"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Java app; use separately/local or UX reference; do not embed whole cleaning platform"
+  - id: "research-search"
+    upstream: "ItzCrazyKns/Vane"
+    phase: 3
+    classification: "selective-fork-candidate"
+    license_signal: "MIT parent; component review"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: true
+    fork_repository: "kiranvbiim-coder/Vane"
+    fork_verified_on: "2026-10-15"
+    observed_fork_head_sha: "348feca3e378fb4157b217724ed508dc707f853f"
+    observed_upstream_head_sha: "348feca3e378fb4157b217724ed508dc707f853f"
+    rationale: "Fork verified on kiranvbiim-coder; not integrated or licence-cleared. Evaluate UX/search modules; SearXNG AGPL bundle separate."
+  - id: "chat-workspace"
+    upstream: "LibreChat-AI/LibreChat"
+    phase: 1
+    classification: "reference"
+    license_signal: "MIT parent; modules vary"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Agent/tool/file UX only; do not adopt competing app/server; admin-panel in org is AGPL"
+  - id: "chat-template"
+    upstream: "vercel/chatbot"
+    phase: 1
+    classification: "reference-or-selective-donor"
+    license_signal: "check exact ref"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Chat streaming/artifact patterns; no Vercel hosted coupling"
+  - id: "chat-alternative"
+    upstream: "open-webui/open-webui"
+    phase: 1
+    classification: "reference-restricted"
+    license_signal: "custom branding restrictions after v0.6.5"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Avoid embedding current code into permissive Dotpol until explicit legal approval"
+  - id: "agent-runtime"
+    upstream: "pydantic/pydantic-ai"
+    phase: 1
+    classification: "dependency"
+    license_signal: "MIT"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Single v1 orchestration framework; already selected"
+  - id: "local-model"
+    upstream: "ollama/ollama"
+    phase: 1
+    classification: "optional-runtime"
+    license_signal: "MIT"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Optional local inference server, not a required bundled daemon"
+  - id: "local-inference-alt"
+    upstream: "ggml-org/llama.cpp"
+    phase: 1
+    classification: "optional-runtime"
+    license_signal: "MIT"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Alternative local inference adapter; avoid bundling large models"
+  - id: "model-routing"
+    upstream: "BerriAI/litellm"
+    phase: 1
+    classification: "candidate-with-licence-gate"
+    license_signal: "no clear repository SPDX"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Use permissive SDK/core only if exact package/component passes review"
+  - id: "workflow-engine"
+    upstream: "PrefectHQ/prefect"
+    phase: 11
+    classification: "dependency"
+    license_signal: "Apache-2.0"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Durable workflows on demand, not in foundation before necessary"
+  - id: "ingestion-engine"
+    upstream: "dlt-hub/dlt"
+    phase: 2
+    classification: "dependency"
+    license_signal: "Apache-2.0"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "One reusable incremental ingestion contract"
+  - id: "doc-parser"
+    upstream: "docling-project/docling"
+    phase: 2
+    classification: "dependency"
+    license_signal: "MIT code; model weights separate"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Single document pipeline; separate model licences/weights"
+  - id: "sql-analytics"
+    upstream: "duckdb/duckdb"
+    phase: 4
+    classification: "dependency"
+    license_signal: "MIT"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Single local analytical query execution owner"
+  - id: "analyst-table"
+    upstream: "perspective-dev/perspective"
+    phase: 4
+    classification: "dependency"
+    license_signal: "Apache-2.0"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "FINOS Perspective canonical repo now perspective-dev; plug through analytics UI"
+  - id: "fast-chart"
+    upstream: "apache/echarts"
+    phase: 4
+    classification: "dependency-candidate"
+    license_signal: "Apache-2.0"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "One chart renderer behind shared chart interface"
+  - id: "vector-search"
+    upstream: "lancedb/lancedb"
+    phase: 3
+    classification: "dependency-candidate"
+    license_signal: "Apache-2.0"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Local semantic index behind adapter; avoid second vector store"
+  - id: "gis-core-renderer"
+    upstream: "maplibre/maplibre-gl-js"
+    phase: 4
+    classification: "dependency"
+    license_signal: "BSD family; component check"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "GIS base map; tile/data rights separate"
+  - id: "gis-layer-renderer"
+    upstream: "visgl/deck.gl"
+    phase: 4
+    classification: "dependency"
+    license_signal: "MIT"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Shared geospatial layers, no per-domain map engine"
+  - id: "gis-lab"
+    upstream: "keplergl/kepler.gl"
+    phase: 4
+    classification: "selective-fork-candidate"
+    license_signal: "MIT"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "High-value advanced analyst Map Lab; fork when actual modifications scoped"
+  - id: "geo-frame"
+    upstream: "geopandas/geopandas"
+    phase: 4
+    classification: "dependency-candidate"
+    license_signal: "BSD-3-Clause"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Spatial joins/projections; reuse with core GIS contracts"
+  - id: "spatial-format"
+    upstream: "protomaps/PMTiles"
+    phase: 4
+    classification: "dependency-candidate"
+    license_signal: "BSD-3 code; sample tiles separately licensed"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Portable offline tile packages; never assume embedded tile assets redistributable"
+  - id: "tile-generator"
+    upstream: "felt/tippecanoe"
+    phase: 4
+    classification: "external-tool-dependency"
+    license_signal: "BSD-2-Clause"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Build offline vector tiles when required, not browser embedded"
+  - id: "geospatial-io"
+    upstream: "OSGeo/gdal"
+    phase: 4
+    classification: "external-tool-dependency"
+    license_signal: "multi-component; verify"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Conversion/reprojection library; ensure binary/distribution review"
+  - id: "statistics"
+    upstream: "statsmodels/statsmodels"
+    phase: 4
+    classification: "dependency"
+    license_signal: "BSD-3-Clause"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Deterministic statistics; do not calculate in LLM prompt"
+  - id: "bayesian"
+    upstream: "pymc-devs/pymc"
+    phase: 7
+    classification: "dependency"
+    license_signal: "repo SPDX unclear; verify exact component"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Bayesian forecasts and posterior predictive checking"
+  - id: "policy-simulation"
+    upstream: "openfisca/openfisca-core"
+    phase: 8
+    classification: "external-or-reference"
+    license_signal: "AGPL-3.0"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Potential laws-as-code; avoid embedding into permissive core"
+  - id: "survey-forms"
+    upstream: "surveyjs/survey-library"
+    phase: 6
+    classification: "dependency"
+    license_signal: "MIT Form Library only"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Render forms, Dotpol authors Survey Studio; commercial Survey Creator excluded"
+  - id: "survey-xlsform"
+    upstream: "XLSForm/pyxform"
+    phase: 6
+    classification: "interop-dependency-candidate"
+    license_signal: "BSD-2-Clause"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Use XLSForm conversion for ODK interoperability if needed"
+  - id: "offline-field"
+    upstream: "getodk/collect"
+    phase: 6
+    classification: "interop-or-fork-later"
+    license_signal: "repo SPDX inconclusive"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Android offline workflows; confirm exact module licensing before any fork"
+  - id: "survey-server"
+    upstream: "getodk/central"
+    phase: 6
+    classification: "optional-external-service"
+    license_signal: "Apache-2.0"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Interoperate; no mandatory separate server"
+  - id: "survey-server-alt"
+    upstream: "kobotoolbox/kpi"
+    phase: 6
+    classification: "external-only"
+    license_signal: "AGPL-3.0"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Do not embed as permissive Dotpol survey backend"
+  - id: "media-narratives"
+    upstream: "MaartenGr/BERTopic"
+    phase: 9
+    classification: "dependency-candidate"
+    license_signal: "MIT"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Topic clustering with evaluation/robust multilingual support"
+  - id: "rss-adapters"
+    upstream: "DIYgod/RSSHub"
+    phase: 9
+    classification: "external-only"
+    license_signal: "AGPL-3.0"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Possible independently hosted/user-managed integration, not vendored core"
+  - id: "privacy-pii"
+    upstream: "data-privacy-stack/presidio"
+    phase: 2
+    classification: "dependency-candidate"
+    license_signal: "MIT"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Optional PII recognition/redaction (not complete privacy compliance)"
+  - id: "eval-ai"
+    upstream: "promptfoo/promptfoo"
+    phase: 1
+    classification: "dev-eval-dependency"
+    license_signal: "MIT"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Offline/no-key and security regression evals when test infrastructure begins"
+  - id: "tracing"
+    upstream: "open-telemetry/opentelemetry-python"
+    phase: 1
+    classification: "dependency-when-needed"
+    license_signal: "Apache-2.0"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Opt-in local instrumentation; no hosted service requirement"
+  - id: "data-browser"
+    upstream: "simonw/datasette"
+    phase: 4
+    classification: "external-or-reference"
+    license_signal: "Apache-2.0"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Lightweight published datasets; avoid second core UI/database layer"

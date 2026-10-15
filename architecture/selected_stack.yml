@@ -1,0 +1,227 @@
+# Single-choice proposed selection; this is NOT an installed-dependencies manifest.
+# Maintainer approval, ADR, exact version and licence validation required before adoption.
+version: "1.0"
+as_of: "2026-10-15"
+status: "proposed-phase-0"
+source_document: "docs/SINGLE_STACK_SELECTION.md"
+model: "one-owner-per-capability"
+no_new_forks_required: true
+existing_forks:
+  - "kiranvbiim-coder/Vane"
+selected:
+  - capability_id: "web"
+    technology: "Next.js"
+    upstream: "vercel/next.js"
+    owner: "apps/web"
+    phase: 1
+    integration_role: "application"
+    adoption_status: "proposed"
+    exact_ref: null
+    licence_verified: false
+    integrated: false
+  - capability_id: "research-ui"
+    technology: "Vane selected source/citation/progress components"
+    upstream: "kiranvbiim-coder/Vane"
+    owner: "apps/web"
+    phase: 1
+    integration_role: "selective-ui"
+    adoption_status: "proposed"
+    exact_ref: null
+    licence_verified: false
+    integrated: false
+  - capability_id: "api"
+    technology: "FastAPI"
+    upstream: "fastapi/fastapi"
+    owner: "services/api"
+    phase: 1
+    integration_role: "gateway"
+    adoption_status: "proposed"
+    exact_ref: null
+    licence_verified: false
+    integrated: false
+  - capability_id: "agents"
+    technology: "PydanticAI"
+    upstream: "pydantic/pydantic-ai"
+    owner: "platform/ai"
+    phase: 1
+    integration_role: "framework"
+    adoption_status: "proposed"
+    exact_ref: null
+    licence_verified: false
+    integrated: false
+  - capability_id: "inference"
+    technology: "Ollama"
+    upstream: "ollama/ollama"
+    owner: "platform/ai"
+    phase: 1
+    integration_role: "local-runtime"
+    adoption_status: "proposed"
+    exact_ref: null
+    licence_verified: false
+    integrated: false
+  - capability_id: "operational-storage"
+    technology: "SQLite"
+    upstream: "https://sqlite.org"
+    owner: "platform/data"
+    phase: 1
+    integration_role: "operational-db"
+    adoption_status: "proposed"
+    exact_ref: null
+    licence_verified: false
+    integrated: false
+  - capability_id: "data-ingestion"
+    technology: "dlt"
+    upstream: "dlt-hub/dlt"
+    owner: "platform/data"
+    phase: 2
+    integration_role: "pipelines"
+    adoption_status: "proposed"
+    exact_ref: null
+    licence_verified: false
+    integrated: false
+  - capability_id: "documents"
+    technology: "Docling"
+    upstream: "docling-project/docling"
+    owner: "platform/documents"
+    phase: 2
+    integration_role: "parser"
+    adoption_status: "proposed"
+    exact_ref: null
+    licence_verified: false
+    integrated: false
+  - capability_id: "retrieval"
+    technology: "LanceDB OSS"
+    upstream: "lancedb/lancedb"
+    owner: "platform/search"
+    phase: 1
+    integration_role: "fts-vector-hybrid-index"
+    adoption_status: "proposed"
+    exact_ref: null
+    licence_verified: false
+    integrated: false
+  - capability_id: "analytical-sql"
+    technology: "DuckDB"
+    upstream: "duckdb/duckdb"
+    owner: "platform/analytics"
+    phase: 4
+    integration_role: "analytical-db"
+    adoption_status: "proposed"
+    exact_ref: null
+    licence_verified: false
+    integrated: false
+  - capability_id: "analyst-ui"
+    technology: "Perspective"
+    upstream: "perspective-dev/perspective"
+    owner: "apps/web"
+    phase: 4
+    integration_role: "analytics-ui"
+    adoption_status: "proposed"
+    exact_ref: null
+    licence_verified: false
+    integrated: false
+  - capability_id: "maps"
+    technology: "Kepler.gl"
+    upstream: "keplergl/kepler.gl"
+    owner: "platform/gis"
+    phase: 4
+    integration_role: "map-ui"
+    adoption_status: "proposed"
+    exact_ref: null
+    licence_verified: false
+    integrated: false
+  - capability_id: "spatial-calculation"
+    technology: "GeoPandas"
+    upstream: "geopandas/geopandas"
+    owner: "platform/gis"
+    phase: 4
+    integration_role: "geometry-engine"
+    adoption_status: "proposed"
+    exact_ref: null
+    licence_verified: false
+    integrated: false
+  - capability_id: "statistical-analysis"
+    technology: "Statsmodels"
+    upstream: "statsmodels/statsmodels"
+    owner: "platform/analytics"
+    phase: 4
+    integration_role: "statistics"
+    adoption_status: "proposed"
+    exact_ref: null
+    licence_verified: false
+    integrated: false
+  - capability_id: "bayesian-forecasting"
+    technology: "PyMC"
+    upstream: "pymc-devs/pymc"
+    owner: "domains/forecasting"
+    phase: 7
+    integration_role: "bayesian"
+    adoption_status: "proposed"
+    exact_ref: null
+    licence_verified: false
+    integrated: false
+  - capability_id: "web-survey"
+    technology: "SurveyJS Form Library"
+    upstream: "surveyjs/survey-library"
+    owner: "platform/surveys"
+    phase: 6
+    integration_role: "form-runtime"
+    adoption_status: "proposed"
+    exact_ref: null
+    licence_verified: false
+    integrated: false
+  - capability_id: "offline-field"
+    technology: "ODK Collect"
+    upstream: "getodk/collect"
+    owner: "apps/field"
+    phase: 6
+    integration_role: "android-client"
+    adoption_status: "proposed"
+    exact_ref: null
+    licence_verified: false
+    integrated: false
+  - capability_id: "media-topics"
+    technology: "BERTopic"
+    upstream: "MaartenGr/BERTopic"
+    owner: "domains/media"
+    phase: 9
+    integration_role: "topic-modeling"
+    adoption_status: "proposed"
+    exact_ref: null
+    licence_verified: false
+    integrated: false
+  - capability_id: "privacy-pii"
+    technology: "Presidio"
+    upstream: "data-privacy-stack/presidio"
+    owner: "platform/data"
+    phase: 2
+    integration_role: "redaction-helper"
+    adoption_status: "proposed"
+    exact_ref: null
+    licence_verified: false
+    integrated: false
+  - capability_id: "automations"
+    technology: "Prefect"
+    upstream: "PrefectHQ/prefect"
+    owner: "platform/automation"
+    phase: 11
+    integration_role: "scheduler"
+    adoption_status: "proposed"
+    exact_ref: null
+    licence_verified: false
+    integrated: false
+  - capability_id: "ai-evaluations"
+    technology: "promptfoo"
+    upstream: "promptfoo/promptfoo"
+    owner: "evaluations"
+    phase: 1
+    integration_role: "evaluation"
+    adoption_status: "proposed"
+    exact_ref: null
+    licence_verified: false
+    integrated: false
+
+# Strict implementation invariants:
+# - Never use another top-level engine for an existing capability_id without an approved ADR.
+# - Kepler's MapLibre/deck.gl transitives belong to Kepler and are not separately integrated app engines.
+# - SQLite metadata, DuckDB analytics and LanceDB retrieval have distinct authoritative scopes.
+# - No survey-creator commercial component or unlicensed bundled web search service.
