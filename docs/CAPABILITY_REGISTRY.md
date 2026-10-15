@@ -66,7 +66,7 @@ Agents live under `agents/` but consume the owners above. They do not own data/e
 | Policy Agent | policy/search/documents |
 | Legislative Agent | legislation/documents/search |
 | Media Agent | media/search/data |
-| Field Operations Agent | field updates/tasks/incidents/aggregates |
+| Field Operations Agent | authorized station/microarea observations, Task/FieldUpdate, review and aggregate reporting; no voter-level political inference |
 | Data Quality Agent | data validations/diagnostics |
 | Report Agent | work products + citations/provenance |
 | War Room Agent | cross-domain monitoring/tools |
