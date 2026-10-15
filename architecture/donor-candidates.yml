@@ -94,8 +94,12 @@ candidates:
     exact_upstream_ref: null
     component_license_reviewed: false
     integrated: false
-    forked: false
-    rationale: "Strong UX/search patterns; SearXNG inside stack has AGPL impact; no wholesale embed"
+    forked: true
+    fork_repository: "kiranvbiim-coder/Vane"
+    fork_verified_on: "2026-10-15"
+    observed_fork_head_sha: "348feca3e378fb4157b217724ed508dc707f853f"
+    observed_upstream_head_sha: "348feca3e378fb4157b217724ed508dc707f853f"
+    rationale: "Fork verified on kiranvbiim-coder; not integrated or licence-cleared. Evaluate UX/search modules; SearXNG AGPL bundle separate."
   - id: "chat-workspace"
     upstream: "LibreChat-AI/LibreChat"
     phase: 1
