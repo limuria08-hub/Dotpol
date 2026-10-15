@@ -231,9 +231,9 @@ Deliverables:
 - War Room Agent;
 - after-action/post-election learning.
 
-**Rule:** war room consumes shared election/GIS/survey/media engines; it does not rebuild them.
+**Rule:** war room consumes shared fieldops/election/GIS/survey/media engines; it does not rebuild them. No individual political-preference/voter tracking or voter-level persuasion functionality.
 
-**Exit gate:** live operational information can be combined with existing intelligence while preserving source/time/verification states.
+**Exit gate:** live operational information can be combined with existing intelligence while preserving source/time/verification states, with station incidents, discrepancy review, safe aggregated reporting and access-controlled alerts tested end-to-end. See [pre-election handoff requirements](PRE_ELECTION_MICROAREA_INTELLIGENCE.md).
 
 ## Phase 11 — Automation, plugins and open platform
 
