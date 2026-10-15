@@ -151,16 +151,11 @@ Deliverables:
 
 **Exit gate:** a survey can be defined, collected/imported, weighted and analysed reproducibly with methodology/provenance attached.
 
-### Pre-election microarea and field-readiness bridge — Phase 6 proposed addition
+### Pre-election field operations — Phase 6 proposed addition
 
-- define one `domains/fieldops` owner for station-readiness assessments and authorized field assignments; **do not** create a voter CRM or competing operations backend;
-- create canonical microarea coverage and polling-site facilities checklists using existing station/boundary/version and Task/FieldUpdate/Incident contracts;
-- establish shared ODK offline form definitions, idempotent submission/ingest, dispute review and access/retention controls;
-- test public issue summaries as appropriately aggregated and methodology-labelled—not named voter/household political preferences;
-- pilot supervisor coverage, report freshness and approved public-site issues dashboard using synthetic/permitted sources;
-- document handoff to Phase 10 war room via the same IDs and provenance contracts.
+`domains/fieldops` reuses station geography, `Task`, `FieldUpdate`, SurveyJS/ODK collection and evidence contracts. Scope: authorized station assessments, offline idempotent submissions, human review and verified aggregate issue maps. Phase 10 consumes the same operations records; no second booth CRM or individual political preference profiling.
 
-**Proposed exit gate:** a legally approved, synthetic/public-source station-facilities workflow runs end-to-end: assigned field task -> offline site report -> idempotent import -> reviewer verification -> source-backed aggregated map/brief, with no private political voter profiles. This is **not** a new top-level phase and does not bypass privacy/identity/sync reviews. See [detailed workstream](PRE_ELECTION_MICROAREA_INTELLIGENCE.md) and [ADR-0003](DECISIONS/0003-pre-election-microarea-operations.md).
+**Exit:** pass F1–F5 in the [field specification](PRE_ELECTION_MICROAREA_INTELLIGENCE.md) with permitted/synthetic data. See [Master Plan](MASTER_PLAN.md).
 
 ## Phase 7 — Forecasting, simulation and aggregate digital twin
 
