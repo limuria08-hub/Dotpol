@@ -4,6 +4,10 @@
 
 Its goal is to bring research, elections, psephology, GIS, surveys, forecasting, public policy, legislative intelligence, media/narrative analysis, field operations, and war-room workflows into one local-first intelligence platform.
 
+## Proposed pre-election field / booth intelligence workstream
+
+The [Pre-Election Microarea Intelligence and Booth Operations specification](docs/PRE_ELECTION_MICROAREA_INTELLIGENCE.md) and [ADR-0003](docs/DECISIONS/0003-pre-election-microarea-operations.md) propose a single fieldops owner for **polling-site geography, facility readiness, lawful aggregate public issues, authorized field assignments, offline reports and verification**, reused by the existing election-day war room. This is a **Phase 0 proposal**, not implemented or approved individual political-voter profiling. The existing user-level political targeting boundary remains unchanged.
+
 ## Project status
 
 **Blueprint v1.0 — architecture freeze before implementation.**
