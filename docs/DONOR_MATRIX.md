@@ -1,5 +1,7 @@
 # Dotpol Open-Source Donor Matrix v1.0
 
+**IMPLEMENTATION SELECTION:** Follow the [one-stack decision](SINGLE_STACK_SELECTION.md) and [selected_stack.yml](../architecture/selected_stack.yml), not the historical candidate alternatives in this matrix. Proposed [ADR-0002](DECISIONS/0002-one-stack-per-capability.md) controls any deliberate architectural changes.
+
 ## 1. Purpose
 
 Dotpol should aggressively reuse strong open-source engineering while avoiding duplicate frameworks, licence surprises and unnecessary long-term forks.
