@@ -61,6 +61,7 @@ Deliverables:
 - Docling document pipeline;
 - canonical entity identifiers;
 - geography/jurisdiction primitives;
+- source/versioned polling-station directory and proposed privacy-safe Microarea boundaries for subsequent pre-election site reporting;
 - political actors/election/policy/media base entities;
 - provenance links from source records to canonical entities;
 - initial official/public-source connector pilots;
@@ -106,7 +107,8 @@ Deliverables:
 - Statsmodels integration;
 - reproducible analytical runs;
 - GIS Agent and Statistics Agent tools;
-- Kepler Map Lab donor evaluation/assimilation.
+- Kepler Map Lab donor evaluation/assimilation;
+- canonical station/microarea public-site layers, with site and boundary versions (no private household/voter-level political maps).
 
 **Exit gate:** same canonical dataset can be filtered/pivoted/charted/mapped without duplicating its domain representation.
 
@@ -122,6 +124,7 @@ Deliverables:
 - margins, vote share, turnout and swing engines;
 - election comparison workflows;
 - geographic election layers;
+- polling-station reference IDs reused by approved public aggregate election analyses and the proposed pre-election field preparedness workspace;
 - constituency briefs;
 - Election Agent;
 - deterministic tests for election calculations;
