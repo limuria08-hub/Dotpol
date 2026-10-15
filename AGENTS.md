@@ -1,5 +1,7 @@
 # Dotpol Agent Instructions
 
+**Start with [Master Plan](docs/MASTER_PLAN.md)** for the chosen stack, phases, scope and current acceptance gates. For field work, use [Field Specification](docs/PRE_ELECTION_MICROAREA_INTELLIGENCE.md) and [proposed ADR-0003](docs/DECISIONS/0003-pre-election-microarea-operations.md). One `domains/fieldops` owner; Phase 10 consumes its records. No voter political-preference/household targeting or parallel CRM. These changes remain proposed, not implemented.
+
 These instructions are mandatory for AI coding agents, automation workers, and human collaborators working in this repository.
 
 ## 1. Read before changing code
@@ -100,12 +102,12 @@ These are architectural defaults, not permission to install everything immediate
 - Local analytics: DuckDB.
 - Dataset interchange: Parquet/CSV/JSON plus typed contracts.
 - Local document/file storage: filesystem.
-- Local semantic retrieval: embedded local vector store selected through an adapter; LanceDB is the current preferred candidate.
+- Local retrieval: LanceDB OSS for full-text/vector hybrid through one Dotpol-owned search interface.
 - Team/server mode later: PostgreSQL and shared storage behind the same contracts.
 - AI model access: local models + BYOAI through one Dotpol model gateway.
 - Agent framework v1: PydanticAI unless an ADR changes it.
 - Workflow orchestration: Prefect when durable workflows are required.
-- GIS: MapLibre + deck.gl + H3; Kepler.gl reserved for advanced Map Lab workflows.
+- GIS: **one Kepler.gl map interface** with its internal renderers; GeoPandas handles backend geometry, one canonical GIS owner.
 - Analytics UI: FINOS Perspective.
 - Statistics: Statsmodels; Bayesian modelling: PyMC.
 - Documents: Docling.

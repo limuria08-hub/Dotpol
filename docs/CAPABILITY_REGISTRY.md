@@ -18,8 +18,7 @@ Before adding code, contributors must check this registry and `architecture/capa
 | Dataset registry | `platform/data` | analytics/domains | versioned datasets/contracts |
 | Provenance | `platform/provenance` | all | evidence, run, transform and model lineage |
 | Documents | `platform/documents` | research/policy/media | Docling-backed parsing/evidence spans |
-| GIS | `platform/gis` | elections/surveys/policy/warroom | MapLibre + deck.gl + H3 |
-| Advanced Map Lab | `platform/gis` | analysts | Kepler donor when phase begins |
+| GIS/map workspace | `platform/gis` | elections/surveys/policy/fieldops/warroom/analysts | One Kepler.gl map UI (its renderer dependencies are internal), GeoPandas backend spatial operations; one canonical geography owner |
 | Analytics query engine | `platform/analytics` | all analytical domains | DuckDB |
 | Analytical workbench | `platform/analytics` | analysts/domains | FINOS Perspective |
 | Statistics runtime | `platform/analytics` | psephology/forecasting/research | Statsmodels/shared deterministic interface |
@@ -47,7 +46,8 @@ Before adding code, contributors must check this registry and `architecture/capa
 | Manifesto intelligence | `domains/manifestos` | documents/policy | promises/status assertions |
 | Media/narrative intelligence | `domains/media` | search/data/AI | topics, narratives, events, stance observations |
 | Research workflows | `domains/research` | search/documents/analytics | evidence-backed research/work products |
-| War-room intelligence | `domains/warroom` | other domains + automation | composition/monitoring, not duplicate engines |
+| Pre-election field operations | `domains/fieldops` | constituencies, GIS, survey forms, Task/FieldUpdate, provenance | area/site readiness, supervised field assignments, verified aggregates and offline sync; no voter political profiles; [workstream](PRE_ELECTION_MICROAREA_INTELLIGENCE.md) |
+| War-room intelligence | `domains/warroom` | fieldops + other domains + automation | composition/monitoring of same station, incident and aggregate data; not duplicate engines |
 
 ## Agent ownership
 
@@ -65,7 +65,7 @@ Agents live under `agents/` but consume the owners above. They do not own data/e
 | Policy Agent | policy/search/documents |
 | Legislative Agent | legislation/documents/search |
 | Media Agent | media/search/data |
-| Field Operations Agent | field updates/tasks/incidents/aggregates |
+| Field Operations Agent | authorized station/microarea observations, Task/FieldUpdate, review and aggregate reporting; no voter-level political inference |
 | Data Quality Agent | data validations/diagnostics |
 | Report Agent | work products + citations/provenance |
 | War Room Agent | cross-domain monitoring/tools |
@@ -80,6 +80,8 @@ Agents live under `agents/` but consume the owners above. They do not own data/e
 - a war-room-specific election model duplicating `domains/elections`.
 - a second vector database introduced by one agent.
 - a second workflow framework for one connector.
+- a separate voter/household political CRM, or booth-agent database with its own authoritative station IDs, overlapping `domains/fieldops`.
+- using individual electoral-roll/private survey linkage to create political persuasion or inferred-vote scores.
 
 ## Capability proposal template
 

@@ -237,6 +237,12 @@ The AI layer should support deep aggregate/geographic/cohort political intellige
 
 Individual-level political persuasion or inferred private voting preference targeting is not an objective for the AI decision layer.
 
+### Pre-election field intelligence rules (proposed ADR-0003)
+
+The Field Operations and War Room agents may describe authorized **site conditions**, missing assignment coverage, facility accessibility issues, verified **aggregate** geographic summaries, source conflicts and dated public turnout observations. AI does not create an authoritative field/turnout fact, infer a named person's political preference, synthesize a voter contact score, track individual voted/not-voted status, or recommend individualized political targeting. Reviewer approval, data provenance, role limits and aggregate suppression apply equally to automated reports and human-accessible tools.
+
+See [pre-election field specification](PRE_ELECTION_MICROAREA_INTELLIGENCE.md) and [ownership ADR](DECISIONS/0003-pre-election-microarea-operations.md).
+
 ## 17. Automation
 
 Long-running or scheduled intelligence should use workflow infrastructure rather than keeping an agent conversation alive.

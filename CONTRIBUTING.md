@@ -80,3 +80,11 @@ Dotpol's AI intelligence should focus on aggregate/geographic/cohort political a
 ## Documentation is part of the product
 
 When a contribution changes a capability, architecture decision, donor, data model, AI tool, or roadmap gate, update the relevant repository documentation in the same PR.
+
+## Planning and phase-completion evidence (proposed 2026-10-15 addendum)
+
+The [planning audit](docs/PLAN_AUDIT_2026-10-15.md) lists maintainer decisions required before coding. Proposed ADRs must be resolved through review rather than silently treated as accepted.
+
+For implementation PRs, also report (when relevant): owner/capability ID and contract version; the end-to-end acceptance journey served; data/privacy/source-terms classification; explicit read/write tool permissions; provenance and missing-evidence handling; negative security/AI evaluation cases; local/no-key test result; actual test logs; and which roadmap gate evidence the PR changes.
+
+Progress labels are `specified`, `approved`, `implemented`, `verified`, and `released` — do not report a fork, plan or merged-but-untested change as a completed production capability.

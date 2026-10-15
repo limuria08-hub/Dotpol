@@ -1,6 +1,6 @@
 # Dotpol Blueprint v1.0
 
-**Status:** FROZEN FOR PHASE 0 REVIEW  
+**Status:** Consolidated planning baseline — implementation, licences and component pins pending  
 **Purpose:** Single source of truth for product direction before implementation.  
 **Change policy:** Major changes require an ADR under `docs/DECISIONS/`.
 
@@ -162,6 +162,16 @@ Chat is one interface, not the product architecture. Search, maps, analytical ta
 - operational alerting;
 - post-event/election learning.
 
+### 3.9A Pre-election booth and microarea field operations
+
+- Canonical polling stations, time-valid aggregate microareas and facilities/accessibility assessments.
+- Authorized site assignments, offline field forms, review, conflict resolution and sourced issue summaries.
+- Preparedness dashboard for coverage, incomplete work, verified site conditions and incidents.
+- Phase 10 war room consumes **the same** station IDs, `Task`, `FieldUpdate`, `Incident` and alert data.
+- One owner: `domains/fieldops`. No separate voter CRM, inferred individual political preferences or voter-level tracking.
+
+See [Master Plan](MASTER_PLAN.md), [field contracts](PRE_ELECTION_MICROAREA_INTELLIGENCE.md) and [ADR-0003](DECISIONS/0003-pre-election-microarea-operations.md).
+
 ### 3.10 Open platform
 
 - connectors;
@@ -287,16 +297,15 @@ Future team mode may replace/augment local state with PostgreSQL/shared storage 
 - AI streaming/tool UI: use framework utilities/pattern donors, not a mandatory hosted platform.
 - Backend/local gateway: Python + FastAPI.
 - Agent framework: PydanticAI in v1.
-- AI provider abstraction: one Dotpol gateway; LiteLLM OSS is a candidate implementation dependency.
+- AI provider abstraction: one Dotpol gateway built on PydanticAI; local Ollama as runtime, no second routing layer.
 - Workflow orchestration: Prefect when durable workflows are needed.
 - Ingestion: dlt.
 - Document processing: Docling.
-- GIS: MapLibre + deck.gl + official H3.
-- Advanced GIS: Kepler.gl donor for Map Lab.
+- GIS map experience: one Kepler.gl embedded workspace (its MapLibre/deck.gl dependencies are internal); GeoPandas handles backend spatial operations.
 - Analytics UI: FINOS Perspective.
 - Statistics: Statsmodels.
 - Bayesian/forecasting: PyMC.
-- Charts: ECharts or equivalent permissive shared chart package.
+- Tables, pivots and charts: FINOS Perspective (one shared analytics interface).
 - Surveys: Dotpol Survey Studio + SurveyJS Form Library where appropriate + ODK interoperability.
 
 A technology listed here is not automatically installed at repository initialization. Add it when the roadmap phase that owns it begins.
@@ -314,12 +323,12 @@ Major current research candidates:
 
 - Open Politics / OPOL — political data/intelligence domain donor/reference;
 - Vane — generative-search donor;
-- Kepler.gl — advanced GIS donor;
+- Kepler.gl — selected single GIS workbench when Phase 4 begins;
 - Vercel AI Chatbot / LibreChat — chat/tool UX reference donors, not product foundations;
 - FINOS Perspective — analytics dependency;
 - Docling — document dependency;
 - dlt — ingestion dependency;
-- MapLibre/deck.gl/H3 — GIS dependencies;
+- GeoPandas — backend spatial operations; Kepler's internal map dependencies are not separate Dotpol integrations;
 - Statsmodels/PyMC — statistical dependencies;
 - PydanticAI — agent dependency;
 - ODK — field/offline interoperability/donor reference;

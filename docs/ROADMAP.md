@@ -61,6 +61,7 @@ Deliverables:
 - Docling document pipeline;
 - canonical entity identifiers;
 - geography/jurisdiction primitives;
+- source/versioned polling-station directory and privacy-safe Microarea boundaries (subject to data-contract review) for subsequent pre-election site reporting;
 - political actors/election/policy/media base entities;
 - provenance links from source records to canonical entities;
 - initial official/public-source connector pilots;
@@ -96,17 +97,17 @@ Deliverables:
 Deliverables:
 
 - canonical boundary/geometry contracts;
-- MapLibre integration;
-- deck.gl layers;
-- H3 spatial indexing;
+- Kepler.gl embedded as the **only** interactive map workspace (MapLibre/deck.gl are internal dependencies);
+- GeoPandas backend geometry and spatial joins;
 - map-layer registry;
 - DuckDB analytical datasets/views;
 - FINOS Perspective workbench;
-- shared chart layer;
+- Perspective-backed shared chart/table views;
 - Statsmodels integration;
 - reproducible analytical runs;
 - GIS Agent and Statistics Agent tools;
-- Kepler Map Lab donor evaluation/assimilation.
+- Kepler integration/asset-licence review without an unnecessary maintained fork;
+- canonical station/microarea public-site layers, with site and boundary versions (no private household/voter-level political maps).
 
 **Exit gate:** same canonical dataset can be filtered/pivoted/charted/mapped without duplicating its domain representation.
 
@@ -122,6 +123,7 @@ Deliverables:
 - margins, vote share, turnout and swing engines;
 - election comparison workflows;
 - geographic election layers;
+- polling-station reference IDs reused by approved public aggregate election analyses and the pre-election field preparedness workspace;
 - constituency briefs;
 - Election Agent;
 - deterministic tests for election calculations;
@@ -147,6 +149,12 @@ Deliverables:
 - Survey/Psephology Agent.
 
 **Exit gate:** a survey can be defined, collected/imported, weighted and analysed reproducibly with methodology/provenance attached.
+
+### Pre-election field operations — Phase 6 core deliverable
+
+`domains/fieldops` reuses station geography, `Task`, `FieldUpdate`, SurveyJS/ODK collection and evidence contracts. Scope: authorized station assessments, offline idempotent submissions, human review and verified aggregate issue maps. Phase 10 consumes the same operations records; no second booth CRM or individual political preference profiling.
+
+**Exit:** pass F1–F5 in the [field specification](PRE_ELECTION_MICROAREA_INTELLIGENCE.md) with permitted/synthetic data. See [Master Plan](MASTER_PLAN.md).
 
 ## Phase 7 — Forecasting, simulation and aggregate digital twin
 
@@ -211,18 +219,18 @@ Deliverables:
 
 Deliverables:
 
-- field tasks/updates/incidents;
-- offline collection/sync interoperability;
-- aggregate turnout and operational monitoring;
+- field tasks/updates/incidents, consuming **the same `domains/fieldops` records and site IDs** established in the pre-election field pilot;
+- offline collection/sync interoperability with idempotent receipts, clock/source time, dispute review and role permissions;
+- aggregate turnout and operational monitoring, distinguishing official approximate VTR, statutory Form 17C when legally available, and non-official field observations;
 - maps and escalation workflows;
 - controller/war-room workspace;
 - alert acknowledgement/state;
 - War Room Agent;
 - after-action/post-election learning.
 
-**Rule:** war room consumes shared election/GIS/survey/media engines; it does not rebuild them.
+**Rule:** war room consumes shared fieldops/election/GIS/survey/media engines; it does not rebuild them. No individual political-preference/voter tracking or voter-level persuasion functionality.
 
-**Exit gate:** live operational information can be combined with existing intelligence while preserving source/time/verification states.
+**Exit gate:** live operational information can be combined with existing intelligence while preserving source/time/verification states, with station incidents, discrepancy review, safe aggregated reporting and access-controlled alerts tested end-to-end. See [pre-election handoff requirements](PRE_ELECTION_MICROAREA_INTELLIGENCE.md).
 
 ## Phase 11 — Automation, plugins and open platform
 
