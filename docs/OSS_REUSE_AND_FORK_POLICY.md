@@ -113,17 +113,23 @@ Do not use a LOC-only percentage, because generated/vendor code inflates it and 
 
 These are comparison/planning proposals; they do not authorize installing dependencies in the foundation.
 
+## Existing verified fork status (2026-10-15)
+
+One targeted donor fork **already exists**: [kiranvbiim-coder/Vane](https://github.com/kiranvbiim-coder/Vane), from [ItzCrazyKns/Vane](https://github.com/ItzCrazyKns/Vane). Fork and upstream `master` SHAs both observed as `348feca3e378fb4157b217724ed508dc707f853f`. It was created under `kiranvbiim-coder`, **not** the `limuria08-hub` Dotpol owner. The fork is not yet integrated or component-licence approved. See [Vane evaluation](DONOR_EVAL_VANE.md).
+
+Do **not** create a duplicate Vane fork until maintainers decide to move ownership or maintain a deliberately separate fork. Use the existing fork for source review without changing its code. The GitHub connector used here can update GitHub issues/PRs/docs but does not expose a new-repository fork action.
+
 ## GitHub forking: user action when approved
 
 The current connected GitHub operations can read repositories and create branches/files/issues/PRs in Dotpol, but **do not provide a repository-fork action**. A repository owner can create a fork from their own GitHub UI:
 
 1. Sign in to GitHub as `limuria08-hub`.
-2. Open a shortlisted source, e.g. https://github.com/ItzCrazyKns/Vane.
-3. Select **Fork**, choose **Owner: limuria08-hub** and retain link to upstream; create the fork.
+2. Open an *approved future* donor upstream, e.g. https://github.com/keplergl/kepler.gl when that phase arrives. Vane is already forked; do not repeat it.
+3. Select **Fork**, choose the explicitly approved fork owner, and retain link to upstream; create the fork.
 4. Share the new fork URL with collaborators; record exact upstream SHA, licence and reason in the acceptance record *before* any assimilation.
 5. Fork Kepler only when Phase 4 modifications have been approved. Don't fork OPOL merely because a repo exists.
 
-Optional GitHub CLI if authenticated as `limuria08-hub`: `gh repo fork ItzCrazyKns/Vane --clone=false`. Confirm authentication and the fork destination first. No access tokens need to be sent through chat.
+Optional GitHub CLI for **future** approved donors: `gh repo fork <upstream-owner>/<repository> --clone=false` (replace placeholders). Confirm authentication and destination first. **Do not rerun this for Vane**. No access tokens need to be sent through chat.
 
 ## Donor acceptance status model
 
