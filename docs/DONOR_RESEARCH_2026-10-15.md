@@ -1,4 +1,6 @@
-# Dotpol Donor Research — Reuse-First Candidate Register (Round 2)
+# Dotpol Donor Research — Historical Candidate Register (Round 2)
+
+**ACTIONABLE SELECTION:** [One canonical technology per capability](SINGLE_STACK_SELECTION.md) and [selected stack manifest](../architecture/selected_stack.yml) supersede the alternatives below for implementation planning. The 43 items are retained for traceable research, **not an instruction to adopt 43 apps**.
 
 **As of:** 2026-10-15. **Status:** candidate evaluation; no production adoption/fork approval.  
 **Repo owner:** `limuria08-hub/Dotpol`. **Companion:** [OSS reuse and fork playbook](OSS_REUSE_AND_FORK_POLICY.md) and [current donor matrix](DONOR_MATRIX.md).
