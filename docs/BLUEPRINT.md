@@ -162,6 +162,22 @@ Chat is one interface, not the product architecture. Search, maps, analytical ta
 - operational alerting;
 - post-event/election learning.
 
+### 3.9A Pre-election microarea intelligence and booth preparedness (proposed Phase 0 addition)
+
+**Core workflow missing from the initial Blueprint:** before polling day, authorized field teams need a neutral, evidence-backed workflow for booth/station geography, facilities readiness, microarea public issues, assignment coverage, offline field forms, report verification, and continuity into the election-day war room.
+
+- canonical PollingStation directory, time-valid geography and adequately aggregated Microarea units (not household/voter political maps);
+- approved station-facility/accessibility assessments and local infrastructure observations;
+- role-scoped field assignment, submit/review/reject/verify audit trail, conflicting-report reconciliation;
+- lawful surveys and public issue summaries with appropriate sampling, suppression, source and time labels;
+- ODK Collect offline interoperability through the shared survey/field contract rather than a second mobile backend;
+- preparedness dashboards showing station coverage, missing information, incident resolution and report freshness;
+- handoff of the same site IDs and operational records to Phase 10 war-room monitoring.
+
+**Non-goal and safety boundary:** no individual voter political preference profiling, household-level political persuasion labels, electoral-roll enrichment for targeting, individual voted/not-voted tracking, or AI-directed outreach. Legitimate personal service cases, if introduced later, require separate explicit purpose, access, retention and no political-profile joins.
+
+**Single proposed owner:** `domains/fieldops` (subject to ADR-0003); it consumes `platform/gis`, `platform/surveys`, `platform/data`, `platform/provenance` and existing `Task/Incident/Alert`. War room reuses these outputs rather than rebuilding them. See [full field specification](PRE_ELECTION_MICROAREA_INTELLIGENCE.md) and [proposed ADR-0003](DECISIONS/0003-pre-election-microarea-operations.md). The operational slice begins before Phase 10 (station data Phases 2/4/5; field pilot Phase 6), while real-time operations remain Phase 10.
+
 ### 3.10 Open platform
 
 - connectors;
