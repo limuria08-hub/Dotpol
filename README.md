@@ -144,6 +144,7 @@ The following **proposed** additions support the Phase 0 architecture review; th
 - [Planning gap audit and maintainer decisions](docs/PLAN_AUDIT_2026-10-15.md)
 - [Product MVP and acceptance journeys](docs/PRODUCT_MVP_AND_ACCEPTANCE.md)
 - [Political data governance and source intake](docs/DATA_GOVERNANCE.md)
+- [Official India data-source feasibility matrix](docs/SOURCE_FEASIBILITY.md)
 - [Local security and AI assurance](docs/SECURITY_AND_AI_ASSURANCE.md)
 - [Proposed ADR-0001: API vs reusable capability ownership](docs/DECISIONS/0001-foundation-module-ownership.md)
 
