@@ -1,5 +1,7 @@
 # Dotpol OSS Reuse, Fork and Integration Playbook
 
+**Current implementation choice:** [one canonical stack](SINGLE_STACK_SELECTION.md) and [selected_stack.yml](../architecture/selected_stack.yml). Candidate comparisons below are research, not authorization for multiple engines.
+
 **Status:** Proposed architecture/engineering review (2026-10-15); planning only.  
 **Companions:** `docs/DONOR_RESEARCH_2026-10-15.md`, `architecture/donor-candidates.yml`, `docs/DONOR_MATRIX.md`, `architecture/donors.lock.yml`.
 
