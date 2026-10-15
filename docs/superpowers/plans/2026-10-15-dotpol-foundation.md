@@ -352,7 +352,7 @@ Implement Phase 1 only after maintainers review Blueprint v1.0. Prefer subagent-
 
 ## Planning review overlay — 2026-10-15 (proposed; not implementation)
 
-**Stop before Task 1 until Phase 0 review is accepted.** The task checkboxes above remain authoritative and unchecked. The proposed [ADR-0001](../../DECISIONS/0001-foundation-module-ownership.md) is intentionally not accepted; it may change the *file placement* of sources, provenance, AI and tools from `services/api` to registered `platform/` owners. Do not create both implementations. (The relative ADR link should resolve from this plan's directory as `../../DECISIONS/0001-foundation-module-ownership.md`.)
+**Stop before Task 1 until Phase 0 review is accepted.** The task checkboxes above remain authoritative and unchecked. The proposed [ADR-0001](../../DECISIONS/0001-foundation-module-ownership.md) is intentionally not accepted; it may change the *file placement* of sources, provenance, AI and tools from `services/api` to registered `platform/` owners. Do not create both implementations.
 
 ### Preconditions
 
