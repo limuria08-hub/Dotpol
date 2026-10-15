@@ -6,7 +6,8 @@ status: "candidate-research"
 target_commodity_reuse_share: 0.90
 reuse_target_type: "aspirational_commodity_capabilities_not_verified_code_percent"
 license_approval_granted: false
-forks_created: []
+forks_created:
+  - "kiranvbiim-coder/Vane"
 candidates:
   - id: "political-domain"
     upstream: "open-politics/opol"
