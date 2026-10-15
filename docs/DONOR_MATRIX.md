@@ -178,3 +178,7 @@ The user's aspirational **90% commodity functionality reuse** target is accepted
 **Fork policy retained:** prefer upstream dependencies/adapters; do not create all possible forks upfront. Propose Vane as the first targeted review/fork candidate, Kepler in Phase 4 only if custom modifications are required, and OPOL only after a scoped module/licence audit. Forking a repo is not integrating it.
 
 No roadmap phase or donor was marked complete through this research.
+
+### Vane concrete module outcomes (source screening only)
+
+The [2026-10-15 Vane module-level matrix](VANE_MODULE_DECISION_MATRIX.md) makes narrower donor decisions: **A candidates** for selected UI/progress/citation components, **B references** for classifier/research heuristics, **C optional external** SearXNG/Vane API adapters, and **D excluded as-is** duplicate database/model/tool runtimes, insecure browser scraper and bundled Docker stack. No integration, full dependency review or security testing has occurred. The fork remains under `kiranvbiim-coder/Vane`.
