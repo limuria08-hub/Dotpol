@@ -136,3 +136,15 @@ No major feature implementation should begin until the blueprint documents, capa
 ---
 
 Dotpol is intended to make sophisticated political intelligence substantially more accessible by combining open-source infrastructure with an original political domain model, analytical engines, AI agents and evidence-backed workflows.
+
+## Planning review before implementation (2026-10-15)
+
+The following **proposed** additions support the Phase 0 architecture review; they do not authorize coding or replace Blueprint v1.0:
+
+- [Planning gap audit and maintainer decisions](docs/PLAN_AUDIT_2026-10-15.md)
+- [Product MVP and acceptance journeys](docs/PRODUCT_MVP_AND_ACCEPTANCE.md)
+- [Political data governance and source intake](docs/DATA_GOVERNANCE.md)
+- [Local security and AI assurance](docs/SECURITY_AND_AI_ASSURANCE.md)
+- [Proposed ADR-0001: API vs reusable capability ownership](docs/DECISIONS/0001-foundation-module-ownership.md)
+
+**Review gate:** maintainers should accept/revise the gap findings, assign owners, settle ADR-0001 and the root project licence decision, then update Phase 1 paths/contracts coherently. All Phase 1 implementation checkboxes remain unstarted in the planning branch.
