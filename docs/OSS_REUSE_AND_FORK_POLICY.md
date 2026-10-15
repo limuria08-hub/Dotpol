@@ -115,7 +115,7 @@ These are comparison/planning proposals; they do not authorize installing depend
 
 ## Existing verified fork status (2026-10-15)
 
-One targeted donor fork **already exists**: [kiranvbiim-coder/Vane](https://github.com/kiranvbiim-coder/Vane), from [ItzCrazyKns/Vane](https://github.com/ItzCrazyKns/Vane). Fork and upstream `master` SHAs both observed as `348feca3e378fb4157b217724ed508dc707f853f`. It was created under `kiranvbiim-coder`, **not** the `limuria08-hub` Dotpol owner. The fork is not yet integrated or component-licence approved. See [Vane evaluation](DONOR_EVAL_VANE.md).
+One targeted donor fork **already exists**: [kiranvbiim-coder/Vane](https://github.com/kiranvbiim-coder/Vane), from [ItzCrazyKns/Vane](https://github.com/ItzCrazyKns/Vane). Fork and upstream `master` SHAs both observed as `348feca3e378fb4157b217724ed508dc707f853f`. It was created under `kiranvbiim-coder`, **not** the `limuria08-hub` Dotpol owner. The fork is not yet integrated or component-licence approved. See [Vane evaluation](DONOR_EVAL_VANE.md) and [source-level adoption matrix](VANE_MODULE_DECISION_MATRIX.md).
 
 Do **not** create a duplicate Vane fork until maintainers decide to move ownership or maintain a deliberately separate fork. Use the existing fork for source review without changing its code. The GitHub connector used here can update GitHub issues/PRs/docs but does not expose a new-repository fork action.
 
