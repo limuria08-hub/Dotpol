@@ -5,7 +5,7 @@
 **Fork:** [kiranvbiim-coder/Vane](https://github.com/kiranvbiim-coder/Vane) (`master`, exact inspected tree `348feca3e378fb4157b217724ed508dc707f853f`); confirmed upstream [ItzCrazyKns/Vane](https://github.com/ItzCrazyKns/Vane) was at the same HEAD during this review.  
 **Status:** Technical screening completed for named files; legal/transitive dependency review, reproducible execution tests, maintainers' approval and import decisions **open**.
 
-This complements [fork verification](DONOR_EVAL_VANE.md), [Dotpol donor policy](OSS_REUSE_AND_FORK_POLICY.md), [capability ownership](CAPABILITY_REGISTRY.md), and the pending [Phase 0 audit](PLAN_AUDIT_2026-10-15.md) on another PR. An upstream MIT root licence is **not** blanket clearance for model weights, dependencies, bundled SearXNG, images, data or every module.
+This complements [fork verification](DONOR_EVAL_VANE.md), [Dotpol donor policy](OSS_REUSE_AND_FORK_POLICY.md), [capability ownership](CAPABILITY_REGISTRY.md), and the pending [Phase 0 audit PR #1](https://github.com/limuria08-hub/Dotpol/pull/1) on another PR. [Official SearXNG upstream](https://github.com/searxng/searxng) declares AGPL-3.0; Vane's [default Docker instructions](https://github.com/ItzCrazyKns/Vane#installation) describe a bundled SearXNG distribution. Architectural separation alone does not automatically establish compliance: get a component/packaging licence decision before distribution. An upstream MIT root licence is **not** blanket clearance for model weights, dependencies, bundled SearXNG, images, data or every module.
 
 ## Adoption statuses and criteria
 
