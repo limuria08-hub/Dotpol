@@ -325,6 +325,17 @@ Generated rule/model/workflow alert with evidence and acknowledgement state.
 
 Time-bounded synthesized intelligence package linked to underlying results/evidence.
 
+### Proposed pre-election field specializations (ADR-0003, not yet accepted)
+
+- `StationFacilityAssessment` — typed public-site checklist/condition linked to `PollingStation`, `Source` and review/version status.
+- `FieldAssignment` — scoped, audited `Task` specialization for an authorized field worker assigned to a site/microarea; **no second task store**.
+- `FieldObservation` — typed `FieldUpdate` specialization with collected/received time, microarea/site, approved report type, reviewer and evidence; no voter political traits.
+- `SyncReceipt` — submission key, form version, authoritative receive time, dedup/conflict outcome; no respondent content in logs.
+- `BoothReadinessSnapshot` — derived view of audited facility status, coverage, disputed/missing observations. Not new authoritative station data.
+- Any consent-based accessibility service follow-up contacts must be **restricted purpose-limited records**, never joinable to political segmentation, booth-level personal maps or AI targeting.
+
+Before implementation, resolve overlaps with current `Task/FieldUpdate` and documented retention/source-licence rules. See [field workstream specification](PRE_ELECTION_MICROAREA_INTELLIGENCE.md).
+
 ## 13. Provenance and execution
 
 ### TransformationRun
