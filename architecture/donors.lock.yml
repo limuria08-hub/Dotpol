@@ -41,7 +41,7 @@ projects:
     license_verified_for_ref: false
     action: "Reference/selectively assimilate UI patterns; not Dotpol architecture foundation."
   - id: librechat
-    repository: danny-avila/LibreChat
+    repository: LibreChat-AI/LibreChat
     classification: reference
     capability: ai-workspace-ux
     roadmap_phase: 1
@@ -98,7 +98,7 @@ projects:
     upstream_ref: null
     license_verified_for_ref: false
   - id: perspective
-    repository: finos/perspective
+    repository: perspective-dev/perspective
     classification: dependency
     capability: analytics-workbench
     roadmap_phase: 4
