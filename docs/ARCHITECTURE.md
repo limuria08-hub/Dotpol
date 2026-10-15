@@ -200,7 +200,8 @@ Examples:
 - `domains/forecasting` owns forecast specifications/runs/calibration/backtesting;
 - `domains/policy` and `domains/legislation` own policy/legislative semantics;
 - `domains/media` owns narrative/event intelligence semantics;
-- `domains/warroom` composes operational intelligence without reimplementing underlying engines.
+- proposed `domains/fieldops` owns pre-election station facilities, microarea aggregate reporting, and verified authorized field workflows behind shared `Task`, `FieldUpdate` and survey contracts (pending [ADR-0003](DECISIONS/0003-pre-election-microarea-operations.md));
+- `domains/warroom` composes validated fieldops/election/GIS/survey intelligence, including appropriate polling-day source distinctions, without reimplementing field collection or underlying engines.
 
 ## 8. Agent layer
 
