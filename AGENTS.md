@@ -207,3 +207,15 @@ A capability is not done merely because its UI works. It is done when:
 - local-first behavior works;
 - documentation is updated;
 - no duplicate implementation was introduced.
+
+## Planning-to-implementation review gate (proposed addendum, 2026-10-15)
+
+When preparing substantial new capabilities, also review:
+
+- `docs/PLAN_AUDIT_2026-10-15.md` — proposed gap register and unresolved maintainer decisions.
+- `docs/PRODUCT_MVP_AND_ACCEPTANCE.md` — priority user journeys, milestones and verification states.
+- `docs/DATA_GOVERNANCE.md` and `docs/SOURCE_FEASIBILITY.md` — personal-data/source/licence intake and provisional official sources.
+- `docs/SECURITY_AND_AI_ASSURANCE.md` — local gateway and AI tool risk/evaluation gates.
+- `docs/DECISIONS/0001-foundation-module-ownership.md` — **proposed, not accepted** resolution of `services/api` vs `platform/` ownership.
+
+Do not treat any proposed decision, unverified donor, documented interface or unchecked checkbox as implemented code. Before starting Phase 1, maintainers must accept or revise the relevant planning proposals, choose the project licence and reconcile approved folder/contract ownership. During implementation, include a capability ID, single canonical implementation owner, data-security class, test/evaluation evidence, local-first proof and any donor/licence implications in the PR. Parallel tasks must not create competing registries, gateways, models, parsers or persistence stores.
