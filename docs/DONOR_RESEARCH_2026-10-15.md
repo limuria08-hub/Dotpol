@@ -86,10 +86,15 @@ The 'licence signal' reflects GitHub repository metadata and/or upstream documen
 | `domains/media` | BERTopic as needed + lawful source adapters | RSSHub only external/AGPL review, method-labeled narrative extraction |
 | evaluation/privacy | promptfoo, Presidio, OpenTelemetry as bounded dependencies | local-first, test security and licence before adoption |
 
+## Verified Vane fork — 2026-10-15
+
+GitHub verified [kiranvbiim-coder/Vane](https://github.com/kiranvbiim-coder/Vane) as a fork of [ItzCrazyKns/Vane](https://github.com/ItzCrazyKns/Vane), with both observed `master` heads at `348feca3e378fb4157b217724ed508dc707f853f`. Its root MIT licence was read, but SearXNG, transitive modules and model/data terms remain subject to a component-level audit. See [selective module analysis](DONOR_EVAL_VANE.md).
+
+
 ## Immediate fork decisions (planning stage)
 
-- **Fork now:** *none required*; every candidate is public for read-only auditing. Blind forks are not a measure of progress.
-- **First selective fork to propose:** `ItzCrazyKns/Vane` once maintainers approve search module scope and its MIT/AGPL component boundary. GitHub fork target suggestion `limuria08-hub/Vane`, but a renamed fork is optional.
+- **Verified existing fork:** `kiranvbiim-coder/Vane` is a true fork of `ItzCrazyKns/Vane` with observed master SHA `348feca3e378fb4157b217724ed508dc707f853f`. No module has been integrated. Avoid duplicate unused forks.
+- **First selective assimilation evaluation:** assess the already forked Vane modules. Keep it under its actual owner `kiranvbiim-coder` unless maintainers decide a transfer/duplicate is necessary. See [Vane review](DONOR_EVAL_VANE.md).
 - **Second high-value future fork:** `keplergl/kepler.gl` when Phase 4 has an agreed Map Lab contract and real need for divergent patches. Do not fork just to preserve a copy.
 - **Conditional political code donor:** `open-politics/opol` only after pinpointing exact files, verifying licence/subcomponents and checking whether its old services are necessary.
 - **Dependencies, not forks:** Docling, dlt, DuckDB, PydanticAI, Perspective, Splink, Statsmodels, PyMC, MapLibre, deck.gl, LanceDB, SurveyJS Form Library, BERTopic etc.
@@ -111,4 +116,4 @@ Source references:
 - OpenStreetMap tiles https://operations.osmfoundation.org/policies/tiles/
 - NIST supply chain/SSDF https://csrc.nist.gov/projects/ssdf
 
-**Explicit nonclaim:** no forks created, no source code imported, no donor integrated, no donor component legally approved and no '90% reuse' measurement performed by this register.
+**Explicit nonclaim:** this research did not create the GitHub fork; an existing Vane fork was verified. No source code imported, no donor integrated, no donor component legally approved and no '90% reuse' measurement performed by this register.
