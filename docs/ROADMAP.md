@@ -281,3 +281,40 @@ Every phase must preserve:
 Parallel tasks are encouraged only when they do not create competing implementations or require unstable interfaces from unfinished prerequisite phases.
 
 A visible UI is not considered progress if it bypasses the canonical data/model/tool architecture.
+
+## Phase quality-gate addendum (proposed for Phase 0 review, 2026-10-15)
+
+This addendum **does not renumber, reorder, or mark complete** any phase. It defines evidence needed to keep the existing dependency order from becoming duplicate implementation work. See [planning audit](PLAN_AUDIT_2026-10-15.md), [MVP acceptance plan](PRODUCT_MVP_AND_ACCEPTANCE.md), [data governance](DATA_GOVERNANCE.md) and [security/AI assurance](SECURITY_AND_AI_ASSURANCE.md).
+
+### Phase 0 (before implementation)
+
+- [ ] Identify owner and reviewer for every Phase 1 capability and its API/data contract; resolve [proposed ADR-0001](DECISIONS/0001-foundation-module-ownership.md) before generating conflicting Python package paths.
+- [ ] Approve or revise initial MVP persona and user journeys J1–J4; explicitly distinguish Phase 1 foundation from usable end-to-end research MVP.
+- [ ] Approve project licence and decide root LICENSE/third-party attribution approach; keep all proposed donor licences unverified until checked at exact version/component.
+- [ ] Approve data-classification/intake policy, local gateway threat model, agent permission classes and CI security expectations.
+- [ ] Assign an accountable reviewer for architecture, AI evaluation, data/privacy, security/licensing, UX and release acceptance; agree what test reports and demos count as evidence.
+- [ ] Ensure the Phase 1 task plan is compatible with approved owners, schemas and no-network/zero-cost assumptions.
+
+### Cross-phase planning gates (apply at entry, review, exit)
+
+1. **Capability owner:** one registered owner and import path; no competing model gateway, vector store, engine, data registry or parser.
+2. **Contracts:** typed schemas, canonical identifiers, units, temporal and geographic references, errors, source/evidence links; backward-compatibility and migration strategy.
+3. **Security:** classify exposed data and tool effects, review trust boundaries, include negative tests and restricted defaults. Local first does not mean unsecured localhost.
+4. **AI:** source-linked and no-evidence behavior evaluated; deterministic reference engine owns calculations; approval required for external/destructive side effects.
+5. **Reproducibility:** version data, model, transform, tool and boundary, with documented methodology and input/outputs; output states observed/derived/forecast/inferred.
+6. **OSS/legal:** pin and verify donor version/component and terms; observe map tile, data, model-weight and form-editor licences.
+7. **User value:** demonstrate phase-specific journey with real/synthetic clearly labeled fixtures; accessible and understandable errors/uncertainty.
+8. **Verification:** link passing tests/CI, local/no-key launch when applicable, evidence for unfinished cases. Mark 'specified', 'approved', 'implemented', 'verified', 'released' separately.
+
+### Specific additional exit checks
+
+- **Phase 1:** loopback/local API protection and path-validation tests; missing-model/startup behavior; source IDs cannot be invented; workspace reopens after restart; baseline public PR CI runs unprivileged.
+- **Phase 2:** source/licence/personal-data classification, canonical identity merge/conflict fixtures, imported raw→staging→canonical lineage and schema-version validation.
+- **Phase 3:** source span/row citation fidelity; explicit no-evidence abstention; privacy-filtered local retrieval and document prompt-injection tests.
+- **Phase 4–5:** boundary-version comparability warnings; shared dataset drives table/chart/map; reference tests for margins, turnout, swing and missing results.
+- **Phase 6–7:** documented sampling/weighting/quality, publication suppression, model calibration/backtests and provenance-linked uncertainty.
+- **Phase 8–9:** time/version-sensitive legislative and media claims; contradictory sources and observed-versus-inferred labels.
+- **Phase 10–11:** auditable field event/alert state; delegated tool approvals, least privilege, secure sync/plugin boundaries and no default unsanctioned publishing.
+- **Phase 12:** practical installer, restore, export/erase where lawful, dependency SBOM/licence notices, tested recovery and supported-OS matrix.
+
+**Non-goal:** do not turn this into a mandate to add all planned packages before their phase. Security, licence and privacy review begins early; heavyweight mechanisms are introduced when required.
