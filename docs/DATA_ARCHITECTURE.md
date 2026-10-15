@@ -271,3 +271,7 @@ Do not commit private datasets to the public repository.
 Local/private datasets should remain on the user's machine by default. Any future team sync must have explicit permissions, encryption/transport controls and access auditing.
 
 Individual-level political preference inference is not a target for the AI decision layer. Analytical models should emphasize aggregate geography, survey cohorts and appropriately governed operational data.
+
+### Proposed pre-election microarea/field-data rules (ADR-0003)
+
+Station/microarea mapping is an **aggregate/public-site geography** problem, not authorization for named-voter or household targeting. Field assignments, site conditions, source-vetted public issues and verified operational status should reuse canonical `PollingStation/BoundaryVersion/Source/FieldUpdate/Task` and record site coordinates, not people/home GPS. Sensitive survey answers and opt-in accessibility service contact requests require a separate documented purpose, access and retention; they may not be joined into political profiles. Offline uploads need idempotent receipts and collected/received timestamps, verified audit trails, source licensing and suppression to prevent tiny-area re-identification. Distinguish official approximate turnout feeds, lawfully obtained statutory Form 17C records and nonofficial observer observations. See [field specification](PRE_ELECTION_MICROAREA_INTELLIGENCE.md).
