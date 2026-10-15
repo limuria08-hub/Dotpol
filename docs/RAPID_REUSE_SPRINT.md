@@ -1,5 +1,7 @@
 # Dotpol Rapid Reuse Sprint — 3–7-Day First Working Release
 
+**Selected technology authority:** [one stack, one job per capability](https://github.com/limuria08-hub/Dotpol/blob/docs/donor-reuse-audit-2026-10-15/docs/SINGLE_STACK_SELECTION.md) (pending maintainer approval). This sprint is the first preview subset, not permission to install later-phase dependencies.
+
 **Date:** 2026-10-15  
 **Status:** Proposed time-boxed execution plan; **no implementation authorized by this document**.  
 **Target:** The **first runnable, local-first research MVP**, not all 13 roadmap phases.  
@@ -23,7 +25,7 @@ This is an engineering sprint *target*, **not a promised delivery date**; feasib
 | **Day 1** | Resolve only blocking Phase 0 decisions; establish repo contracts, local gateway, health check, run instructions and CI skeleton | architecture + `services/api` | FastAPI, Pydantic, GitHub Actions | One fresh local start; loopback, health, CI smoke; no API key |
 | **Day 2** | SQLite project lifecycle; filesystem source registry + evidence IDs; first local import and non-AI inspection | `platform/data` + `platform/provenance` | SQLite stdlib, typed contracts; format parsers already available | Create/import/reopen without loss; stable ids; negative path tests |
 | **Day 3** | Next.js research shell + AI gateway/tool invocation; local Ollama adapter path; user-visible missing-model behavior | `apps/web` + `platform/ai` | Next.js, PydanticAI, Ollama (user-managed); Vane **UI modules only after rights/security review** | Working integrated vertical demo; stream/events; no invented citations |
-| **Day 4** | Indexed local TXT/CSV/JSON retrieval, exact row/line source linkage; minimal evidence registry | `platform/search` + documents/data | SQLite full text or existing library; bounded lightweight format parsers | Known-answer and unknown-answer fixtures; no-network tests |
+| **Day 4** | Indexed local TXT/CSV/JSON retrieval, exact row/line source linkage; minimal evidence registry | `platform/search` + documents/data | LanceDB OSS full-text index with stable evidence IDs; bounded lightweight format parsers | Known-answer and unknown-answer fixtures; no-network tests |
 | **Day 5** | Research agent ties retrieval to source evidence; answer/brief export, abstention and model-failure paths | `platform/search`, `platform/ai`, `platform/provenance` | PydanticAI tools + existing document/research UX | Fake/withdrawn/missing citation rejected; export matches evidence |
 | **Day 6** | Security, privacy, docs, integration regression; optional PDF import if Docling fits without destabilizing scope | security + data + docs | Existing scanners/test libraries; Docling optional | SSRF/path/prompt-injection fixtures; CI/local no-key passes |
 | **Day 7** | Fix blockers, clean fresh-start demo, licence/attribution inventory, tag first working preview **only if gates pass** | release owner | Existing packaging, CI artifacts | Independent reviewer reproduces on one OS; no known P0 blocker |
@@ -38,10 +40,10 @@ This is an engineering sprint *target*, **not a promised delivery date**; feasib
 | API | FastAPI local gateway, same process for first release | Existing ecosystem and planned architecture | microservices or second Next.js API as canonical backend |
 | Storage | SQLite + filesystem, explicit source/evidence identifiers | no external DB deployment | Postgres, second Drizzle data model, premature DuckDB unless CSV size demands it |
 | Agent/runtime | one PydanticAI typed-tool runner | already chosen and extensible | LangGraph/CrewAI/parallel Vane agent runtime |
-| Model | local Ollama-compatible provider *if already installed*; optional remote BYOAI later | works without mandatory paid provider | automatic heavy model download or default cloud dependency |
-| Retrieval | structured lookup/local full text, explicit source/row/line IDs; bounded import | easier to verify and cheap to run | graph-RAG, multiple vector stores, mandatory web search/SearXNG |
+| Model | local Ollama runtime *if already installed*; no-model non-AI mode otherwise | one local provider, zero mandatory cloud cost | automatic heavy model downloads or another inference runtime |
+| Retrieval | LanceDB OSS full-text search with exact source/row/line IDs; enable vectors only when available | one search index handles both keyword and semantic retrieval | additional RAG/vector/full-text engines, mandatory web search/SearXNG |
 | Documents | basic TXT/CSV/JSON first; Docling behind future adapter | reliably proves citation architecture | full Office/PDF parsing on critical path |
-| Donors | dependency by default, Vane already forked for optional selective UI components | maximize reuse without duplicate application stack | copying 43 repos or making unnecessary forks |
+| Donors | use the [one-selected-stack proposal](https://github.com/limuria08-hub/Dotpol/blob/docs/donor-reuse-audit-2026-10-15/docs/SINGLE_STACK_SELECTION.md); Vane only for approved source/citation/progress UI | one choice per capability, minimal forks | copying 43 repos or installing competing app backends |
 
 Donor review is **not** an integration blocker if an unapproved Vane component can be replaced by an existing permissive UI primitive. No unverified donor code crosses into product. Cross-phase major architectural changes still require an accepted ADR.
 
