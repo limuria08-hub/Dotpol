@@ -34,6 +34,8 @@ Rejected: directly violates one capability/one owner.
 
 Select **A** as the canonical foundation layout. `services/api` composes the platform capabilities and provides FastAPI interfaces, rather than being a second system of record. No full code scaffold is requested by this ADR. The Phase 1 *file paths* must align with this ownership rule before implementation; do not blindly execute outdated path examples.
 
+**Concrete Python package layout:** use one editable package rooted at `platform/src/dotpol_platform/` with `ai/`, `data/`, `provenance/` and later `search/` modules. The capability IDs `platform/ai` etc. are logical owners. Never use Python `import platform.ai` (it collides with stdlib `platform`) or create copies under `services/api/dotpol_api`. The API imports `dotpol_platform.*`. See the [Phase 1 execution checklist](../superpowers/plans/2026-10-15-dotpol-foundation.md).
+
 ## Consequences
 
 - Clean responsibility boundaries reduce duplicate engineering and make tests reusable.

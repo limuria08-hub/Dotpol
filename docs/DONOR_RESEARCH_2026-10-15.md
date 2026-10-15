@@ -80,7 +80,7 @@ The 'licence signal' reflects GitHub repository metadata and/or upstream documen
 | `platform/ai` | PydanticAI + provider-owned model gateway | LiteLLM optional after package licence/security review; local Ollama or llama.cpp is a provider, not a second gateway |
 | `platform/data` | dlt + Docling + single source registry | evaluate OPOL/OpenElections/OpenStates as adapters/patterns only; **Splink versus dedupe**, not both blindly |
 | `platform/search` | unified hybrid search + LanceDB adapter | Vane patterns selectively; SearXNG external/AGPL review only; no parallel RAG framework |
-| `platform/gis` | MapLibre + deck.gl + H3 + GeoPandas/PMTiles when needed | Kepler.gl = advanced Map Lab only; GDAL/Tippecanoe external conversion tools |
+| `platform/gis` | Kepler.gl as the one map UI; GeoPandas spatial backend | MapLibre/deck.gl belong to Kepler's internals; GDAL/Tippecanoe are future external converters |
 | `platform/analytics` | DuckDB + Perspective + Statsmodels/PyMC | ECharts chart interface; avoid a second analytics DB or BI stack |
 | `platform/surveys` | SurveyJS free Form Library + ODK/XLSForm interoperability | Dotpol-owned survey authoring; no commercial Survey Creator or forced Kobo/ODK server |
 | `domains/elections` | Dotpol election rules + open-source parsing patterns | official Indian data and versioned constituency geography need Dotpol adapters |

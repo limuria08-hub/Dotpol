@@ -10,9 +10,9 @@ Its goal is to bring research, elections, psephology, GIS, surveys, forecasting,
 
 ## Project status
 
-**Blueprint v1.0 — architecture freeze before implementation.**
+**Canonical consolidated planning baseline — implementation not started.**
 
-Dotpol is intentionally beginning with documentation and architecture before feature development. The repository should not accumulate duplicate implementations, competing frameworks, or frequently changing architectural choices.
+Dotpol has a consolidated [master plan](docs/MASTER_PLAN.md) and selected stack; implementation and verification remain ahead. The repository should not accumulate duplicate implementations, competing frameworks, or frequently changing architectural choices.
 
 Major architecture changes require an Architecture Decision Record (ADR) under `docs/DECISIONS/`.
 

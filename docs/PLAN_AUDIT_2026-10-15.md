@@ -1,7 +1,7 @@
 # Dotpol Blueprint v1.0 — Independent Planning Audit
 
 **Date:** 2026-10-15  
-**Status:** Proposed review findings; not an implementation authorization  
+**Status:** Historical Phase 0 audit and gap register; the adopted planning baseline is [Master Plan](MASTER_PLAN.md) and [ADRs](DECISIONS/README.md). Earlier unchecked audit options are **not separate active implementation plans**.  
 **Baseline:** `main` — `README.md`, `docs/BLUEPRINT.md`, `docs/ROADMAP.md`, architecture/AI/data/domain/donor/licence documents, and the Phase 1 task plan.
 
 ## Executive decision

@@ -70,6 +70,8 @@ Dotpol/
 
 Create directories when their roadmap phase begins; do not scaffold empty architecture merely for appearance.
 
+**Python path detail (ADR-0001):** `platform/ai`, `platform/data` and other entries describe logical owners. Implement reusable Python code once under the importable package `platform/src/dotpol_platform/{ai,data,provenance,...}` and install it into the FastAPI service; never import from Python's standard-library name `platform` or create duplicate `dotpol_api/ai` implementations. [Phase 1 file plan](superpowers/plans/2026-10-15-dotpol-foundation.md) is now aligned.
+
 ## 3. Runtime topology
 
 ### Personal/local mode
