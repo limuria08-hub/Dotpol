@@ -222,9 +222,9 @@ Deliverables:
 
 Deliverables:
 
-- field tasks/updates/incidents;
-- offline collection/sync interoperability;
-- aggregate turnout and operational monitoring;
+- field tasks/updates/incidents, consuming **the same `domains/fieldops` records and site IDs** established in the pre-election field pilot;
+- offline collection/sync interoperability with idempotent receipts, clock/source time, dispute review and role permissions;
+- aggregate turnout and operational monitoring, distinguishing official approximate VTR, statutory Form 17C when legally available, and non-official field observations;
 - maps and escalation workflows;
 - controller/war-room workspace;
 - alert acknowledgement/state;
