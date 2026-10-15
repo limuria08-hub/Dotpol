@@ -18,7 +18,7 @@ This matrix classifies candidates as:
 | Project | Repository | Class | Expected role | Planning licence signal | Decision |
 |---|---|---|---|---|---|
 | Open Politics / OPOL | `open-politics/opol` | FORK/DONOR + REFERENCE | political ingestion, classification, entity/geocoding/domain patterns | MIT at project level; bundled services need separate review | serious political-domain donor, do not wholesale-copy full stack |
-| Vane | `ItzCrazyKns/Vane` | FORK/DONOR | generative search/research patterns | MIT | selectively assimilate search/research UX/backend patterns behind Dotpol Search |
+| Vane | `ItzCrazyKns/Vane` — verified fork `kiranvbiim-coder/Vane` | FORK/DONOR (fork created; not integrated) | generative search/research patterns | MIT root only; component review pending | evaluate scoped UI/search modules behind Dotpol Search; avoid bundling SearXNG/second API; [review](DONOR_EVAL_VANE.md) |
 | Kepler.gl | `keplergl/kepler.gl` | FORK/DONOR when Phase 4 begins | advanced GIS Map Lab | MIT | core maps use MapLibre/deck.gl; Kepler is advanced analyst workspace |
 | Vercel AI Chatbot | `vercel/chatbot` | REFERENCE/DONOR | streaming chat, tool UI, artifact interaction patterns | verify exact repository version | do not make Dotpol product architecture depend on template |
 | LibreChat | `LibreChat-AI/LibreChat` | REFERENCE | chat/agent/MCP/file UX patterns | MIT | reference rich AI workspace behavior; avoid parallel app foundation |
@@ -153,6 +153,10 @@ Do not fork everything immediately.
 Phase 0/1 should establish Dotpol's interfaces first. Donor forks should be created/assimilated when the capability's roadmap phase begins, so we do not maintain unused forks or prematurely inherit their architecture.
 
 ## 11. Second-pass donor research and coverage audit — 2026-10-15
+
+**Verified fork status:** Vane is forked under [`kiranvbiim-coder/Vane`](https://github.com/kiranvbiim-coder/Vane) as of 2026-10-15, with upstream and fork `master` at the same observed commit `348feca3e378fb4157b217724ed508dc707f853f`. See [Vane evaluation](DONOR_EVAL_VANE.md). This does *not* imply a component licence clearance or Dotpol integration.
+
+
 
 This matrix remains the *architecture-level classification*. See the expanded **[43-candidate research register](DONOR_RESEARCH_2026-10-15.md)** and **[reuse/fork playbook](OSS_REUSE_AND_FORK_POLICY.md)**, backed by the machine-readable **`architecture/donor-candidates.yml`** inventory.
 
