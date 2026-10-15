@@ -51,6 +51,10 @@ Canonical electoral constituency with identifier, jurisdiction, type and time-va
 
 Polling/booth geography or station metadata where public/lawful data is available.
 
+### Microarea (proposed, ADR-0003)
+
+Public/appropriately aggregated geographic reporting unit for polling-site facilities, logistical coverage and general issue observations. Has a stable non-personal ID, geographic version, effective dates and authoritative/source link; it is **not** a household, voter-profile or private home-location entity. Do not finalize as a canonical entity until the extension rule and ADR review pass.
+
 ### BoundaryVersion
 
 Versioned geometry linked to an area and effective date range. Boundary history matters because delimitation changes analytical comparability.
