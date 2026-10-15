@@ -1,0 +1,163 @@
+version: "1.0"
+status: frozen-phase-0
+principles:
+  local_first: true
+  zero_cost_core: true
+  reuse_before_build: true
+  one_capability_one_owner: true
+  one_canonical_domain_model: true
+  provenance_required: true
+  deterministic_engines_for_calculation: true
+capabilities:
+  - id: ai-model-gateway
+    owner: platform/ai
+    status: planned
+    roadmap_phase: 1
+    consumers: [agents, all-domains]
+    rule: "All model providers route through one Dotpol-owned interface."
+  - id: agent-runtime
+    owner: platform/ai
+    status: planned
+    roadmap_phase: 1
+    preferred_dependency: PydanticAI
+    consumers: [agents]
+  - id: tool-registry
+    owner: platform/ai
+    status: planned
+    roadmap_phase: 1
+    consumers: [agents]
+  - id: search
+    owner: platform/search
+    status: planned
+    roadmap_phase: 3
+    donor: Vane
+    consumers: [research, elections, policy, legislation, media]
+  - id: semantic-retrieval
+    owner: platform/search
+    status: planned
+    roadmap_phase: 3
+    preferred_local_candidate: LanceDB
+    rule: "No parallel production RAG stacks without ADR and evaluation evidence."
+  - id: data-ingestion
+    owner: platform/data
+    status: planned
+    roadmap_phase: 2
+    preferred_dependency: dlt
+    consumers: [connectors, all-domains]
+  - id: source-registry
+    owner: platform/data
+    status: planned
+    roadmap_phase: 1
+  - id: dataset-registry
+    owner: platform/data
+    status: planned
+    roadmap_phase: 2
+  - id: provenance
+    owner: platform/provenance
+    status: planned
+    roadmap_phase: 1
+    consumers: [all]
+  - id: documents
+    owner: platform/documents
+    status: planned
+    roadmap_phase: 2
+    preferred_dependency: Docling
+    consumers: [research, policy, legislation, manifestos, media]
+  - id: gis
+    owner: platform/gis
+    status: planned
+    roadmap_phase: 4
+    dependencies: [MapLibre, deck.gl, H3]
+    consumers: [elections, surveys, policy, field-ops, warroom]
+  - id: advanced-map-lab
+    owner: platform/gis
+    status: planned
+    roadmap_phase: 4
+    donor: kepler.gl
+  - id: analytics-query
+    owner: platform/analytics
+    status: planned
+    roadmap_phase: 4
+    preferred_dependency: DuckDB
+  - id: analytics-workbench
+    owner: platform/analytics
+    status: planned
+    roadmap_phase: 4
+    preferred_dependency: FINOS-Perspective
+  - id: statistics
+    owner: platform/analytics
+    status: planned
+    roadmap_phase: 4
+    preferred_dependency: Statsmodels
+  - id: bayesian-modeling
+    owner: platform/analytics
+    status: planned
+    roadmap_phase: 7
+    preferred_dependency: PyMC
+  - id: surveys-runtime
+    owner: platform/surveys
+    status: planned
+    roadmap_phase: 6
+    preferred_dependency: SurveyJS-Form-Library
+  - id: offline-field-interoperability
+    owner: platform/surveys
+    status: planned
+    roadmap_phase: 6
+    reference_or_dependency: ODK
+  - id: workflow-automation
+    owner: platform/automation
+    status: planned
+    roadmap_phase: 11
+    preferred_dependency: Prefect
+  - id: political-ontology
+    owner: packages/domain
+    status: specification
+    roadmap_phase: 2
+  - id: constituency-intelligence
+    owner: domains/constituencies
+    status: planned
+    roadmap_phase: 5
+  - id: election-intelligence
+    owner: domains/elections
+    status: planned
+    roadmap_phase: 5
+  - id: psephology
+    owner: domains/psephology
+    status: planned
+    roadmap_phase: 6
+  - id: forecasting
+    owner: domains/forecasting
+    status: planned
+    roadmap_phase: 7
+  - id: simulation
+    owner: domains/simulation
+    status: planned
+    roadmap_phase: 7
+  - id: policy-intelligence
+    owner: domains/policy
+    status: planned
+    roadmap_phase: 8
+  - id: legislative-intelligence
+    owner: domains/legislation
+    status: planned
+    roadmap_phase: 8
+  - id: governance-intelligence
+    owner: domains/governance
+    status: planned
+    roadmap_phase: 8
+  - id: manifesto-intelligence
+    owner: domains/manifestos
+    status: planned
+    roadmap_phase: 8
+  - id: media-narrative-intelligence
+    owner: domains/media
+    status: planned
+    roadmap_phase: 9
+  - id: research-workflows
+    owner: domains/research
+    status: planned
+    roadmap_phase: 3
+  - id: warroom-intelligence
+    owner: domains/warroom
+    status: planned
+    roadmap_phase: 10
