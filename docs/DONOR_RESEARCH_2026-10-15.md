@@ -88,7 +88,7 @@ The 'licence signal' reflects GitHub repository metadata and/or upstream documen
 
 ## Verified Vane fork — 2026-10-15
 
-GitHub verified [kiranvbiim-coder/Vane](https://github.com/kiranvbiim-coder/Vane) as a fork of [ItzCrazyKns/Vane](https://github.com/ItzCrazyKns/Vane), with both observed `master` heads at `348feca3e378fb4157b217724ed508dc707f853f`. Its root MIT licence was read, but SearXNG, transitive modules and model/data terms remain subject to a component-level audit. See [selective module analysis](DONOR_EVAL_VANE.md).
+GitHub verified [kiranvbiim-coder/Vane](https://github.com/kiranvbiim-coder/Vane) as a fork of [ItzCrazyKns/Vane](https://github.com/ItzCrazyKns/Vane), with both observed `master` heads at `348feca3e378fb4157b217724ed508dc707f853f`. Its root MIT licence was read, but SearXNG, transitive modules and model/data terms remain subject to a component-level audit. See [fork assessment](DONOR_EVAL_VANE.md) and [20-component adoption matrix](VANE_MODULE_DECISION_MATRIX.md).
 
 
 ## Immediate fork decisions (planning stage)
