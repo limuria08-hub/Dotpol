@@ -349,3 +349,29 @@ Phase 1 is complete only when all are true:
 ## Execution note
 
 Implement Phase 1 only after maintainers review Blueprint v1.0. Prefer subagent-driven implementation with review gates because storage, AI, provenance and frontend contracts become dependencies for nearly every later phase.
+
+## Planning review overlay — 2026-10-15 (proposed; not implementation)
+
+**Stop before Task 1 until Phase 0 review is accepted.** The task checkboxes above remain authoritative and unchecked. The proposed [ADR-0001](../../DECISIONS/0001-foundation-module-ownership.md) is intentionally not accepted; it may change the *file placement* of sources, provenance, AI and tools from `services/api` to registered `platform/` owners. Do not create both implementations. (The relative ADR link should resolve from this plan's directory as `../../DECISIONS/0001-foundation-module-ownership.md`.)
+
+### Preconditions
+
+- [ ] Maintainers accept/revise the [plan audit](../../PLAN_AUDIT_2026-10-15.md) and select initial [MVP journey](../../PRODUCT_MVP_AND_ACCEPTANCE.md).
+- [ ] Resolve [ADR-0001](../../DECISIONS/0001-foundation-module-ownership.md) and adjust path examples/tests before assigning parallel agents; designate single canonical implementation owner for local persistence/source/provenance/model/tool contracts.
+- [ ] Approve root project licence decision and establish legal/OSS review process.
+- [ ] Review [data governance](../../DATA_GOVERNANCE.md), [security/AI assurance](../../SECURITY_AND_AI_ASSURANCE.md) and local-model/no-provider fallback behavior.
+- [ ] Record API contract cards for health, projects, sources, evidence, provider and tool invocation; designate cross-language schema/semver policy as needed.
+
+### Extra failure tests required in implementation, by task
+
+- **Task 1:** loopback binding by default, disallowed CORS/origins/host headers, no-key boot, sensible resource limits and non-leaky errors; localhost write routes require an approved anti-CSRF/local-auth strategy.
+- **Task 2:** path traversal/symlink escape, malformed names, reopening/migrations, backup/restore plan and forbidden destructive path operations.
+- **Task 3:** unknown/withdrawn source and evidence IDs rejected; source classification and version/attribution metadata preserved.
+- **Task 4:** credentials never required or logged for local startup; remote provider disabled unless configured by user; clear offline/unavailable errors; no private data silently sent remotely.
+- **Task 5:** untrusted source prompt injection, no-evidence abstention, typed tool allowlists, no unsolicited network/write/destructive effect and bounded execution.
+- **Task 6:** no mock production data presented as genuine; error/loading/absence states; keyboard accessibility, local gateway safety and clear model offline status.
+- **Task 7:** fork PRs have restricted tokens and no privileged execution of untrusted code; CI reports backend/frontend tests and no-secret/no-key path; dependency licences reviewed before adoption.
+
+### Completion evidence record
+
+For each task link: PR; capability ID/owner; typed contract; donor/legal review if applicable; command and actual test result; negative security test; offline/local result; relevant provenance/evaluation; acceptance demo. A merged PR without verification is **implemented**, not **verified**. No future domain phase should start merely to make the UI appear complete.
