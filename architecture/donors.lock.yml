@@ -23,7 +23,13 @@ projects:
     roadmap_phase: 3
     upstream_ref: null
     license_verified_for_ref: false
-    action: "Assimilate behind Dotpol SearchProvider/research contracts."
+    fork_repository: kiranvbiim-coder/Vane
+    fork_status: created-verified-not-integrated
+    fork_verified_on: "2026-10-15"
+    observed_fork_head_sha: 348feca3e378fb4157b217724ed508dc707f853f
+    observed_upstream_head_sha: 348feca3e378fb4157b217724ed508dc707f853f
+    component_evaluation: docs/DONOR_EVAL_VANE.md
+    action: "Review selective UX/search modules behind Dotpol SearchProvider; no wholesale embedding or unreviewed SearXNG bundle."
   - id: kepler-gl
     repository: keplergl/kepler.gl
     classification: donor
