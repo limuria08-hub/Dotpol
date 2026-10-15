@@ -1,10 +1,6 @@
 # Dotpol Agent Instructions
 
-## New core planning gap (2026-10-15; proposed, not implementation)
-
-Review [pre-election microarea intelligence/booth operations](docs/PRE_ELECTION_MICROAREA_INTELLIGENCE.md) and [proposed ADR-0003](docs/DECISIONS/0003-pre-election-microarea-operations.md) before any election, station, survey, field, mobile or war-room workstream. Pre-election site readiness, authorized field tasks and reported aggregate issues have one proposed owner `domains/fieldops`; Phase 10 war room only composes its canonical records. Do not implement individual political-preference voter/household profiles, inferred-vote ranking, targeted outreach, or a parallel booth voter CRM. Respect source rights, polling-day rules, role separation, privacy and human verification. These changes remain subject to maintainer approval; do not mark as implemented.
-
-
+**Start with [Master Plan](docs/MASTER_PLAN.md)** for the chosen stack, phases, scope and current acceptance gates. For field work, use [Field Specification](docs/PRE_ELECTION_MICROAREA_INTELLIGENCE.md) and [proposed ADR-0003](docs/DECISIONS/0003-pre-election-microarea-operations.md). One `domains/fieldops` owner; Phase 10 consumes its records. No voter political-preference/household targeting or parallel CRM. These changes remain proposed, not implemented.
 
 These instructions are mandatory for AI coding agents, automation workers, and human collaborators working in this repository.
 
