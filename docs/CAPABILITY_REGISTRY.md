@@ -47,7 +47,8 @@ Before adding code, contributors must check this registry and `architecture/capa
 | Manifesto intelligence | `domains/manifestos` | documents/policy | promises/status assertions |
 | Media/narrative intelligence | `domains/media` | search/data/AI | topics, narratives, events, stance observations |
 | Research workflows | `domains/research` | search/documents/analytics | evidence-backed research/work products |
-| War-room intelligence | `domains/warroom` | other domains + automation | composition/monitoring, not duplicate engines |
+| Pre-election field intelligence (proposed) | `domains/fieldops` | constituencies, GIS, survey forms, Task/FieldUpdate, provenance | area/site readiness, supervised field assignments, verified aggregates and offline sync; no voter political profiles; [workstream](PRE_ELECTION_MICROAREA_INTELLIGENCE.md) |
+| War-room intelligence | `domains/warroom` | fieldops + other domains + automation | composition/monitoring of same station, incident and aggregate data; not duplicate engines |
 
 ## Agent ownership
 
