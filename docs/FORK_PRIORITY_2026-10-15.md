@@ -1,5 +1,7 @@
 # Dotpol — Practical Fork Queue and Donor Action Plan
 
+**Selection update:** [One selected technology per capability](SINGLE_STACK_SELECTION.md) is the current proposal. **No new forks are required.** Kepler.gl is selected as a *published upstream integration* for later mapping; a fork is not required to use it. Optional fork candidates below are historical evaluation ideas, not active instructions.
+
 **Prepared:** 2026-10-15  
 **Status:** Proposed planning guidance; no code imported, licences approved or integrations run.  
 **Master inventory:** [All 43 upstream candidates with direct links](DONOR_RESEARCH_2026-10-15.md)  
