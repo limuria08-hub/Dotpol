@@ -1,12 +1,12 @@
 # Dotpol Rapid Reuse Sprint — 3–7-Day First Working Release
 
-**Selected technology authority:** [one stack, one job per capability](https://github.com/limuria08-hub/Dotpol/blob/docs/donor-reuse-audit-2026-10-15/docs/SINGLE_STACK_SELECTION.md) (pending maintainer approval). This sprint is the first preview subset, not permission to install later-phase dependencies.
+**Selected technology authority:** [Master Plan](MASTER_PLAN.md) and [selected stack](SINGLE_STACK_SELECTION.md). This sprint is the first preview subset, not permission to install later-phase dependencies.
 
 **Date:** 2026-10-15  
 **Status:** Proposed time-boxed execution plan; **no implementation authorized by this document**.  
 **Target:** The **first runnable, local-first research MVP**, not all 13 roadmap phases.  
-**Source of truth:** [Blueprint](BLUEPRINT.md), [Roadmap](ROADMAP.md), and [Phase 1 foundation plan](superpowers/plans/2026-10-15-dotpol-foundation.md).  
-**Related pending reviews:** [Architecture/MVP gates PR #1](https://github.com/limuria08-hub/Dotpol/pull/1), [reuse/donor PR #2](https://github.com/limuria08-hub/Dotpol/pull/2). Avoid inventing a third conflicting blueprint.
+**Source of truth:** [Master Plan](MASTER_PLAN.md); supporting implementation detail: [Blueprint](BLUEPRINT.md), [Roadmap](ROADMAP.md), and [Phase 1 plan](superpowers/plans/2026-10-15-dotpol-foundation.md).  
+**Approved planning ADRs:** [foundation ownership](DECISIONS/0001-foundation-module-ownership.md) and [single stack](DECISIONS/0002-one-stack-per-capability.md). Source/licence/CI checks still required.
 
 ## Product outcome and honest scope
 
@@ -43,7 +43,7 @@ This is an engineering sprint *target*, **not a promised delivery date**; feasib
 | Model | local Ollama runtime *if already installed*; no-model non-AI mode otherwise | one local provider, zero mandatory cloud cost | automatic heavy model downloads or another inference runtime |
 | Retrieval | LanceDB OSS full-text search with exact source/row/line IDs; enable vectors only when available | one search index handles both keyword and semantic retrieval | additional RAG/vector/full-text engines, mandatory web search/SearXNG |
 | Documents | basic TXT/CSV/JSON first; Docling behind future adapter | reliably proves citation architecture | full Office/PDF parsing on critical path |
-| Donors | use the [one-selected-stack proposal](https://github.com/limuria08-hub/Dotpol/blob/docs/donor-reuse-audit-2026-10-15/docs/SINGLE_STACK_SELECTION.md); Vane only for approved source/citation/progress UI | one choice per capability, minimal forks | copying 43 repos or installing competing app backends |
+| Donors | use the [selected stack](SINGLE_STACK_SELECTION.md); Vane only for approved source/citation/progress UI | one choice per capability, minimal forks | copying 43 repos or installing competing app backends |
 
 Donor review is **not** an integration blocker if an unapproved Vane component can be replaced by an existing permissive UI primitive. No unverified donor code crosses into product. Cross-phase major architectural changes still require an accepted ADR.
 
@@ -76,7 +76,7 @@ In order, defer: animations/widgets; multi-provider AI; web search integration; 
 - [ ] Maintainer approves scope: '7-day research preview' rather than 'complete political-intelligence OS'.
 - [ ] Confirm development OS, model availability, people/reviewers, CI permissions and actual working-hours capacity.
 - [ ] Accept/revise architecture ownership proposal + licence decision (PR #1).
-- [ ] Approve exact 3–5 donor/dependency shortlist per sprint, no wholesale Vane backend (PR #2).
+- [ ] Approve exact 3–5 donor/dependency shortlist per sprint, no wholesale Vane backend ([donor review](VANE_MODULE_DECISION_MATRIX.md)).
 - [ ] Create scoped implementation PRs, one per capability lane with complete acceptance checks.
 - [ ] Record actual days and blockers; do not infer a completion percentage from added files/merges.
 - [ ] Independently run demo, tests and data-backup/reopen flow before announcing preview.

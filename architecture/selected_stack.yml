@@ -1,8 +1,8 @@
-# Single-choice proposed selection; this is NOT an installed-dependencies manifest.
+# Selected canonical planning stack; NOT an installed-dependencies or licence-approval manifest.
 # Maintainer approval, ADR, exact version and licence validation required before adoption.
 version: "1.0"
 as_of: "2026-10-15"
-status: "proposed-phase-0"
+status: "selected-not-implemented"
 source_document: "docs/SINGLE_STACK_SELECTION.md"
 model: "one-owner-per-capability"
 no_new_forks_required: true
@@ -15,7 +15,7 @@ selected:
     owner: "apps/web"
     phase: 1
     integration_role: "application"
-    adoption_status: "proposed"
+    adoption_status: "selected-not-integrated"
     exact_ref: null
     licence_verified: false
     integrated: false

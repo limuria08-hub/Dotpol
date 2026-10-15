@@ -1,5 +1,5 @@
 version: "1.0"
-status: frozen-phase-0
+status: consolidated-planning-baseline
 principles:
   local_first: true
   zero_cost_core: true
@@ -67,13 +67,10 @@ capabilities:
     owner: platform/gis
     status: planned
     roadmap_phase: 4
-    dependencies: [MapLibre, deck.gl, H3]
-    consumers: [elections, surveys, policy, field-ops, warroom]
-  - id: advanced-map-lab
-    owner: platform/gis
-    status: planned
-    roadmap_phase: 4
-    donor: kepler.gl
+    preferred_dependency: keplergl/kepler.gl
+    spatial_backend: geopandas/geopandas
+    rule: "One embedded Kepler map workspace; no independent parallel MapLibre/deck.gl renderer. Versioned canonical geography remains Dotpol-owned."
+    consumers: [elections, surveys, policy, field-ops, warroom, analysts]
   - id: analytics-query
     owner: platform/analytics
     status: planned

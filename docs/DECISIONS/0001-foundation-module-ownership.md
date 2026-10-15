@@ -1,6 +1,6 @@
 # ADR-0001: Foundation API and canonical capability ownership
 
-- **Status:** Proposed — maintainer review required
+- **Status:** Accepted planning architecture — implementation and package import verification pending
 - **Date:** 2026-10-15
 - **Owners:** Unassigned; architecture maintainer to approve
 - **Related capabilities:** AI model gateway, tool registry, source registry, provenance, local persistence, API gateway
@@ -30,9 +30,9 @@ Pros: fastest single-package bootstrap. Cons: more churn as reusable capabilitie
 **C — Have both `services/api` and `platform/` implement them.**  
 Rejected: directly violates one capability/one owner.
 
-## Proposed decision
+## Decision
 
-Select **A**, subject to maintainer review. `services/api` composes the platform capabilities and provides FastAPI interfaces, rather than being a second system of record. No full code scaffold is requested by this ADR. If an accepted ADR selects A, revise the Phase 1 *file paths* and capable owner records **before** implementation; do not blindly execute the preexisting path examples.
+Select **A** as the canonical foundation layout. `services/api` composes the platform capabilities and provides FastAPI interfaces, rather than being a second system of record. No full code scaffold is requested by this ADR. The Phase 1 *file paths* must align with this ownership rule before implementation; do not blindly execute outdated path examples.
 
 ## Consequences
 
@@ -57,4 +57,4 @@ Prevents `services/api/dotpol_api/ai` vs `platform/ai`, separate source/provenan
 - Tests run locally in a no-API-key configuration.
 - No parallel packages provide the same canonical entity or tool registry.
 
-**This is a proposal, not an accepted architectural change.** Existing blueprint remains the baseline until maintainers approve an ADR and update registries/implementation paths consistently.
+**Planning decision accepted; no product code exists and no test, licence or deployed-integration result is implied.**

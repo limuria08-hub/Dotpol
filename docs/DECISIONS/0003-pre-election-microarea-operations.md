@@ -1,12 +1,12 @@
 # ADR-0003 — One pre-election field-operations owner
 
-**Status:** Proposed · **Date:** 2026-10-15 · **Owner:** maintainer to approve
+**Status:** Accepted planning scope · **Date:** 2026-10-15 · **Implementation owner:** `domains/fieldops`
 
 ## Problem
 
 The original blueprint covered booths, surveys and election-day war room but did not specify pre-election site readiness, authorized field assignments, offline report verification or continuity into live operations. Treating this solely as a Phase 10 feature would leave the essential earlier field workflow missing.
 
-## Decision proposed
+## Decision
 
 - **`domains/fieldops`** owns pre-election site/microarea assessments, assigned work and verified field-observation semantics, using canonical `Task` and `FieldUpdate`.
 - **`domains/warroom`** composes the **same** records into election-day incidents, aggregate monitoring and alerts. No second task store, map system, voter CRM or survey backend.
@@ -29,4 +29,4 @@ The original blueprint covered booths, surveys and election-day war room but did
 
 Pass tests **F1–F8** in the [field specification](../PRE_ELECTION_MICROAREA_INTELLIGENCE.md), including offline retry, conflicts, role isolation, aggregate suppression and distinct official/field turnout source states. No implementation is marked complete until tested.
 
-**Supersession:** No accepted ADR is superseded. Reconcile this with [proposed ADR-0001](https://github.com/limuria08-hub/Dotpol/pull/1) and [proposed ADR-0002](https://github.com/limuria08-hub/Dotpol/pull/2) before integration.
+**Dependencies:** use accepted planning [ADR-0001](0001-foundation-module-ownership.md) and [ADR-0002](0002-one-stack-per-capability.md). Compliance, source permission, role grants and F1–F8 tests remain implementation gates.

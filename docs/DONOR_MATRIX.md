@@ -1,6 +1,6 @@
 # Dotpol Open-Source Donor Matrix v1.0
 
-**IMPLEMENTATION SELECTION:** Follow the [one-stack decision](SINGLE_STACK_SELECTION.md) and [selected_stack.yml](../architecture/selected_stack.yml), not the historical candidate alternatives in this matrix. Proposed [ADR-0002](DECISIONS/0002-one-stack-per-capability.md) controls any deliberate architectural changes.
+**IMPLEMENTATION SELECTION:** Follow the [one-stack decision](SINGLE_STACK_SELECTION.md) and [selected_stack.yml](../architecture/selected_stack.yml), not the historical candidate alternatives in this matrix. Adopted planning [ADR-0002](DECISIONS/0002-one-stack-per-capability.md) controls any deliberate architectural changes.
 
 ## 1. Purpose
 
@@ -21,7 +21,7 @@ This matrix classifies candidates as:
 |---|---|---|---|---|---|
 | Open Politics / OPOL | `open-politics/opol` | FORK/DONOR + REFERENCE | political ingestion, classification, entity/geocoding/domain patterns | MIT at project level; bundled services need separate review | serious political-domain donor, do not wholesale-copy full stack |
 | Vane | `ItzCrazyKns/Vane` — verified fork `kiranvbiim-coder/Vane` | FORK/DONOR (fork created; not integrated) | generative search/research patterns | MIT root only; component review pending | evaluate scoped UI/search modules behind Dotpol Search; avoid bundling SearXNG/second API; [review](DONOR_EVAL_VANE.md) |
-| Kepler.gl | `keplergl/kepler.gl` | FORK/DONOR when Phase 4 begins | advanced GIS Map Lab | MIT | core maps use MapLibre/deck.gl; Kepler is advanced analyst workspace |
+| Kepler.gl | `keplergl/kepler.gl` | UPSTREAM DEPENDENCY when Phase 4 begins | single interactive GIS workspace | MIT planning signal; basemap assets separate | reuse Kepler with MapLibre/deck.gl internally; **do not** create a second map UI or fork without code-modification need |
 | Vercel AI Chatbot | `vercel/chatbot` | REFERENCE/DONOR | streaming chat, tool UI, artifact interaction patterns | verify exact repository version | do not make Dotpol product architecture depend on template |
 | LibreChat | `LibreChat-AI/LibreChat` | REFERENCE | chat/agent/MCP/file UX patterns | MIT | reference rich AI workspace behavior; avoid parallel app foundation |
 
@@ -34,8 +34,8 @@ This matrix classifies candidates as:
 | LanceDB | `lancedb/lancedb` | DEPENDENCY candidate | embedded vector retrieval | Apache-2.0 planning signal | keep behind adapter; verify when adopted |
 | dlt | `dlt-hub/dlt` | DEPENDENCY | ingestion | Apache-2.0 planning signal | one primary ingestion framework |
 | Docling | `docling-project/docling` | DEPENDENCY | document extraction | MIT planning signal | models/subdependencies need their own review |
-| MapLibre GL JS | `maplibre/maplibre-gl-js` | DEPENDENCY | map renderer | BSD-3-Clause planning signal | no mandatory proprietary map provider |
-| deck.gl | `visgl/deck.gl` | DEPENDENCY | large geospatial layers | MIT planning signal | core GIS visualization |
+| MapLibre GL JS | `maplibre/maplibre-gl-js` | TRANSITIVE through Kepler | internal map renderer | BSD planning signal | not a separately managed Dotpol map engine |
+| deck.gl | `visgl/deck.gl` | TRANSITIVE through Kepler | internal map layers | MIT planning signal | no independent Dotpol renderer |
 | H3 | `uber/h3` | DEPENDENCY | spatial indexing | Apache-2.0 planning signal | use official upstream |
 | FINOS Perspective | `perspective-dev/perspective` | DEPENDENCY | analytical grid/pivot/workbench | Apache-2.0 planning signal | terminal-grade interactive analytics |
 | Statsmodels | `statsmodels/statsmodels` | DEPENDENCY | statistics/econometrics | BSD planning signal | deterministic statistics |

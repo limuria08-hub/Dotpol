@@ -1,6 +1,6 @@
 # Dotpol — Master Product & Delivery Plan
 
-**Date:** 2026-10-15 · **Status:** Proposed for maintainer approval · **Implementation:** not started
+**Date:** 2026-10-15 · **Status:** Canonical consolidated planning baseline · **Implementation:** not started
 
 This is the **single short entry point** for planning and execution. Detailed requirements remain in the linked blueprint, contracts and ADRs; they should not be recopied into new plans. Changes to frozen architecture require an accepted ADR.
 
@@ -39,7 +39,7 @@ This is the **single short entry point** for planning and execution. Detailed re
 
 **Not duplicates:** SQLite stores authoritative operational records; DuckDB calculates over analytical datasets; LanceDB indexes searchable content. Each has a different job. No second chat backend, search engine, map app, survey runtime or field database.
 
-**Fork plan:** [Vane is already forked](https://github.com/kiranvbiim-coder/Vane). **No further forks are required now.** Use upstream packages for the other selections; fork only if a reviewed modification truly cannot be made through published APIs. Finalize versions and exact component/asset licences when implementing. The [single-stack selection PR](https://github.com/limuria08-hub/Dotpol/pull/2) contains dependency evaluations.
+**Fork plan:** [Vane is already forked](https://github.com/kiranvbiim-coder/Vane). **No further forks are required now.** Use upstream packages for the other selections; fork only if a reviewed modification truly cannot be made through published APIs. Finalize versions and exact component/asset licences when implementing. See [selected stack](SINGLE_STACK_SELECTION.md), [machine-readable owner list](../architecture/selected_stack.yml) and the [donor audit](DONOR_RESEARCH_2026-10-15.md) for supporting decisions.
 
 ## 3. Product workstreams and ownership
 
@@ -106,10 +106,10 @@ Approved station/microarea directory
 
 A capability is **done** only when its code is integrated, tests pass, local install works, source/licence records exist and a real end-to-end use case passes. Documentation or a GitHub fork is **not** implementation.
 
-1. Review [foundation/MVP architecture PR #1](https://github.com/limuria08-hub/Dotpol/pull/1) and [single-stack donor PR #2](https://github.com/limuria08-hub/Dotpol/pull/2); resolve only blocking choices, including the proposed Kepler simplification.
-2. Confirm [3–7-day first-preview target PR #3](https://github.com/limuria08-hub/Dotpol/pull/3). Align it with this master plan.
-3. Approve [field ownership ADR-0003](DECISIONS/0003-pre-election-microarea-operations.md), permitted data classes and **F1–F8** test fixtures.
-4. Open small coding PRs for foundation, data/research and web, then the field slice; require evidence of working behaviour before marking tasks complete.
+1. Follow accepted planning decisions [ADR-0001](DECISIONS/0001-foundation-module-ownership.md), [ADR-0002](DECISIONS/0002-one-stack-per-capability.md) and [ADR-0003](DECISIONS/0003-pre-election-microarea-operations.md); exact licenses, source permissions and component versions require review before code import.
+2. Use the [3–7-day preview execution checklist](RAPID_REUSE_SPRINT.md) and [MVP acceptance journeys](PRODUCT_MVP_AND_ACCEPTANCE.md); start only the selected first-release components.
+3. Prepare lawful [field F1–F8 tests](PRE_ELECTION_MICROAREA_INTELLIGENCE.md) after the foundation and canonical station data exist.
+4. Open small coding PRs for foundation, data/research and web, then the field slice; require passing local and CI evidence before marking work complete.
 
 ### Documentation ownership
 

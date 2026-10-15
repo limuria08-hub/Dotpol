@@ -61,7 +61,7 @@ Deliverables:
 - Docling document pipeline;
 - canonical entity identifiers;
 - geography/jurisdiction primitives;
-- source/versioned polling-station directory and proposed privacy-safe Microarea boundaries for subsequent pre-election site reporting;
+- source/versioned polling-station directory and privacy-safe Microarea boundaries (subject to data-contract review) for subsequent pre-election site reporting;
 - political actors/election/policy/media base entities;
 - provenance links from source records to canonical entities;
 - initial official/public-source connector pilots;
@@ -97,17 +97,16 @@ Deliverables:
 Deliverables:
 
 - canonical boundary/geometry contracts;
-- MapLibre integration;
-- deck.gl layers;
-- H3 spatial indexing;
+- Kepler.gl embedded as the **only** interactive map workspace (MapLibre/deck.gl are internal dependencies);
+- GeoPandas backend geometry and spatial joins;
 - map-layer registry;
 - DuckDB analytical datasets/views;
 - FINOS Perspective workbench;
-- shared chart layer;
+- Perspective-backed shared chart/table views;
 - Statsmodels integration;
 - reproducible analytical runs;
 - GIS Agent and Statistics Agent tools;
-- Kepler Map Lab donor evaluation/assimilation;
+- Kepler integration/asset-licence review without an unnecessary maintained fork;
 - canonical station/microarea public-site layers, with site and boundary versions (no private household/voter-level political maps).
 
 **Exit gate:** same canonical dataset can be filtered/pivoted/charted/mapped without duplicating its domain representation.
@@ -124,7 +123,7 @@ Deliverables:
 - margins, vote share, turnout and swing engines;
 - election comparison workflows;
 - geographic election layers;
-- polling-station reference IDs reused by approved public aggregate election analyses and the proposed pre-election field preparedness workspace;
+- polling-station reference IDs reused by approved public aggregate election analyses and the pre-election field preparedness workspace;
 - constituency briefs;
 - Election Agent;
 - deterministic tests for election calculations;
@@ -151,7 +150,7 @@ Deliverables:
 
 **Exit gate:** a survey can be defined, collected/imported, weighted and analysed reproducibly with methodology/provenance attached.
 
-### Pre-election field operations — Phase 6 proposed addition
+### Pre-election field operations — Phase 6 core deliverable
 
 `domains/fieldops` reuses station geography, `Task`, `FieldUpdate`, SurveyJS/ODK collection and evidence contracts. Scope: authorized station assessments, offline idempotent submissions, human review and verified aggregate issue maps. Phase 10 consumes the same operations records; no second booth CRM or individual political preference profiling.
 

@@ -18,8 +18,7 @@ Before adding code, contributors must check this registry and `architecture/capa
 | Dataset registry | `platform/data` | analytics/domains | versioned datasets/contracts |
 | Provenance | `platform/provenance` | all | evidence, run, transform and model lineage |
 | Documents | `platform/documents` | research/policy/media | Docling-backed parsing/evidence spans |
-| GIS | `platform/gis` | elections/surveys/policy/warroom | MapLibre + deck.gl + H3 |
-| Advanced Map Lab | `platform/gis` | analysts | Kepler donor when phase begins |
+| GIS/map workspace | `platform/gis` | elections/surveys/policy/fieldops/warroom/analysts | One Kepler.gl map UI (its renderer dependencies are internal), GeoPandas backend spatial operations; one canonical geography owner |
 | Analytics query engine | `platform/analytics` | all analytical domains | DuckDB |
 | Analytical workbench | `platform/analytics` | analysts/domains | FINOS Perspective |
 | Statistics runtime | `platform/analytics` | psephology/forecasting/research | Statsmodels/shared deterministic interface |
@@ -47,7 +46,7 @@ Before adding code, contributors must check this registry and `architecture/capa
 | Manifesto intelligence | `domains/manifestos` | documents/policy | promises/status assertions |
 | Media/narrative intelligence | `domains/media` | search/data/AI | topics, narratives, events, stance observations |
 | Research workflows | `domains/research` | search/documents/analytics | evidence-backed research/work products |
-| Pre-election field intelligence (proposed) | `domains/fieldops` | constituencies, GIS, survey forms, Task/FieldUpdate, provenance | area/site readiness, supervised field assignments, verified aggregates and offline sync; no voter political profiles; [workstream](PRE_ELECTION_MICROAREA_INTELLIGENCE.md) |
+| Pre-election field operations | `domains/fieldops` | constituencies, GIS, survey forms, Task/FieldUpdate, provenance | area/site readiness, supervised field assignments, verified aggregates and offline sync; no voter political profiles; [workstream](PRE_ELECTION_MICROAREA_INTELLIGENCE.md) |
 | War-room intelligence | `domains/warroom` | fieldops + other domains + automation | composition/monitoring of same station, incident and aggregate data; not duplicate engines |
 
 ## Agent ownership

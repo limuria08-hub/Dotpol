@@ -1,6 +1,6 @@
 # Dotpol Architecture v1.0
 
-**Status:** Frozen baseline for Phase 0 review.
+**Status:** Consolidated planning baseline; implementation pending.
 
 ## 1. Architectural objective
 
@@ -200,7 +200,7 @@ Examples:
 - `domains/forecasting` owns forecast specifications/runs/calibration/backtesting;
 - `domains/policy` and `domains/legislation` own policy/legislative semantics;
 - `domains/media` owns narrative/event intelligence semantics;
-- proposed `domains/fieldops` owns pre-election station facilities, microarea aggregate reporting, and verified authorized field workflows behind shared `Task`, `FieldUpdate` and survey contracts (pending [ADR-0003](DECISIONS/0003-pre-election-microarea-operations.md));
+- `domains/fieldops` owns pre-election station facilities, microarea aggregate reporting, and verified authorized field workflows behind shared `Task`, `FieldUpdate` and survey contracts (per [ADR-0003](DECISIONS/0003-pre-election-microarea-operations.md));
 - `domains/warroom` composes validated fieldops/election/GIS/survey intelligence, including appropriate polling-day source distinctions, without reimplementing field collection or underlying engines.
 
 ## 8. Agent layer
@@ -260,25 +260,17 @@ No domain can import a provider SDK directly without going through the platform 
 
 ## 11. GIS architecture
 
-Core GIS:
+One GIS experience (ADR-0002):
 
 ```text
-Canonical Geography/Boundary contracts
+Canonical station/boundary + GIS layer contracts
         ↓
-Spatial utilities + H3
+GeoPandas backend spatial calculations
         ↓
-MapLibre + deck.gl
+Kepler.gl embedded in the Dotpol web app
 ```
 
-Advanced Map Lab:
-
-```text
-Dotpol map-layer/data contracts
-        ↓
-Kepler.gl-derived/embedded analytical workspace
-```
-
-Kepler is not the canonical geography model.
+MapLibre/deck.gl remain Kepler's internal dependencies, **not separate Dotpol map applications**. Kepler never owns canonical geographic IDs or source versions. Local/offline basemap terms must be reviewed.
 
 ## 12. Analytics architecture
 
@@ -289,7 +281,7 @@ DuckDB
   ↓
 Domain/statistical engine
   ↓
-Perspective/ECharts views
+Perspective views
   ↓
 AI tool explanation
 ```

@@ -102,12 +102,12 @@ These are architectural defaults, not permission to install everything immediate
 - Local analytics: DuckDB.
 - Dataset interchange: Parquet/CSV/JSON plus typed contracts.
 - Local document/file storage: filesystem.
-- Local semantic retrieval: embedded local vector store selected through an adapter; LanceDB is the current preferred candidate.
+- Local retrieval: LanceDB OSS for full-text/vector hybrid through one Dotpol-owned search interface.
 - Team/server mode later: PostgreSQL and shared storage behind the same contracts.
 - AI model access: local models + BYOAI through one Dotpol model gateway.
 - Agent framework v1: PydanticAI unless an ADR changes it.
 - Workflow orchestration: Prefect when durable workflows are required.
-- GIS: MapLibre + deck.gl + H3; Kepler.gl reserved for advanced Map Lab workflows.
+- GIS: **one Kepler.gl map interface** with its internal renderers; GeoPandas handles backend geometry, one canonical GIS owner.
 - Analytics UI: FINOS Perspective.
 - Statistics: Statsmodels; Bayesian modelling: PyMC.
 - Documents: Docling.

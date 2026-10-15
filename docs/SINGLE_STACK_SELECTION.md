@@ -1,7 +1,7 @@
 # Dotpol — One Canonical Technology per Capability
 
 **Date:** 2026-10-15  
-**Status:** **DECISION PROPOSAL FOR PHASE 0** — singular engineering selection, pending maintainer approval, exact version/licence review and relevant ADR.  
+**Status:** Selected canonical planning baseline (ADR-0002). **No implementation**; exact version, component licence and integration tests pending.  
 **Goal:** ~90% reuse of *commodity capabilities* through maintained upstream code and small adapters, not blind code copying or fork counts.  
 **Scope:** One local-first political intelligence product, one owner per capability; no second application stack for a feature. This does not claim all 13 phases can be completed in seven days.
 
@@ -80,9 +80,9 @@ Historical research remains in [43-donor register](DONOR_RESEARCH_2026-10-15.md)
 
 No new forks required. The Vane fork exists; Kepler **should be used as an upstream dependency first** and forked only if a concrete modification beyond the public component API is unavoidable.
 
-## Before marking this canonical
+## Before releasing these components
 
-- [ ] Maintainer accepts the one-per-purpose stack, especially Kepler-based map UI versus frozen Blueprint's separate MapLibre/deck.gl core layout.
+- [x] Consolidated one-per-purpose stack and single Kepler map UI recorded in Blueprint/Architecture (planning only).
 - [ ] Resolve [proposed ADR-0001](https://github.com/limuria08-hub/Dotpol/pull/1) about `services/api` and `platform/` owners.
 - [ ] Set exact versions/lockfiles and transitive/asset licence reviews *per imported component*. SurveyJS free Form Library is **not** Survey Creator; separate Geo basemap/tile rights.
 - [ ] Confirm one supported development OS, local model availability, CPU/GPU and preview acceptance tests. Kepler React/Redux/basemap integration needs its own phase.
