@@ -81,6 +81,8 @@ Agents live under `agents/` but consume the owners above. They do not own data/e
 - a war-room-specific election model duplicating `domains/elections`.
 - a second vector database introduced by one agent.
 - a second workflow framework for one connector.
+- a separate voter/household political CRM, or booth-agent database with its own authoritative station IDs, overlapping `domains/fieldops`.
+- using individual electoral-roll/private survey linkage to create political persuasion or inferred-vote scores.
 
 ## Capability proposal template
 
