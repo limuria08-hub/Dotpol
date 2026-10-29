@@ -1,8 +1,12 @@
 # Dotpol Blueprint v1.0
 
 **Status:** Consolidated planning baseline — implementation, licences and component pins pending  
-**Purpose:** Single source of truth for product direction before implementation.  
+**Purpose:** Product scope and engineering constitution; **the five-phase execution schedule is in [MASTER_PLAN](MASTER_PLAN.md) / [ROADMAP](ROADMAP.md)**. Historical phases 0–12 mentioned here are detailed milestones mapped to P1–P5, not additional execution phases.  
 **Change policy:** Major changes require an ADR under `docs/DECISIONS/`.
+
+## Five-phase implementation structure (2026-10-29)
+
+P1 foundation/research (former 0–3); P2 election/GIS/statistics/surveys + field pilot (4–6); P3 simulation/policy/media (7–9); P4 nested teams/command centre (10 and continuation of 6); P5 automations/release (11–12). Scope below remains intact. No donor is installed or licence-approved just because it is listed. See [ADR-0004](DECISIONS/0004-five-phase-execution-and-service-isolation.md).
 
 ## 1. Mission
 
