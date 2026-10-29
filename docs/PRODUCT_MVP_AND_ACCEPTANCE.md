@@ -1,7 +1,23 @@
 # Dotpol Product MVP and Acceptance Plan
 
-**Status:** Proposed for Phase 0 maintainer review; not an architecture replacement.  
-**Canonical context:** `docs/BLUEPRINT.md` and `docs/ROADMAP.md`.
+**Status:** Five-phase acceptance plan; P1 first preview remains unverified until tested. This does not change the selected stack.  
+**Canonical context:** `docs/MASTER_PLAN.md`, `docs/BLUEPRINT.md`, and `docs/ROADMAP.md` (historic milestone references below map to P1–P5).
+
+## Five-phase acceptance journeys (new execution labels)
+
+| Phase | User journey | Verification |
+|---|---|---|
+| P1 | J1 local source-backed research → editable saved artifact | Clean install, correct citation/no-evidence, restart, no-key mode |
+| P2 | J2 election dataset → map/table/analysis + J3 surveyed aggregate → offline field F1–F5 | Reproducible arithmetic, geographic versions, weighting methodology, duplicate upload defense |
+| P3 | J4 manifesto/bill/scheme cited research + policy/media/model study | Source-linked dated assertions, documented assumptions and reproducible outputs |
+| P4 | J5 recursive team collaboration + J6 election operations, continuing P2 field data | Admin/three supervisors/ten members + nested child team, denial tests, offline sync, F6–F8 |
+| P5 | J7 automation/plugin failure/restore, local and shared deployment | Licence/security/test CI, backup/restore and independent install |
+
+**J5 — Nested teams:** Given admin A with coordinators B, C and D, with ten test members and a child team created by B; when assignments/observations/incidents are submitted and delegated; then each member sees only permitted tasks, parent dashboards show permitted rollups, unauthorized read/export is denied, and revocation immediately blocks new sync. Include an offline retry that produces exactly one report.
+
+**J6 — Command centre:** Given verified station reference IDs established in P2; when approved staff report dated observations and incidents; then the war room displays source/verification status, timestamps, incidents, audit trails and resolutions without individual voting preference inference or fictional official feeds.
+
+**J7 — Automation/release:** Given a clean machine and an optional missing service; when launching local mode, running a monitoring rule, backing up and restoring; then no paid provider is needed, missing integrations degrade gracefully and all emitted artifacts keep provenance.
 
 ## Intended users and first useful jobs
 
