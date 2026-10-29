@@ -6,7 +6,7 @@ Dotpol is an open-source, local-first political intelligence platform. Contribut
 
 Read `AGENTS.md` and the documents under `docs/` before opening implementation work.
 
-The current project phase is architecture-first. Do not begin large feature work unless the relevant capability owner, data contracts, donor strategy, and roadmap prerequisites are already defined.
+The current **execution plan consists of five phases P1–P5**, mapped to former 0–12 milestones in `docs/ROADMAP.md`. Planning has not been verified as implementation. Do not begin large feature work unless the relevant capability owner, data contracts, donor strategy, and roadmap prerequisites are already defined.
 
 ## Contribution workflow
 
@@ -22,6 +22,8 @@ The current project phase is architecture-first. Do not begin large feature work
 10. Update relevant documentation and donor/licence records.
 
 ## Pull-request expectations
+
+A PR should identify exactly one execution phase P1–P5, canonical owner, legacy milestone if applicable, user journey/acceptance gate, dependency licence/commit verification and tests. No contributor should fork or install unused donor software just to increase apparent progress.
 
 A PR should explain:
 
