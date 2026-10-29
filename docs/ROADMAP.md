@@ -1,8 +1,121 @@
-# Dotpol Roadmap v1.0
+# Dotpol Roadmap — Five Execution Phases
+
+**Updated 2026-10-29. Canonical delivery structure: five phases only.** Milestones 0–12 retained below as detailed work packages mapped to these five phases, not alternative phases. This document works with [Master Plan](MASTER_PLAN.md), [ADR-0004](DECISIONS/0004-five-phase-execution-and-service-isolation.md), and the single-owner [capability registry](../architecture/capabilities.yml). No untested item may be marked complete.
+
+## P1 — Foundation, AI, political data and cited research (former 0–3)
+
+**Goal:** one installable local AI political-research terminal, one canonical data/evidence model, one research interface.
+
+- [ ] Accept architecture and licensing decisions, confirm owners and reference contracts; retain selected stack.
+- [ ] Start one Next.js frontend + one FastAPI gateway; health check, loopback security and baseline CI.
+- [ ] Create/reopen projects locally using SQLite/filesystem with stable source, evidence, run and artifact IDs.
+- [ ] Implement PydanticAI single model/tool gateway; Ollama optional, BYOAI optional, truthful no-model mode.
+- [ ] Import user-authorized TXT/CSV/JSON; document pipeline via Docling only after basic import works.
+- [ ] Register data source licences, versions, timestamps and permitted uses; use dlt for repeatable connectors.
+- [ ] Configure one LanceDB retrieval path with verified line/row citations and no-evidence abstention.
+- [ ] Selectively adapt Vane citations/progress/UI only after component audit; no Vane backend or SearXNG duplication.
+- [ ] Chat → saved editable research artifact → reopen after restart; test absence of mandatory paid/cloud dependencies.
+- [ ] Record tested deployment instructions and donor/notice status.
+
+**Exit:** fresh machine can install, import verified sample data, conduct sourced research, save/reopen and export. Model unavailable and disconnected states are honest.
+
+## P2 — Elections, GIS, statistics, psephology and field-research foundations (former 4–6)
+
+**Goal:** a real political analysis workbench plus an offline, verified pre-election field pilot.
+
+- [ ] Import historical election results and canonical contests/candidates/parties/constituencies with source versions.
+- [ ] Pilot an official India connector, evaluate OPOL patterns and Indian election parsing donors; no wholesale donor data backend.
+- [ ] Validate identifiers, missing totals, geography time validity and official vs unofficial sources.
+- [ ] Embed **one Kepler.gl** workspace, GeoPandas spatial transformations, and approved offline basemap option.
+- [ ] Connect DuckDB analytical queries, Perspective table/pivot/chart views and Statsmodels calculations.
+- [ ] Support history, margins, turnout, descriptive swings, exploratory spatial comparisons and statistical diagnostics.
+- [ ] Support survey instrument schema, SurveyJS free form runtime, methodology, sampling, weighting and response quality.
+- [ ] Pilot ODK Collect offline on permitted forms and optional interoperable ODK Central; avoid second authoritative task database.
+- [ ] Reuse one station/microarea directory for site conditions and field assessment F1–F5.
+- [ ] Chat → interactive map/table/chart → source-linked edit/recompute/export; persist full artifact state.
+
+**Exit:** same dataset drives verified election math, GIS, interactive statistics and a successful F1–F5 offline field pilot.
+
+## P3 — Policy, legislation, media, governance and simulation (former 7–9)
+
+**Goal:** full research depth on public affairs with reproducible modeling and literature evidence.
+
+- [ ] Register policy/scheme, public budget, bill, amendment, debate, question, manifesto and promise entities.
+- [ ] Integrate documented official/public source connectors (ECI, Digital Sansad, data.gov.in, MoSPI and approved partners), scoped by rights.
+- [ ] Implement policy and legislative search, timelines, comparison and referenced status assertions.
+- [ ] Add source-linked public-media/RSS/event monitoring, BERTopic topic clustering, dates and source contrasts.
+- [ ] Connect PyMC/model registry as necessary for aggregate simulation, uncertainty, assumptions, backtesting and calibration.
+- [ ] Evaluate DoWhy for causal policy analysis; OpenFisca external-only if country rules and licensing are validated.
+- [ ] Evaluate public-consultation integrations (Polis/Decidim) as optional independent services, not core dependencies.
+- [ ] Export traced briefs, evidence-backed reports, research packages and method appendices.
+- [ ] Enforce descriptive neutrality: no unsupported personalized political profiling, targeting or AI outcome claims.
+
+**Exit:** reproducible historical research and policy analysis with linked evidence, method/data versions and known uncertainty.
+
+## P4 — Recursive teamwork, mobile field operations and command centre (former 10 + milestone 6 continuation)
+
+**Goal:** one administrator can create supervisors, nested sub-teams and mobile assignments through a single role-secured workspace.
+
+- [ ] Define canonical Team, TeamMembership, RoleGrant, Delegation, Task and TeamEvent contracts; no parallel CRM or task DB.
+- [ ] Permit recursive team creation under configurable limits, explicit invitations, scoped permissions and revocation.
+- [ ] Test 1 admin → 3 supervisors → 10 team members; test a supervisor creating a child team and restricted visibility.
+- [ ] Implement web/mobile client flows for on-duty check-in, assignments, approved reports, incidents and communications.
+- [ ] Reuse ODK/mobile offline data with signed/unique submission IDs, sync receipts, conflict review and clock skew protection.
+- [ ] Support incident ownership, escalation, acknowledgements, media evidence and cross-team review with audited disclosure.
+- [ ] Show sanctioned aggregate turnout observations with source class: official approximate / legally obtained statutory / field-unverified / field-verified / disputed / outdated.
+- [ ] War room composes Phase P2 records; pass F6–F8 plus wrong-role, lost-device, delayed-sync and duplicate-upload tests.
+- [ ] Optional Centrifugo/ntfy event transport only if required; never replace authoritative database.
+- [ ] AI briefing summarises verified tasks/incidents, uncertainty, exceptions and audit references rather than generating new operational truth.
+
+**Exit:** team exercise end-to-end with nested permissions, offline recovery, incident lifecycle, provenance, privacy controls and role-isolated exports.
+
+## P5 — Automations, optional services, security, tests and release (former 11–12)
+
+**Goal:** maintainable zero-cost core and independently reproducible release for both local and optional shared modes.
+
+- [ ] Implement manifest-based Plugin/DataConnector/AnalysisTool/FieldService/ArtifactProvider/AutomationProvider contracts.
+- [ ] Prefect for durable scheduling only when needed; idempotent triggers, approval controls and monitoring.
+- [ ] Compose-based optional service profiles (Ollama, ODK Central, notifications); K3s only if concrete self-hosted demand warrants it.
+- [ ] Pin donor and model versions, complete dependency/component/data licence audits, record attribution/SBOM.
+- [ ] Add security, threat-model, secret rotation, permission, audit, deletion/retention and privacy testing.
+- [ ] Run deterministic engine tests, AI citation/prompt injection evals, frontend E2E, offline tests, load/failure recovery and backup restore.
+- [ ] Verify no-paid-key local path, optional collaborative server path, installer/docs and graceful absent-service behavior.
+- [ ] Produce public contributor guide, capability ledger, tested release notes and end-user onboarding.
+
+**Exit:** independent reproducible local installation, optional shared deployment, audited OSS supply chain and traceable acceptance logs.
+
+## Three-day integration sprint (target, not five-phase completion)
+
+- **Day 1:** freeze contracts, run UI/API, project/source state, locally imported data.
+- **Day 2:** source-backed research and one election-data analytical path using existing parsers/engines if compatible.
+- **Day 3:** integrate chat→workbench artifact, one chart/map where supported, save/export, clean-install + regression checks.
+- **Never claim:** five phases complete, nationwide live data, every donor forked, production election operations or secure offline teams until independently tested.
+
+## Legacy milestone map (reference identifiers only)
+
+| Former milestone | Now delivered in |
+|---|---|
+| 0 Architecture decisions; 1 Foundation; 2 Data; 3 Research | P1 |
+| 4 GIS/analytics; 5 Elections; 6 Surveys + pre-election field pilot | P2 |
+| 7 Models/simulation; 8 Policy/legislation; 9 Media | P3 |
+| 10 War room and collaborative operations; fieldops continuity from 6 | P4 |
+| 11 Automations; 12 Release | P5 |
+
+## Gate rules
+
+- One canonical political entity and one capability owner; no duplicate AI/search/GIS/survey/field backends.
+- Every integrated capability requires a real demonstrated workflow, source/commit/licence review and regression tests.
+- Source precision: source authority, time observed, time received, geography/boundary version, completeness and verification states.
+- Local-first/no paid API core, with optional user-managed models/services; no fictional official live booth feed.
+- All phases keep accurate completion metadata; plans, forks and screenshots are not verified implementation.
+
+---
+
+## Supporting detailed milestone specifications (old 0–12, NOT additional execution phases)
 
 This roadmap is dependency-ordered. Later phases should not bypass missing foundations simply to create visible features.
 
-## Phase 0 — Blueprint and architecture freeze
+#### Legacy milestone 0 — Blueprint and architecture freeze
 
 **Goal:** establish a stable development constitution before product code.
 
@@ -22,7 +135,7 @@ Deliverables:
 
 **Exit gate:** collaborators can answer where a new capability belongs, which owner implements it, what data contracts it uses, whether OSS is reused, and what architectural changes require ADRs.
 
-## Phase 1 — Local platform foundation
+#### Legacy milestone 1 — Local platform foundation
 
 **Goal:** create the minimal runnable Dotpol spine.
 
@@ -48,7 +161,7 @@ Deliverables:
 
 **Exit gate:** user can launch Dotpol locally, create/open a project, configure a local or optional external model, invoke a simple evidence-aware tool through the gateway, and close/reopen without data loss.
 
-## Phase 2 — Political data fabric and ontology
+#### Legacy milestone 2 — Political data fabric and ontology
 
 **Goal:** create trustworthy ingestion, document and canonical political entity foundations.
 
@@ -69,7 +182,7 @@ Deliverables:
 
 **Exit gate:** imported source data can be transformed into versioned canonical entities/datasets with reproducible lineage.
 
-## Phase 3 — Search, research and retrieval
+#### Legacy milestone 3 — Search, research and retrieval
 
 **Goal:** make local/user/public information searchable and researchable with evidence.
 
@@ -90,7 +203,7 @@ Deliverables:
 
 **Exit gate:** user can ask a research question over local documents/datasets and receive a source-linked answer; web search is optional, not mandatory.
 
-## Phase 4 — GIS and analytical terminal
+#### Legacy milestone 4 — GIS and analytical terminal
 
 **Goal:** provide professional map and analytical workbenches.
 
@@ -111,7 +224,7 @@ Deliverables:
 
 **Exit gate:** same canonical dataset can be filtered/pivoted/charted/mapped without duplicating its domain representation.
 
-## Phase 5 — Election and constituency intelligence
+#### Legacy milestone 5 — Election and constituency intelligence
 
 **Goal:** make elections a first-class Dotpol domain.
 
@@ -131,7 +244,7 @@ Deliverables:
 
 **Exit gate:** election metrics are reproducible, mapped, source-linked and callable as tools by AI.
 
-## Phase 6 — Surveys and psephology
+#### Legacy milestone 6 — Surveys and psephology
 
 **Goal:** provide end-to-end survey analysis without rebuilding proven offline collection infrastructure.
 
@@ -156,7 +269,7 @@ Deliverables:
 
 **Exit:** pass F1–F5 in the [field specification](PRE_ELECTION_MICROAREA_INTELLIGENCE.md) with permitted/synthetic data. See [Master Plan](MASTER_PLAN.md).
 
-## Phase 7 — Forecasting, simulation and aggregate digital twin
+#### Legacy milestone 7 — Forecasting, simulation and aggregate digital twin
 
 **Goal:** turn historical/survey data into calibrated probabilistic scenarios.
 
@@ -176,7 +289,7 @@ Deliverables:
 
 **Exit gate:** every forecast is tied to a model version, data version, parameters, uncertainty and backtest/calibration metadata.
 
-## Phase 8 — Policy, legislation, governance and manifestos
+#### Legacy milestone 8 — Policy, legislation, governance and manifestos
 
 **Goal:** connect political competition to policy/governance intelligence.
 
@@ -194,7 +307,7 @@ Deliverables:
 
 **Exit gate:** users can trace a public promise/issue through documents, legislative/policy activity and evidence-backed status assertions where data allows.
 
-## Phase 9 — Media, event and narrative intelligence
+#### Legacy milestone 9 — Media, event and narrative intelligence
 
 **Goal:** create evidence-backed narrative/event monitoring.
 
@@ -213,7 +326,7 @@ Deliverables:
 
 **Exit gate:** narrative/issue outputs link back to concrete source items and method/model versions.
 
-## Phase 10 — Field operations and war room
+#### Legacy milestone 10 — Field operations and war room
 
 **Goal:** compose existing intelligence into operational monitoring and coordination.
 
@@ -232,7 +345,7 @@ Deliverables:
 
 **Exit gate:** live operational information can be combined with existing intelligence while preserving source/time/verification states, with station incidents, discrepancy review, safe aggregated reporting and access-controlled alerts tested end-to-end. See [pre-election handoff requirements](PRE_ELECTION_MICROAREA_INTELLIGENCE.md).
 
-## Phase 11 — Automation, plugins and open platform
+#### Legacy milestone 11 — Automation, plugins and open platform
 
 **Goal:** make Dotpol extensible and proactive.
 
@@ -250,7 +363,7 @@ Deliverables:
 
 **Exit gate:** a contributor can add an approved connector/tool without editing unrelated core modules.
 
-## Phase 12 — Hardening and release engineering
+#### Legacy milestone 12 — Hardening and release engineering
 
 **Goal:** make Dotpol reliable for broad OSS use.
 
