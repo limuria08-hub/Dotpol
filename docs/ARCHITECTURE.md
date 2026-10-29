@@ -1,6 +1,6 @@
 # Dotpol Architecture v1.0
 
-**Status:** Consolidated planning baseline; implementation pending.
+**Status:** Five-phase consolidated planning baseline (2026-10-29); implementation pending. See [Roadmap](ROADMAP.md) and [ADR-0004](DECISIONS/0004-five-phase-execution-and-service-isolation.md).
 
 ## 1. Architectural objective
 
@@ -346,7 +346,21 @@ embedded local -> stronger local machine -> shared server -> workers/distributed
 
 Do not start at the final scale.
 
-## 17. Architecture change control
+## 17. Reusable OSS integration topology and hierarchical teams
+
+**One-time integration contract, not all-at-once installation:** app and gateway expose typed DataConnector, AnalysisTool, AIProvider, FieldService, ArtifactProvider and AutomationProvider contracts. Donors are either embedded libraries, separately operated optional API services, narrowly adapted approved forks, or references. The selected stack (ADR-0002) remains the implementation baseline. There is no second canonical AI/GIS/search/task system.
+
+**Personal/local:** Next.js frontend + FastAPI local gateway; SQLite for operational records; DuckDB for analytical computation; LanceDB for search index; filesystem for assets and backed-up files. No mandatory cloud, Kubernetes, external services or paid keys. Optional Ollama is user-managed. A no-model workflow must work honestly.
+
+**Connected teams:** one shared gateway and PostgreSQL authoritative store behind stable storage contracts; clients may be mobile/offline. Only authorized records sync. Optional ODK Central provides independent field form intake, with ODK submission IDs mapped to Dotpol canonical FieldUpdate/Task/Evidence IDs. Optional real-time transport delivers events but does not own state. Use Compose for optional profiles. K3s only after a measurable deployment need.
+
+**Recursive hierarchy:** one canonical Organization/Team tree with TeamMembership, delegated RoleGrant, ProjectAccess and resource-level visibility. Delegated permissions cannot exceed the issuer's privileges; revocation cascades according to explicit policies. All mutations are auditable. Support admin → supervisor → sub-team → staff. Geographic hierarchy and reporting hierarchy remain independent.
+
+**Artifact continuum:** chat results, interactive map, statistical table, research report and saved library item share a canonical Project, SourceRef, EvidenceRef, Artifact and versioned ToolRun/AnalysisRun context. Chat previews open the exact corresponding workbench artifact, and edits persist both ways.
+
+**Source truth and reporting:** historical official results, field observations and publicly published aggregate turnout are independently labelled with authority, timestamp and verification class. No invented official live booth-level feed. No individual inferred vote/preference tracking.
+
+## 18. Architecture change control
 
 An ADR is mandatory before changing:
 
