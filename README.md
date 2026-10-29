@@ -6,11 +6,11 @@ Its goal is to bring research, elections, psephology, GIS, surveys, forecasting,
 
 ## Start here
 
-**[Dotpol Master Plan](docs/MASTER_PLAN.md)** — the single concise product and delivery plan. It covers all 13 phases, the selected stack, pre-election field intelligence, election-day operations and release gates. Detailed specifications below are supporting reference, not competing plans.
+**[Dotpol Master Plan](docs/MASTER_PLAN.md)** — the single concise product and delivery plan. It now defines **five execution phases**, preserving former milestones 0–12 as detailed acceptance work packages; it also covers the selected stack, research, political data, pre-election field intelligence, nested teams, election-day operations and release gates. Detailed specifications below are supporting reference, not competing plans.
 
 ## Project status
 
-**Canonical consolidated planning baseline — implementation not started.**
+**Five-phase planning baseline accepted for documentation — implementation not verified.**
 
 Dotpol has a consolidated [master plan](docs/MASTER_PLAN.md) and selected stack; implementation and verification remain ahead. The repository should not accumulate duplicate implementations, competing frameworks, or frequently changing architectural choices.
 
@@ -59,6 +59,18 @@ SQLite + DuckDB + Parquet + local vector store + filesystem
 Optional team/server mode later:
 PostgreSQL + shared object storage + central gateway
 ```
+
+## Five-phase delivery
+
+| Execution phase | Scope |
+|---|---|
+| **P1** | Foundation, AI, evidence-backed research and canonical data |
+| **P2** | Election intelligence, GIS, statistics, psephology and field pilot |
+| **P3** | Advanced simulation, policy, legislation, governance and media |
+| **P4** | Recursive teams, mobile collaboration and live command centre |
+| **P5** | Automations, optional OSS services, quality, security and release |
+
+The three-day sprint targets a **vertical research-and-analytics demo**, not a completed five-phase product. Preserve the existing selected stack and the no-duplication rules. Read [ROADMAP](docs/ROADMAP.md) and [ADR-0004](docs/DECISIONS/0004-five-phase-execution-and-service-isolation.md).
 
 ## Documentation map
 
@@ -133,9 +145,9 @@ Tests + provenance + documentation
 
 ## Current phase
 
-**Phase 0: Blueprint and architecture freeze.**
+**P1: Foundation and architecture consolidation (implementation requires actual tests).**
 
-No major feature implementation should begin until the blueprint documents, capability ownership, donor decisions, data contracts and architecture rules have been reviewed by collaborators.
+Before major implementation, approve any remaining architecture/licence gates, verify contracts and create small independently tested integration PRs. Historic milestone numbers elsewhere in specs refer to work packages mapped in ROADMAP.md, not additional phases.
 
 ---
 
