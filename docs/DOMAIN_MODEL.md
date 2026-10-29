@@ -398,3 +398,18 @@ Before adding a new canonical entity:
 2. Identify at least two workflows that need the entity, unless the domain requirement is intrinsically atomic.
 3. Define identifiers, temporal semantics and provenance.
 4. Update this document and the capability/data contracts through an ADR if the change is architecture-significant.
+
+
+## Proposed hierarchical collaboration extension (2026-10-29; ADR-0004)
+
+Do not create a second CRM or duplicate task database. The hierarchical team feature extends authorized operations:
+
+- `Organization`: account/workspace owner with membership and security settings.
+- `Team`: stable ID, `organization_id`, optional `parent_team_id`, explicit membership/role policy and lifecycle state. A geographic unit is a reference, not a hierarchy substitute.
+- `TeamMembership`: user/team role association, effective dates and explicit invite/approval history.
+- `RoleGrant` / `Delegation`: allowed action, resource scope, issuer, expiry and revocation state; child-team admins cannot grant more than they possess.
+- `ProjectAccess`: resource/project-level visibility separate from merely belonging to an ancestor team.
+- `TeamEvent`: immutable timestamped membership, assignment, escalation and permission-change event; audit links to existing Source/Evidence/ToolRun where needed.
+- Existing `Task`, `FieldUpdate`, `Incident`, `Alert` and `SyncReceipt` continue to be canonical. Do not clone them into `warroom` or an external field service.
+
+**Security invariants:** prevent team cycles; configure nesting/membership limits; deny by default; authorization is checked server-side for every read/export, aggregated view and synchronization; revoked devices and cross-team leaks are negative tests. Offline submissions have idempotency keys, observed/received timestamps, conflict status and supervisor review. Stage these definitions behind the existing domain-model extension process; names are proposed, not migrated data tables.

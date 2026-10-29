@@ -1,6 +1,6 @@
 # Dotpol Agent Instructions
 
-**Start with [Master Plan](docs/MASTER_PLAN.md)** for the chosen stack, phases, scope and current acceptance gates. For field work, use [Field Specification](docs/PRE_ELECTION_MICROAREA_INTELLIGENCE.md) and [proposed ADR-0003](docs/DECISIONS/0003-pre-election-microarea-operations.md). One `domains/fieldops` owner; Phase 10 consumes its records. No voter political-preference/household targeting or parallel CRM. These changes remain proposed, not implemented.
+**Start with [Master Plan](docs/MASTER_PLAN.md) and [Five-phase Roadmap](docs/ROADMAP.md).** There are exactly FIVE execution phases P1–P5; historic milestone labels 0–12 are supporting acceptance work packages only. For field work read [Field Specification](docs/PRE_ELECTION_MICROAREA_INTELLIGENCE.md) and accepted planning [ADR-0003](docs/DECISIONS/0003-pre-election-microarea-operations.md). P2 establishes field records; P4 consumes those same records. Planning is not verified implementation.
 
 These instructions are mandatory for AI coding agents, automation workers, and human collaborators working in this repository.
 
@@ -16,12 +16,25 @@ Before implementing anything, read:
 6. `docs/AI_ARCHITECTURE.md`
 7. `docs/CAPABILITY_REGISTRY.md`
 8. `docs/DONOR_MATRIX.md`
-9. `docs/ROADMAP.md`
+9. `docs/ROADMAP.md` (five-phase checklist and legacy milestone map)
 10. `docs/LICENSE_POLICY.md`
 11. `architecture/capabilities.yml`
 12. `architecture/donors.lock.yml`
+13. `docs/DECISIONS/0004-five-phase-execution-and-service-isolation.md`
 
 If a requested change conflicts with these documents, do not silently invent a new architecture. Create or propose an ADR under `docs/DECISIONS/`.
+
+## Five-phase execution contract
+
+- **P1** foundation + evidence-backed research; **P2** elections/GIS/statistics/psephology/field pilot; **P3** policy/media/simulation; **P4** recursive teams/mobile/war room; **P5** automations, optional services and release.
+- The first three days are a *bounded demo target*; they do NOT certify five-phase completion. Mark items complete only after tests and integrated user journeys.
+- Every PR must state execution phase P1–P5, former milestone if relevant, canonical owner, interfaces, donor classification, licence evidence, tests and user-visible acceptance.
+- Build only what a current phase consumes. Register future donor candidates without installing/forking them prematurely.
+- Embedded libraries (Kepler, DuckDB, Perspective, GeoPandas, Statsmodels) belong behind ONE Dotpol owner; Ollama, ODK Central, optional notifications/civic systems may be separately run and accessed via typed APIs.
+- Docker Compose is the default optional service orchestration path. Do not require Kubernetes or an always-on cloud for personal/local mode. K3s remains a future option.
+- P4 recursive teams: parent-child organization records, delegated membership and roles, scoping by project/team and specific resources, revocation, auditable escalation. A parent's membership must not automatically grant access to all confidential child records.
+- Mobile updates and notifications never replace the authoritative Task/FieldUpdate/Incident store; submissions use unique IDs, observed and received timestamps, permissions and conflict-safe idempotent sync.
+- Agent recommendations must be evidence- and aggregate-grounded; no inferred individual voter political preferences or targeted political persuasion.
 
 ## 2. Project constitution
 

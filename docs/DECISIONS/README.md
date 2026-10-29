@@ -92,3 +92,7 @@ It should demonstrate at least one of:
 - upstream project is abandoned/incompatible and creates a maintenance risk.
 
 Every accepted ADR must update the affected blueprint/capability/donor documents in the same change.
+
+## Current execution structure
+
+- [ADR-0004 — Five-phase execution and optional service isolation](0004-five-phase-execution-and-service-isolation.md) defines the consolidated P1–P5 delivery structure. Old 0–12 numbering survives only as milestone/test references; the selected stack is unchanged unless another ADR explicitly replaces it.

@@ -1,0 +1,89 @@
+# Single execution plan for agents and collaborators. Specifications live in docs/ROADMAP.md.
+# None of these phases is verified complete. Status only changes with linked PR/tests.
+version: "1.0"
+as_of: "2026-10-29"
+plan: lios-pol-five-phase
+status: planning-approved-implementation-unverified
+three_day_sprint:
+  objective: "P1 cited research slice plus narrow P2 election analysis spike, if compatible"
+  full_product_promise: false
+  require_clean_install_and_tests: true
+rules:
+  local_first: true
+  zero_cost_core: true
+  reuse_before_build: true
+  one_capability_one_owner: true
+  fork_only_for_required_modifications: true
+  source_and_model_provenance_required: true
+  no_individual_political_preference_inference: true
+  legacy_milestones_are_not_phases: true
+phases:
+  - id: P1
+    title: Foundation, AI, data and cited research
+    legacy_milestones: [0, 1, 2, 3]
+    status: not-verified
+    owner_lanes: [platform, web, ai-research]
+    depends_on: []
+    checkpoints:
+      - "Architecture/contracts/licences reviewed and owners named"
+      - "Next.js and FastAPI start locally without paid credentials"
+      - "Project and source records persist after restart"
+      - "Import authorized source data; inspect provenance"
+      - "Search/citations and no-evidence abstention work"
+      - "Chat artifacts open in workbench and can be saved/reopened"
+    exit_evidence: "Clean-install J1 journey with local/no-model and model-enabled tests"
+  - id: P2
+    title: Elections, GIS, statistics, psephology and field pilot
+    legacy_milestones: [4, 5, 6]
+    status: not-verified
+    owner_lanes: [data, gis-analytics, elections, surveys-fieldops]
+    depends_on: [P1]
+    checkpoints:
+      - "Source-linked Indian public election data ingested and validated"
+      - "Versioned constituency/booth geographies reconciled"
+      - "One Kepler/GeoPandas map and Perspective/DuckDB analytical workbench"
+      - "Vote share, margins, turnouts, classical stats reproducible"
+      - "Survey schemas, sample/weighting/quality analysis documented"
+      - "Offline approved site checks pass F1-F5"
+    exit_evidence: "J2/J3 analyses and F1-F5 verified with reference fixtures"
+  - id: P3
+    title: Policy, legislation, governance, media and simulation
+    legacy_milestones: [7, 8, 9]
+    status: not-verified
+    owner_lanes: [policy-legislation, media, modelling]
+    depends_on: [P1, P2]
+    checkpoints:
+      - "Bills/schemes/manifestos/governance relationships traceable"
+      - "Policy/media sources and dates verified"
+      - "Methods, scenarios and uncertainty reproducible"
+      - "Optional causal/public consultation donors undergo licence review"
+      - "Evidence-backed research/exports pass source challenge tests"
+    exit_evidence: "J4 policy evidence journey and tested analytical report"
+  - id: P4
+    title: Recursive teams, mobile operations and command centre
+    legacy_milestones: [6, 10]
+    status: not-verified
+    owner_lanes: [auth, fieldops, warroom]
+    depends_on: [P1, P2]
+    checkpoints:
+      - "Nested Team/RoleGrant/Delegation authorization contract"
+      - "Admin, 3 supervisors, 10+ members and nested child team tested"
+      - "Mobile offline updates idempotent and permission checked"
+      - "Assignments, incidents, conflict review, escalation audited"
+      - "Aggregate reports retain official/field distinction and timestamps"
+      - "Election-day handoff passes F6-F8"
+    exit_evidence: "J5/J6 nested-team and incident exercise with denial/recovery tests"
+  - id: P5
+    title: Automations, optional services, hardening and release
+    legacy_milestones: [11, 12]
+    status: not-verified
+    owner_lanes: [automation, security, qa-release]
+    depends_on: [P1, P2, P3, P4]
+    checkpoints:
+      - "Plugin/connector/tool/service manifests and permission gates tested"
+      - "Optional ODK/Ollama/event services run independently"
+      - "Compose service profiles, K3s optional only"
+      - "Donor pin/licence/attribution/SBOM records complete"
+      - "AI/deterministic/field/security/E2E and load tests pass"
+      - "Backups, restores, documentation and no-paid-key paths validated"
+    exit_evidence: "J7 independently reproducible local/shared installation and release report"

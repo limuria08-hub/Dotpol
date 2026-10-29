@@ -1,6 +1,6 @@
 # Pre-Election Field Operations — Technical Requirements
 
-**Status:** Proposed · **Canonical product priorities:** [Master Plan](MASTER_PLAN.md) · **Ownership:** [ADR-0003](DECISIONS/0003-pre-election-microarea-operations.md)
+**Status:** Proposed and unimplemented · **Canonical plan:** [Five-phase Master Plan](MASTER_PLAN.md) · **Ownership:** [ADR-0003](DECISIONS/0003-pre-election-microarea-operations.md). Historical Phase 2/4/5/6/10/11/12 mentions below are **legacy milestones**: field pilot is P2, command centre P4, hardening P5.
 
 ## Scope and ownership
 
@@ -48,7 +48,7 @@ Approved PollingStation/Microarea records
   → local controlled import/sync + SyncReceipt deduplication
   → reviewer verification / dispute / correction
   → source-backed coverage and facilities map
-  → Phase 10 shared incidents, alerts, command-center briefing
+  → P4 command-centre shared incidents, alerts, briefing (former milestone 10)
 ```
 
 **Offline sync conditions:** scope credentials by project/site/form, never assume full-time internet; distinguish `observed_at` from `received_at`; preserve raw records, handle clock drift and conflicting submissions; respect device-loss and local-draft protection. ODK submission encryption alone does not secure all device data. No mandatory paid server.

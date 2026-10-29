@@ -2,6 +2,36 @@
 
 **IMPLEMENTATION SELECTION:** Follow the [one-stack decision](SINGLE_STACK_SELECTION.md) and [selected_stack.yml](../architecture/selected_stack.yml), not the historical candidate alternatives in this matrix. Adopted planning [ADR-0002](DECISIONS/0002-one-stack-per-capability.md) controls any deliberate architectural changes.
 
+
+## Five-phase catalogue extension (2026-10-29; NOT adopted by this plan)
+
+Follow the existing single selected stack (ADR-0002) and [five-phase master plan](MASTER_PLAN.md). These are optional/candidate/ref-only supplements, *not* 17 new core services or forks. All have `integrated: false` and `component_license_reviewed: false` in [candidate registry](../architecture/donor-candidates.yml) pending actual independent checks.
+
+| P1–P5 | Candidate / upstream | Full useful capability | Mode and condition | Unique owner |
+|---|---|---|---|---|
+| P1/P2 | `open-politics/opol` | Political extraction, classification/entity mapping | selective patterns, **do not install full second backend** | `platform/data` |
+| P2 | `thecont1/india-votes-data` | Indian election parser/normalizer | scoped connector after source rights and calculation tests | `connectors/india` + `domains/elections` |
+| P2 | `joyboseroy/india-electoral-data-commons` | Form 20/historical aggregate analysis | verified scripts, not authoritative raw data | `domains/elections` |
+| P2 | `OpenRefine/OpenRefine` | Reconciliation and cleaning | external utility/reference only | `platform/data` |
+| P3 | `py-why/dowhy` | Causal methods and sensitivity | optional analytics dependency; benchmark use-case | `platform/analytics` |
+| P3 | `openfisca/openfisca-core` | Rules-based fiscal/public-policy simulation | optional external service; country rules + AGPL review | `domains/simulation` |
+| P3 | `open-politics/open-politics-hq` | Multi-tool political research stack | full-app reference ONLY; AGPL/size and duplicate backend risk | `domains/research` |
+| P3 | `compdemocracy/polis`, `decidim/decidim` | Civic feedback/consultation | separately hosted optional app, AGPL/terms review | `domains/policy` |
+| P3 | `opencivicdata/docs.opencivicdata.org` | Civic/legislative ontology spec | schema reference, never second domain ontology | `packages/domain` |
+| P3 | `mediacloud/api-client` | Media source analysis | optional key/service rights | `domains/media` |
+| P3/P4 | `AI4Bharat/IndicTrans2` | Indian-language translation | optional model tool, weights/terms reviewed | `platform/ai` |
+| P3 | `quarto-dev/quarto-cli` | Reproducible exports/publications | optional export tool, no second editor | `platform/documents` |
+| P4 | `casbin/pycasbin` | Scoped hierarchical permission evaluation | optional library for `platform/auth`, not identity or canonical policy store | `platform/auth` |
+| P4 | `centrifugal/centrifugo` | Reliable event subscription, reconnect | optional live transport; **not** task/status DB | `platform/automation` |
+| P4 | `binwiederhier/ntfy` | Team alerts | optional message delivery; audits stay canonical | `platform/automation` |
+| P4 | `ushahidi/platform` | Incident mapping/workflow | external reference/optional, no duplicate task DB, AGPL review | `domains/warroom` |
+| P5 | `docker/compose`, `k3s-io/k3s` | Optional service profiles / larger self-hosted orchestration | Compose first; K3s only on justified cluster demand | `infra/` |
+
+**Not GitHub software repositories:** ECI, Digital Sansad, MoSPI, data.gov.in, census data and authoritative budget datasets are *sources*, not dependencies. Record source terms, dates, coverage and provenance in the source registry.
+
+**FORK RULE:** maintain the existing Vane fork only; fork other projects if and when a reviewed modification requires a maintained branch. Imported code/modules, licence checks, pinned commits, fallback and integration tests are required before changing candidate status.
+
+
 ## 1. Purpose
 
 Dotpol should aggressively reuse strong open-source engineering while avoiding duplicate frameworks, licence surprises and unnecessary long-term forks.

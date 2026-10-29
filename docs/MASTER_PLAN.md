@@ -1,6 +1,6 @@
 # Dotpol — Master Product & Delivery Plan
 
-**Date:** 2026-10-15 · **Status:** Canonical consolidated planning baseline · **Implementation:** not started
+**Updated:** 2026-10-29 · **Status:** Five-phase canonical execution plan · **Implementation:** not verified / not started per repository baseline
 
 This is the **single short entry point** for planning and execution. Detailed requirements remain in the linked blueprint, contracts and ADRs; they should not be recopied into new plans. Changes to frozen architecture require an accepted ADR.
 
@@ -41,25 +41,39 @@ This is the **single short entry point** for planning and execution. Detailed re
 
 **Fork plan:** [Vane is already forked](https://github.com/kiranvbiim-coder/Vane). **No further forks are required now.** Use upstream packages for the other selections; fork only if a reviewed modification truly cannot be made through published APIs. Finalize versions and exact component/asset licences when implementing. See [selected stack](SINGLE_STACK_SELECTION.md), [machine-readable owner list](../architecture/selected_stack.yml) and the [donor audit](DONOR_RESEARCH_2026-10-15.md) for supporting decisions.
 
-## 3. Product workstreams and ownership
+## 3. Five-phase execution plan (the ONLY top-level phases)
 
-| Phase | Deliverable | Exit evidence |
-|---|---|---|
-| **0 — Decisions** | Approve ownership, core licence, minimal data/evidence contracts and this plan | No contradictory approved architecture |
-| **1 — Foundation** | Start web + local API; projects, users/roles, health, model status, CI | New install can create, save and reopen a project |
-| **2 — Data** | Source registry, versioned public datasets, polling-station IDs, document imports | Imports can be traced to original source and date |
-| **3 — Research** | Search, AI tools, valid citations and saved briefs | User can answer a source-backed query, reject unsupported claims |
-| **4 — GIS / analytics** | One map workspace, tables, reproducible calculations, station/microarea geometry | Same data filters and maps without duplicate entities |
-| **5 — Elections** | Constituencies, contests, candidates/results, official historical turnout and comparisons | Source-linked deterministic election metrics |
-| **6 — Surveys + pre-election field operations** | Forms, approved field assignments, booth/site readiness, offline reports, verified aggregate issue maps | Demonstrate the full field workflow below on allowed test data |
-| **7 — Forecasting** | Calibrated models, scenarios, uncertainty and backtesting | Reproducible method/data/version trail |
-| **8 — Policy** | Bills, governance, schemes, manifestos and source-linked policy views | Traceable claim-to-document links |
-| **9 — Media** | Public-source issue/event collection, topic clustering, monitored reports | Every finding links to sources and methods |
-| **10 — Election-day command center** | Live operational status, field incidents, authorized aggregate turnout observations, alerts and supervisor response | Timestamped, verified reports use **the same** records as Phase 6 |
-| **11 — Automation** | Scheduled connectors, approvals, monitoring, delivery | Auditable bounded runs and retries |
-| **12 — Release** | Tests, permissions, backups, recovery, privacy/licence checks, supported packaging | Independent end-to-end installation and test evidence |
+The previous milestones numbered 0–12 remain **technical work packages and acceptance criteria**, not 13 competing execution phases. Their numbering is preserved in older specifications and ADRs for traceability. [Five-phase roadmap](ROADMAP.md) contains the integrated checklist and phase gates.
 
-**High-priority integration:** Phase 6 **pre-election field intelligence** is not optional or deferred entirely to Phase 10. Phases 2/4/5 prepare canonical station geography first; Phase 10 builds on the Phase 6 operational records.
+| Execution phase | Includes former milestones | Scope | Exit evidence |
+|---|---|---|---|
+| **P1 — Foundation, AI and evidence-backed research** | 0, 1, 2, 3 | Architecture decisions, Next.js/FastAPI, local projects, authentication baseline, political ontology, ingestion, documents, local AI/BYOAI, retrieval, citations and saved artifacts | Clean local install; user imports public/synthetic data, asks a sourced question and reopens the project; works without paid services |
+| **P2 — Political data, election analytics, GIS and surveys** | 4, 5, 6 | Kepler/GeoPandas, DuckDB/Perspective, Statsmodels, versioned constituency and polling-site geometry, historical results, sampling, weighting, SurveyJS and ODK offline field pilot | One traceable dataset drives map, table, statistical analysis, survey and F1–F5 field pilot |
+| **P3 — Policy, media and advanced intelligence** | 7, 8, 9 | Reproducible simulation and calibration, public policy, governance, manifestos, legislation, media, narrative/event analysis and cited publications | Verified research workflows with source/version/uncertainty, no invented results |
+| **P4 — Hierarchical teams and election operations** | 10; operational continuation of 6 | Recursive admin/supervisor/sub-team hierarchy, scoped permissions, mobile tasks and reports, field sync, incident verification, aggregate authorized turnout observations and command centre | 1 admin → 3 coordinators → 10+ scoped staff scenario; offline retries, revocation, incident escalation and F6–F8 accepted |
+| **P5 — Automations, services and release** | 11, 12 | Durable monitoring, plugin/connector manifests, opt-in isolated services, security, backups, tests, licence inventory, performance and docs | Independently reproducible local and optional shared-mode installs; supported release gates pass |
+
+**Scope invariant:** All political research, elections, psephology, GIS, statistics, policy, legislation, manifestos, public participation (optional), media, simulations, reporting, multilingual tooling, and hierarchical field operations remain in the complete vision. No individual inferred political-preference or persuasion targeting.
+
+**Three-day integration sprint:** a *target for P1 vertical slice plus one narrow P2 election-data/table/map spike if ready*, **not** full completion of five phases. A demonstrated fork or a dashboard mock is not a working product.
+
+**Parallel lanes after typed contracts are agreed:** (A) core/auth/data/provenance, (B) research/AI and artifacts, (C) GIS/analytics/political domain, (D) field teams, (E) release/evaluation. Only the owning lane edits a shared capability.
+
+### Approved reuse and isolation principle
+
+- **Embed** libraries through one Dotpol-owned interface (DuckDB, Kepler.gl, GeoPandas, Perspective, Statsmodels, SurveyJS Form Library).
+- **Connect** optional independent services through APIs (user-managed Ollama, ODK Central if necessary, future notification/participation tools). Use Docker Compose initially; K3s only for installations that need an orchestrator.
+- **Selectively adapt** donor code only after exact version/component licences and compatibility tests (Vane UI already forked; OPOL and Indian election parsers are candidates only).
+- **Reference** full external products rather than wholesale merge competing applications (Open Politics HQ, OpenStates/Popolo, Decidim/Polis/Ushahidi).
+- Do not create unused forks, extra retrieval systems, duplicate election/field schemas, parallel databases for authoritative records, or competing chat/agent/GIS engines.
+
+### Hierarchical collaboration model
+
+One organisation may contain arbitrary-depth parent/child teams, subject to configured depth/size limits. Administrators delegate only powers they hold; leaders can create permitted child teams. All users and mobile clients use the **same** canonical Project, Team, Membership, RoleGrant, Task, FieldUpdate, Incident, Evidence and event schemas. Reports roll up according to scope; sensitive records do not become visible simply because a team is an ancestor. Authoritative team mode uses PostgreSQL behind the same storage contracts used by local SQLite. Sync must be idempotent, offline-capable, time-stamped, reviewed and revocable. An optional real-time event transport cannot become the source of truth.
+
+### Donor gating
+
+The selected base stack remains [ADR-0002](DECISIONS/0002-one-stack-per-capability.md). Newly researched projects belong in [donor candidates](../architecture/donor-candidates.yml), **not** in the adopted dependencies until a scoped ADR, exact commit, full component/model/data-licence review, performance evidence and end-to-end acceptance. See [ADR-0004](DECISIONS/0004-five-phase-execution-and-service-isolation.md).
 
 ## 4. One pre-election-to-polling-day workflow
 
@@ -94,11 +108,11 @@ Approved station/microarea directory
 
 ## 5. Delivery order
 
-**First 3–7 days target: a verified research preview, not the entire platform.** Start with Next.js, FastAPI, SQLite, PydanticAI/Ollama, one retrieval index, import/search/citations and a saved project. Add only the Vane UI modules that pass review. No fake proof of completion.
+**First three days are an ambitious integration-sprint target for a verified research preview, not the entire platform.** Start with Next.js, FastAPI, SQLite, PydanticAI/Ollama, one retrieval index, import/search/citations and a saved project. Add only the Vane UI modules that pass review. No fake proof of completion.
 
-**Next vertical slice:** canonical station directory → supervisor assignment → one ODK offline facility form → verified status map → incident carryover. This is the first test of the **core field idea**; scale only after offline/security/privacy and role tests pass.
+**Next vertical slice (P2 field pilot):** canonical station directory → supervisor assignment → one ODK offline facility form → verified status map → incident carryover. This is the first test of the **core field idea**; scale only after offline/security/privacy and role tests pass.
 
-**Later:** full election, GIS, survey, forecasting, policy/media, live war room and automation phases use the same data/contracts rather than separate apps.
+**Later:** P2–P5 add elections, GIS, surveys, forecasting, policy/media, collaborative command centre and automation behind the same data/contracts.
 
 **Do not defer:** evidence IDs, access rules, provenance, no-network mode, sync idempotency and reproducible tests. **Do defer:** decorative features, extra donors, alternative frameworks, unused engines and unrelated forks.
 
