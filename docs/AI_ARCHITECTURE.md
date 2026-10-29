@@ -1,5 +1,7 @@
 # Dotpol AI Architecture v1.0
 
+**Execution map:** P1 shared AI/research gateway; P2 GIS/statistics/election/psephology tools; P3 policy/media/simulation tools; P4 scoped team/field operations copilot; P5 automated monitoring and eval/release. The selected PydanticAI one-gateway architecture is unchanged. See [ROADMAP](ROADMAP.md). No model claims completion by being configured on a diagram.
+
 ## 1. Objective
 
 Dotpol is AI-native, but not AI-dependent for deterministic truth. AI should be embedded across research, search, GIS, surveys, policy, forecasting, media and operational workflows while critical calculations and state remain auditable.
