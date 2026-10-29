@@ -1,6 +1,6 @@
 # Dotpol Capability Registry v1.0
 
-This registry prevents duplicate implementations. Every shared capability has exactly one owner.
+This registry prevents duplicate implementations. Every shared capability has exactly one owner. **Execution phases are P1–P5**; old milestone numbers in older records map in [ROADMAP](ROADMAP.md). All status values describe plans unless tests prove implementation.
 
 Before adding code, contributors must check this registry and `architecture/capabilities.yml`.
 
@@ -48,6 +48,20 @@ Before adding code, contributors must check this registry and `architecture/capa
 | Research workflows | `domains/research` | search/documents/analytics | evidence-backed research/work products |
 | Pre-election field operations | `domains/fieldops` | constituencies, GIS, survey forms, Task/FieldUpdate, provenance | area/site readiness, supervised field assignments, verified aggregates and offline sync; no voter political profiles; [workstream](PRE_ELECTION_MICROAREA_INTELLIGENCE.md) |
 | War-room intelligence | `domains/warroom` | fieldops + other domains + automation | composition/monitoring of same station, incident and aggregate data; not duplicate engines |
+
+## Additional capability ownership (five-phase extension)
+
+| Capability | Owner | Execution phase | Integration rule |
+|---|---|---|---|
+| Recursive organization/team identities | `platform/auth` | P4 (contract defined P1) | Team/Membership/RoleGrant/Delegation once; hierarchical access with scopes and revocation; optional PyCasbin candidate |
+| Mobile synchronization transport | `platform/data` + `domains/fieldops` semantics | P2 pilot, P4 teams | One authoritative record, idempotent receipt and verified conflict resolution; optional Centrifugo is transport only |
+| Team task and incident lifecycle | `domains/fieldops` | P2 pilot, P4 rollout | Reuse Task, FieldUpdate, Incident and Alert; warroom consumes, does not duplicate |
+| Interactive work-product artifact lifecycle | `platform/provenance` + `packages/ui` view | P1, P2+ | Same artifact IDs across chat/workbench/map/report revisions |
+| Civic deliberation connectors | `connectors/` with `domains/policy` semantics | P3 optional | Polis/Decidim are external candidates; not another core app |
+| Causal policy analysis | `platform/analytics` | P3 optional | DoWhy candidate under existing statistics interface, not a new statistical platform |
+| Policy microsimulation | `domains/simulation` | P3 optional | OpenFisca external candidate, licence and country-model gate |
+| Indian-language model tools | `platform/ai` | P3/P4 optional | IndicTrans2 candidate behind model/tool contract; model licences independently reviewed |
+| Operational real-time messages | `platform/automation` transport | P4 optional | Centrifugo/ntfy candidate; alerts remain stored canonical Dotpol events |
 
 ## Agent ownership
 
