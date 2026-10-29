@@ -1,4 +1,7 @@
-version: "1.0"
+version: "1.1"
+execution_plan: five-phase
+phase_map: "0-3=P1,4-6=P2,7-9=P3,10=P4,11-12=P5"
+notice: "Planning lock only; exact pins/licences/integration remain unverified."
 status: planning-lock
 policy:
   pin_exact_upstream_before_assimilation: true
@@ -12,7 +15,8 @@ projects:
     repository: open-politics/opol
     classification: donor-reference
     capability: political-data-intelligence-patterns
-    roadmap_phase: 2
+    roadmap_phase: 2 # legacy milestone
+    execution_phase: P1
     upstream_ref: null
     license_verified_for_ref: false
     action: "Evaluate and selectively assimilate; do not wholesale-adopt full stack."
@@ -20,7 +24,8 @@ projects:
     repository: ItzCrazyKns/Vane
     classification: donor
     capability: generative-search
-    roadmap_phase: 3
+    roadmap_phase: 3 # legacy milestone
+    execution_phase: P1
     upstream_ref: null
     license_verified_for_ref: false
     fork_repository: kiranvbiim-coder/Vane
@@ -34,7 +39,8 @@ projects:
     repository: keplergl/kepler.gl
     classification: donor
     capability: advanced-map-lab
-    roadmap_phase: 4
+    roadmap_phase: 4 # legacy milestone
+    execution_phase: P2
     upstream_ref: null
     license_verified_for_ref: false
     action: "Use only when advanced analyst Map Lab phase starts."
@@ -42,7 +48,8 @@ projects:
     repository: vercel/chatbot
     classification: reference-donor
     capability: ai-chat-tool-artifact-ux
-    roadmap_phase: 1
+    roadmap_phase: 1 # legacy milestone
+    execution_phase: P1
     upstream_ref: null
     license_verified_for_ref: false
     action: "Reference/selectively assimilate UI patterns; not Dotpol architecture foundation."
@@ -50,7 +57,8 @@ projects:
     repository: LibreChat-AI/LibreChat
     classification: reference
     capability: ai-workspace-ux
-    roadmap_phase: 1
+    roadmap_phase: 1 # legacy milestone
+    execution_phase: P1
     upstream_ref: null
     license_verified_for_ref: false
     action: "Study agent/tool/file/MCP UX; avoid parallel app foundation."
@@ -58,84 +66,96 @@ projects:
     repository: duckdb/duckdb
     classification: dependency
     capability: analytics-query
-    roadmap_phase: 4
+    roadmap_phase: 4 # legacy milestone
+    execution_phase: P2
     upstream_ref: null
     license_verified_for_ref: false
   - id: lancedb
     repository: lancedb/lancedb
     classification: dependency-candidate
     capability: local-vector-store
-    roadmap_phase: 3
+    roadmap_phase: 3 # legacy milestone
+    execution_phase: P1
     upstream_ref: null
     license_verified_for_ref: false
   - id: dlt
     repository: dlt-hub/dlt
     classification: dependency
     capability: ingestion
-    roadmap_phase: 2
+    roadmap_phase: 2 # legacy milestone
+    execution_phase: P1
     upstream_ref: null
     license_verified_for_ref: false
   - id: docling
     repository: docling-project/docling
     classification: dependency
     capability: documents
-    roadmap_phase: 2
+    roadmap_phase: 2 # legacy milestone
+    execution_phase: P1
     upstream_ref: null
     license_verified_for_ref: false
   - id: maplibre
     repository: maplibre/maplibre-gl-js
     classification: dependency
     capability: core-map-rendering
-    roadmap_phase: 4
+    roadmap_phase: 4 # legacy milestone
+    execution_phase: P2
     upstream_ref: null
     license_verified_for_ref: false
   - id: deck-gl
     repository: visgl/deck.gl
     classification: dependency
     capability: geospatial-visualization
-    roadmap_phase: 4
+    roadmap_phase: 4 # legacy milestone
+    execution_phase: P2
     upstream_ref: null
     license_verified_for_ref: false
   - id: h3
     repository: uber/h3
     classification: dependency
     capability: spatial-indexing
-    roadmap_phase: 4
+    roadmap_phase: 4 # legacy milestone
+    execution_phase: P2
     upstream_ref: null
     license_verified_for_ref: false
   - id: perspective
     repository: perspective-dev/perspective
     classification: dependency
     capability: analytics-workbench
-    roadmap_phase: 4
+    roadmap_phase: 4 # legacy milestone
+    execution_phase: P2
     upstream_ref: null
     license_verified_for_ref: false
   - id: statsmodels
     repository: statsmodels/statsmodels
     classification: dependency
     capability: statistics
-    roadmap_phase: 4
+    roadmap_phase: 4 # legacy milestone
+    execution_phase: P2
     upstream_ref: null
     license_verified_for_ref: false
   - id: pymc
     repository: pymc-devs/pymc
     classification: dependency
     capability: bayesian-modeling
-    roadmap_phase: 7
+    roadmap_phase: 7 # legacy milestone
+    execution_phase: P3
     upstream_ref: null
     license_verified_for_ref: false
   - id: pydantic-ai
     repository: pydantic/pydantic-ai
     classification: dependency
     capability: agent-runtime
-    roadmap_phase: 1
+    roadmap_phase: 1 # legacy milestone
+    execution_phase: P1
     upstream_ref: null
     license_verified_for_ref: false
   - id: litellm
     repository: BerriAI/litellm
     classification: dependency-candidate
     capability: provider-routing
-    roadmap_phase: 1
+    roadmap_phase: 1 # legacy milestone
+    execution_phase: P1
     upstream_ref: null
     license_verified_for_ref: false
     action: "Use permissive OSS portions only; Dotpol owns provider interface."
@@ -143,14 +163,16 @@ projects:
     repository: PrefectHQ/prefect
     classification: dependency
     capability: workflow-automation
-    roadmap_phase: 11
+    roadmap_phase: 11 # legacy milestone
+    execution_phase: P5
     upstream_ref: null
     license_verified_for_ref: false
   - id: surveyjs-form
     repository: surveyjs/survey-library
     classification: dependency-candidate
     capability: survey-form-runtime
-    roadmap_phase: 6
+    roadmap_phase: 6 # legacy milestone
+    execution_phase: P2
     upstream_ref: null
     license_verified_for_ref: false
     action: "Do not assume Survey Creator is included; Dotpol builds Survey Studio."
@@ -158,14 +180,16 @@ projects:
     repository: getodk/collect
     classification: interoperability-reference
     capability: offline-field-collection
-    roadmap_phase: 6
+    roadmap_phase: 6 # legacy milestone
+    execution_phase: P2
     upstream_ref: null
     license_verified_for_ref: false
   - id: graphrag
     repository: microsoft/graphrag
     classification: experimental-reference
     capability: graph-retrieval
-    roadmap_phase: 3
+    roadmap_phase: 3 # legacy milestone
+    execution_phase: P1
     upstream_ref: null
     license_verified_for_ref: false
     action: "Benchmark only; do not add as parallel production RAG stack."
@@ -173,7 +197,8 @@ projects:
     repository: HKUDS/LightRAG
     classification: experimental-reference
     capability: graph-retrieval
-    roadmap_phase: 3
+    roadmap_phase: 3 # legacy milestone
+    execution_phase: P1
     upstream_ref: null
     license_verified_for_ref: false
     action: "Benchmark only; do not add as parallel production RAG stack."
