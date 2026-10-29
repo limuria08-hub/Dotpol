@@ -1,4 +1,6 @@
-version: "1.0"
+version: "1.1"
+execution_plan: five-phase
+phase_map: "0-3=P1,4-6=P2,7-9=P3,10=P4,11-12=P5"
 status: consolidated-planning-baseline
 principles:
   local_first: true
@@ -12,61 +14,72 @@ capabilities:
   - id: ai-model-gateway
     owner: platform/ai
     status: planned
-    roadmap_phase: 1
+    roadmap_phase: 1 # legacy milestone
+    execution_phase: P1
     consumers: [agents, all-domains]
     rule: "All model providers route through one Dotpol-owned interface."
   - id: agent-runtime
     owner: platform/ai
     status: planned
-    roadmap_phase: 1
+    roadmap_phase: 1 # legacy milestone
+    execution_phase: P1
     preferred_dependency: PydanticAI
     consumers: [agents]
   - id: tool-registry
     owner: platform/ai
     status: planned
-    roadmap_phase: 1
+    roadmap_phase: 1 # legacy milestone
+    execution_phase: P1
     consumers: [agents]
   - id: search
     owner: platform/search
     status: planned
-    roadmap_phase: 3
+    roadmap_phase: 3 # legacy milestone
+    execution_phase: P1
     donor: Vane
     consumers: [research, elections, policy, legislation, media]
   - id: semantic-retrieval
     owner: platform/search
     status: planned
-    roadmap_phase: 3
+    roadmap_phase: 3 # legacy milestone
+    execution_phase: P1
     preferred_local_candidate: LanceDB
     rule: "No parallel production RAG stacks without ADR and evaluation evidence."
   - id: data-ingestion
     owner: platform/data
     status: planned
-    roadmap_phase: 2
+    roadmap_phase: 2 # legacy milestone
+    execution_phase: P1
     preferred_dependency: dlt
     consumers: [connectors, all-domains]
   - id: source-registry
     owner: platform/data
     status: planned
-    roadmap_phase: 1
+    roadmap_phase: 1 # legacy milestone
+    execution_phase: P1
   - id: dataset-registry
     owner: platform/data
     status: planned
-    roadmap_phase: 2
+    roadmap_phase: 2 # legacy milestone
+    execution_phase: P1
   - id: provenance
     owner: platform/provenance
     status: planned
-    roadmap_phase: 1
+    roadmap_phase: 1 # legacy milestone
+    execution_phase: P1
     consumers: [all]
   - id: documents
     owner: platform/documents
     status: planned
-    roadmap_phase: 2
+    roadmap_phase: 2 # legacy milestone
+    execution_phase: P1
     preferred_dependency: Docling
     consumers: [research, policy, legislation, manifestos, media]
   - id: gis
     owner: platform/gis
     status: planned
-    roadmap_phase: 4
+    roadmap_phase: 4 # legacy milestone
+    execution_phase: P2
     preferred_dependency: keplergl/kepler.gl
     spatial_backend: geopandas/geopandas
     rule: "One embedded Kepler map workspace; no independent parallel MapLibre/deck.gl renderer. Versioned canonical geography remains Dotpol-owned."
@@ -74,91 +87,111 @@ capabilities:
   - id: analytics-query
     owner: platform/analytics
     status: planned
-    roadmap_phase: 4
+    roadmap_phase: 4 # legacy milestone
+    execution_phase: P2
     preferred_dependency: DuckDB
   - id: analytics-workbench
     owner: platform/analytics
     status: planned
-    roadmap_phase: 4
+    roadmap_phase: 4 # legacy milestone
+    execution_phase: P2
     preferred_dependency: FINOS-Perspective
   - id: statistics
     owner: platform/analytics
     status: planned
-    roadmap_phase: 4
+    roadmap_phase: 4 # legacy milestone
+    execution_phase: P2
     preferred_dependency: Statsmodels
   - id: bayesian-modeling
     owner: platform/analytics
     status: planned
-    roadmap_phase: 7
+    roadmap_phase: 7 # legacy milestone
+    execution_phase: P3
     preferred_dependency: PyMC
   - id: surveys-runtime
     owner: platform/surveys
     status: planned
-    roadmap_phase: 6
+    roadmap_phase: 6 # legacy milestone
+    execution_phase: P2
     preferred_dependency: SurveyJS-Form-Library
   - id: offline-field-interoperability
     owner: platform/surveys
     status: planned
-    roadmap_phase: 6
+    roadmap_phase: 6 # legacy milestone
+    execution_phase: P2
     reference_or_dependency: ODK
   - id: workflow-automation
     owner: platform/automation
     status: planned
-    roadmap_phase: 11
+    roadmap_phase: 11 # legacy milestone
+    execution_phase: P5
     preferred_dependency: Prefect
   - id: political-ontology
     owner: packages/domain
     status: specification
-    roadmap_phase: 2
+    roadmap_phase: 2 # legacy milestone
+    execution_phase: P1
   - id: constituency-intelligence
     owner: domains/constituencies
     status: planned
-    roadmap_phase: 5
+    roadmap_phase: 5 # legacy milestone
+    execution_phase: P2
   - id: election-intelligence
     owner: domains/elections
     status: planned
-    roadmap_phase: 5
+    roadmap_phase: 5 # legacy milestone
+    execution_phase: P2
   - id: psephology
     owner: domains/psephology
     status: planned
-    roadmap_phase: 6
+    roadmap_phase: 6 # legacy milestone
+    execution_phase: P2
   - id: forecasting
     owner: domains/forecasting
     status: planned
-    roadmap_phase: 7
+    roadmap_phase: 7 # legacy milestone
+    execution_phase: P3
   - id: simulation
     owner: domains/simulation
     status: planned
-    roadmap_phase: 7
+    roadmap_phase: 7 # legacy milestone
+    execution_phase: P3
   - id: policy-intelligence
     owner: domains/policy
     status: planned
-    roadmap_phase: 8
+    roadmap_phase: 8 # legacy milestone
+    execution_phase: P3
   - id: legislative-intelligence
     owner: domains/legislation
     status: planned
-    roadmap_phase: 8
+    roadmap_phase: 8 # legacy milestone
+    execution_phase: P3
   - id: governance-intelligence
     owner: domains/governance
     status: planned
-    roadmap_phase: 8
+    roadmap_phase: 8 # legacy milestone
+    execution_phase: P3
   - id: manifesto-intelligence
     owner: domains/manifestos
     status: planned
-    roadmap_phase: 8
+    roadmap_phase: 8 # legacy milestone
+    execution_phase: P3
   - id: media-narrative-intelligence
     owner: domains/media
     status: planned
-    roadmap_phase: 9
+    roadmap_phase: 9 # legacy milestone
+    execution_phase: P3
   - id: research-workflows
     owner: domains/research
     status: planned
-    roadmap_phase: 3
+    roadmap_phase: 3 # legacy milestone
+    execution_phase: P1
   - id: field-operations-intelligence
     owner: domains/fieldops
     status: specification
     implementation_status: not-started
-    roadmap_phase: 6
+    roadmap_phase: 6 # legacy milestone
+    execution_phase: P2
     adr: docs/DECISIONS/0003-pre-election-microarea-operations.md
     specification: docs/PRE_ELECTION_MICROAREA_INTELLIGENCE.md
     depends_on: [political-ontology, offline-field-interoperability, gis, provenance]
@@ -167,6 +200,41 @@ capabilities:
   - id: warroom-intelligence
     owner: domains/warroom
     status: planned
-    roadmap_phase: 10
+    roadmap_phase: 10 # legacy milestone
+    execution_phase: P4
     depends_on: [field-operations-intelligence, election-intelligence, gis]
     rule: "Compose source/time-verified aggregate booth field reports and official turnout records; no duplicate fieldops engine or individual voter tracking."
+
+  - id: recursive-team-hierarchy
+    owner: platform/auth
+    status: specification
+    implementation_status: not-started
+    execution_phase: P4
+    contract_stage: P1
+    depends_on: [provenance, source-registry]
+    rule: "Organization, Team, TeamMembership, RoleGrant, Delegation, ProjectAccess. Scoped recursive roles, no privilege escalation or implicit child-data leaks."
+  - id: team-mobile-sync
+    owner: domains/fieldops
+    status: specification
+    implementation_status: not-started
+    execution_phase: P4
+    depends_on: [recursive-team-hierarchy, field-operations-intelligence, provenance]
+    rule: "Idempotent offline submissions, conflict review, timestamps; optional event delivery never authoritative."
+  - id: artifact-continuum
+    owner: platform/provenance
+    status: specification
+    implementation_status: not-started
+    execution_phase: P1
+    depends_on: [source-registry, provenance]
+    rule: "One project-linked artifact identity for chat previews, workbench, maps, charts and report revisions."
+  - id: causal-policy-analysis
+    owner: platform/analytics
+    status: candidate
+    execution_phase: P3
+    candidate_dependency: py-why/dowhy
+    rule: "Use existing statistics tool interface; causal assumptions and evidence required."
+  - id: civic-deliberation
+    owner: domains/policy
+    status: candidate-external
+    execution_phase: P3
+    rule: "Optional Polis/Decidim adapters after licence review; never a competing core application."
