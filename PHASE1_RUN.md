@@ -116,3 +116,24 @@ Docling dependency, production Next.js build, real Ollama inference, OCR, hybrid
 semantic retrieval and independent clean-install still need verification.
 Run `python -m pytest -q` to exercise the P1 core tests. This opt-in parser is
 **not** a mandatory service for local AI research.
+
+## P1.11 — Required OpenClaw Gateway foundation (2026-10-30)
+
+**Product decision:** OpenClaw is a **required component of a complete LiOS.Pol release**, not an optional service. OpenCloud is not part of this product. The five-phase canonical plan assigns readiness/contracts to P1, authorized team/channel integration to P4, and full gateway, skills, devices, automations, lifecycle and security acceptance to P5.
+
+The existing FastAPI local gateway exposes a **read-only** status endpoint:
+
+```bash
+curl --fail http://127.0.0.1:8765/api/openclaw/status
+```
+
+It discovers the installed OpenClaw CLI and executes the documented `openclaw health --json --timeout 2500` command with no shell, bounded timeout, and no auto-install, model download, gateway startup, or access to channel content. The response is a sanitized `required_for_release` / `ready` / `status` / `detail` summary; the raw CLI payload, stderr, credentials and channel identities are never returned.
+
+- `not-installed` means a **required release dependency has not been installed** (not that the feature is optional).
+- `unreachable`, `starting`, `unhealthy` or `invalid-response` mean the gateway is not verified ready.
+- `gateway-healthy` confirms a successful health RPC **only**. It does not certify secure channel pairing, device policy, tool permissions, skills, runtime supervision or production readiness.
+- The read-only probe does not replace PydanticAI's evidence-grounded political research tool chain. OpenClaw retains ownership of its own gateway, channel/device pairing and skills.
+- OpenClaw's upstream security guide recommends **one trust boundary per gateway**; use distinct gateway instances/credentials for mutually untrusted organizations. Do not expose full operator tokens to browser clients.
+
+Automated tests mock the OpenClaw CLI and cover missing installation, startup, errors, timeouts, sanitized health, and rejected remote origins. **Real installed gateway integration remains pending** until live local test and P4/P5 acceptance. Avoid claiming complete OpenClaw integration based solely on this status endpoint.
+
