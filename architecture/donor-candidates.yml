@@ -1,9 +1,9 @@
 # Planning candidates ONLY; do not use as installed dependencies or adoption lock.
 # Canonical adoption records are architecture/donors.lock.yml after exact pin, licence and tests.
-version: "1.1"
+version: "1.2"
 execution_plan: five-phase
 phase_map: "0-3=P1,4-6=P2,7-9=P3,10=P4,11-12=P5"
-as_of: "2026-10-15"
+as_of: "2026-10-30"
 status: "candidate-research"
 target_commodity_reuse_share: 0.90
 reuse_target_type: "aspirational_commodity_capabilities_not_verified_code_percent"
@@ -807,3 +807,39 @@ candidates:
     integrated: false
     forked: false
     rationale: "Graph visualization for permission-scoped teams and political relationships"
+
+  - id: "opencloud-service"
+    upstream: "opencloud-eu/opencloud"
+    execution_phase: P4
+    classification: "isolated-full-service-candidate"
+    license_signal: "Apache-2.0 root confirmed 2026-10-30; verify exact version/component assets"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Full self-hosted file/storage/sharing/collaboration service via scoped OIDC and approved file APIs; not Dotpol political DB or mandatory local dependency"
+
+  - id: "opencloud-web"
+    upstream: "opencloud-eu/web"
+    execution_phase: P4
+    classification: "excluded-embedded-frontend-reference"
+    license_signal: "AGPL-3.0 root confirmed 2026-10-30"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "OpenCloud separate Vue UI must not be bundled into Dotpol Next.js; interoperable standalone service only"
+
+  - id: "openclaw-gateway"
+    upstream: "openclaw/openclaw"
+    execution_phase: P5
+    classification: "isolated-full-service-candidate"
+    license_signal: "MIT root confirmed 2026-10-30; plugins/channels/models separately review"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Full optional AI channel/device/skills gateway; sandbox/auth/pairing required; Dotpol PydanticAI and political records remain authoritative"
