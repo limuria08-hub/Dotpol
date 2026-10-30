@@ -21,15 +21,15 @@ def compare_sources(store, project_id: str, question: str) -> dict:
     if not selected:
         answer = 'No matching source excerpts in this project. No comparison or conclusion was inferred.'
     elif not comparable:
-        answer = ('Only one independent source has matching evidence. A cross-source comparison is not supported.\n'
+        answer = ('Only one distinct source among retrieved excerpts. A cross-source comparison is not supported.\n'
                   'Matched excerpt (not an independently verified conclusion):\n'
                   + '\n'.join(f'[{i}] {hit["source_name"]}, line {hit["line"]}: {hit["excerpt"][:350]}'
                               for i, hit in enumerate(selected, 1)))
     else:
-        answer = ('Cross-source evidence matrix (no automated agreement or contradiction claim):\n'
+        answer = ('Cross-source excerpt matrix (distinct files do not prove source independence; no automated agreement or contradiction claim):\n'
                   + '\n'.join(f'[{i}] {hit["source_name"]}, line {hit["line"]}: {hit["excerpt"][:350]}'
                               for i, hit in enumerate(selected, 1))
-                  + '\nIndependent interpretation requires checking dates, definitions and methodologies.')
+                  + '\nInterpretation requires checking source independence, dates, definitions and methodologies.')
     artifact = store.save_artifact(project_id, question, answer, selected,
                                    generation_method='extractive' if selected else 'no-evidence')
     return {
