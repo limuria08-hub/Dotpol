@@ -125,10 +125,11 @@ test('narrow viewport retains keyboard-accessible uploads without horizontal ove
   await makeProject(page, title);
   await expect(page.getByRole('heading', { name: 'Ask LiOS.Pol AI' })).toBeVisible();
 
-  // The source input must remain in keyboard order even when visually hidden.
+  // The visible upload button must be reachable by Tab; its hidden native
+  // input is activated from that button and is not a competing tab stop.
   await page.getByRole('button', { name: title, exact: true }).focus();
   await page.keyboard.press('Tab');
-  await expect(page.locator('input[type="file"]')).toBeFocused();
+  await expect(page.getByRole('button', { name: 'Import source' })).toBeFocused();
   expect(await page.evaluate(() =>
     document.documentElement.scrollWidth <= window.innerWidth + 1,
   )).toBeTruthy();
