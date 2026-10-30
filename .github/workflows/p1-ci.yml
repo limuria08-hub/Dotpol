@@ -40,6 +40,16 @@ jobs:
         with:
           node-version: "22"
       - run: npm install --no-audit --no-fund
+      - name: Export generated npm lockfile for a one-time checked-in pin
+        run: |
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const lock = fs.readFileSync('package-lock.json', 'utf8');
+          for (let i=0;i<lock.length;i+=4000) {
+            process.stdout.write('DOTPOL_LOCK_CHUNK ' + JSON.stringify(lock.slice(i,i+4000)) + '\\n');
+          }
+          process.stdout.write('DOTPOL_LOCK_END\\n');
+          NODE
       - run: npm run build
 
   search-index:
