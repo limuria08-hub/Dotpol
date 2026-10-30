@@ -316,3 +316,47 @@ test('Radix source provenance dialog stays local, keyboard-dismissible and retur
   await expect(inspect).toBeFocused();
   await expect(page.getByRole('heading', { name: 'Ask LiOS.Pol AI' })).toBeVisible();
 });
+
+
+test('OpenClaw authenticated RPC verification is explicit, local, and credential-safe', async ({ page }) => {
+  let rpcCount = 0;
+  let reply = {
+    component: 'openclaw', required_for_release: true, rpc_verified: false,
+    status: 'not-installed',
+    detail: 'Install and configure the required OpenClaw Gateway to verify its RPC connection.',
+  };
+  await page.route(`${API}/api/openclaw/rpc-check`, async route => {
+    expect(route.request().method()).toBe('POST');
+    expect(route.request().headers()['x-dotpol-local']).toBe('1');
+    rpcCount += 1;
+    await route.fulfill({status: 200, contentType: 'application/json',
+      body: JSON.stringify({...reply, operatorToken: 'DO-NOT-RENDER-RPC-CREDENTIAL'})});
+  });
+  await page.goto('/');
+  const gateway = page.getByRole('region', {name: 'Required OpenClaw gateway'});
+  const verify = gateway.getByRole('button', {name: 'Verify connection'});
+  await expect(verify).toBeVisible();
+  await expect(gateway).toContainText('Authenticated connection not checked');
+  expect(rpcCount).toBe(0);
+
+  await verify.click();
+  await expect(gateway).toContainText('Install and configure the required OpenClaw Gateway');
+  await expect(gateway).not.toContainText('DO-NOT-RENDER-RPC-CREDENTIAL');
+  expect(rpcCount).toBe(1);
+
+  reply = {
+    component: 'openclaw', required_for_release: true, rpc_verified: true,
+    status: 'rpc-connected',
+    detail: 'OpenClaw authenticated status RPC succeeded. Channel pairing, tool permissions and device actions still require separate tests.',
+  };
+  await verify.click();
+  await expect(gateway).toContainText('OpenClaw authenticated status RPC succeeded');
+  await expect(gateway).toContainText('tool permissions and device actions still require separate tests');
+  await expect(gateway).not.toContainText('DO-NOT-RENDER-RPC-CREDENTIAL');
+  expect(rpcCount).toBe(2);
+
+  await page.route(`${API}/api/openclaw/rpc-check`, route => route.abort('failed'));
+  await verify.click();
+  await expect(gateway).toContainText('Could not verify the authenticated OpenClaw connection');
+  await expect(verify).toBeEnabled();
+});
