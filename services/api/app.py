@@ -12,6 +12,7 @@ from pydantic import BaseModel, Field, StrictInt
 from fastapi.responses import JSONResponse
 from dotpol_platform.store import Store, InvalidInput, NotFound, RevisionConflict
 from dotpol_platform.documents import extract_document, DocumentEngineUnavailable
+from dotpol_platform.openclaw_gateway import probe_openclaw
 from dotpol_platform.research import search, ai_research
 from dotpol_platform.ai import (status as model_status, probe_local_model, AIUnavailable, UngroundedAnswer, RemoteEvidenceConsentRequired)
 
@@ -101,6 +102,12 @@ def create_app(db_path: str | Path | None = None) -> FastAPI:
     @app.get('/health')
     def health():
         return {'status':'ok','local':True,'version':'0.1.0'}
+
+    @app.get('/api/openclaw/status')
+    async def openclaw_status():
+        # OpenClaw is required for release. A read-only probe must never
+        # install/start the gateway or reveal channel credentials.
+        return await run_in_threadpool(probe_openclaw)
 
     @app.get('/api/ai/status')
     def ai_status():
