@@ -292,3 +292,27 @@ test('mobile stacks the same artifact workbench without duplicate state', async 
   expect((await stored.json()).id).toBe(id);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBeTruthy();
 });
+
+
+test('Radix source provenance dialog stays local, keyboard-dismissible and returns focus', async ({ page }) => {
+  await makeProject(page, 'P1 source inspection ' + Date.now());
+  await page.locator('input[type="file"]').setInputFiles({
+    name: 'provenance.txt',
+    mimeType: 'text/plain',
+    buffer: Buffer.from('Synthetic published budget: 120 units.'),
+  });
+  await expect(page.locator('p.status')).toContainText('Imported provenance.txt');
+  const inspect = page.getByRole('button', { name: 'Inspect source provenance.txt' });
+  await expect(inspect).toBeVisible();
+  await inspect.focus();
+  await page.keyboard.press('Enter');
+  const dialog = page.getByRole('dialog', { name: 'Source provenance' });
+  await expect(dialog).toBeVisible();
+  await expect(dialog).toContainText('provenance.txt');
+  await expect(dialog).toContainText('Content SHA-256');
+  await expect(dialog).toContainText(/\b[a-f0-9]{64}\b/);
+  await page.keyboard.press('Escape');
+  await expect(dialog).toHaveCount(0);
+  await expect(inspect).toBeFocused();
+  await expect(page.getByRole('heading', { name: 'Ask LiOS.Pol AI' })).toBeVisible();
+});
