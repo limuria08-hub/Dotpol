@@ -270,3 +270,25 @@ test('external model consent is one-request-only, including errors and changed q
   await expect(consent).not.toBeChecked();
   expect(sentConsent).toEqual([true, true]);
 });
+
+
+test('mobile stacks the same artifact workbench without duplicate state', async ({ page, request }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const title = 'P1 mobile artifact ' + Date.now();
+  await makeProject(page, title);
+  await page.locator('input[type="file"]').setInputFiles({
+    name: 'mobile-report.txt',
+    mimeType: 'text/plain',
+    buffer: Buffer.from('Synthetic public road budget: 42 units approved.'),
+  });
+  await expect(page.locator('p.status')).toContainText('Imported mobile-report.txt');
+  const result = await ask(page, 'road budget');
+  const id: string = result.artifact.id;
+  await expect(page.locator('.research-stacked')).toBeVisible();
+  await expect(page.getByRole('separator', { name: 'Resize conversation and artifact workbench' })).toHaveCount(0);
+  await page.getByRole('button', { name: `Open artifact ${id} in workbench` }).click();
+  await expect(page.locator('article.result')).toContainText('42 units');
+  const stored = await request.get(`${API}/api/projects/${result.artifact.project_id}/artifacts/${id}`);
+  expect((await stored.json()).id).toBe(id);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBeTruthy();
+});
