@@ -216,8 +216,8 @@ class Store:
         """
         self.project(project_id)
         self._check_id(artifact_id)
-        if not isinstance(answer, str) or not answer.strip() or len(answer) > 100000:
-            raise InvalidInput('Edited answer must contain 1–100000 characters')
+        if not isinstance(answer, str) or not answer.strip() or len(answer.encode('utf-8')) > 100000:
+            raise InvalidInput('Edited answer must contain 1–100000 UTF-8 bytes')
         if not isinstance(expected_revision, int) or isinstance(expected_revision, bool) or expected_revision < 1:
             raise InvalidInput('Expected revision must be a positive integer')
         edited_at = now()
