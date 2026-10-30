@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field, StrictInt
 from fastapi.responses import JSONResponse
 from dotpol_platform.store import Store, InvalidInput, NotFound, RevisionConflict
 from dotpol_platform.documents import extract_document, DocumentEngineUnavailable
-from dotpol_platform.openclaw_gateway import probe_openclaw
+from dotpol_platform.openclaw_gateway import probe_openclaw, audit_openclaw_security
 from dotpol_platform.research import search, ai_research
 from dotpol_platform.ai import (status as model_status, probe_local_model, AIUnavailable, UngroundedAnswer, RemoteEvidenceConsentRequired)
 
@@ -108,6 +108,11 @@ def create_app(db_path: str | Path | None = None) -> FastAPI:
         # OpenClaw is required for release. A read-only probe must never
         # install/start the gateway or reveal channel credentials.
         return await run_in_threadpool(probe_openclaw)
+
+    @app.post('/api/openclaw/audit')
+    async def openclaw_security_audit():
+        # Explicit user action only; no --fix, --deep or browser secrets.
+        return await run_in_threadpool(audit_openclaw_security)
 
     @app.get('/api/ai/status')
     def ai_status():
