@@ -11,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, StrictInt
 from fastapi.responses import JSONResponse
 from dotpol_platform.store import Store, InvalidInput, NotFound, RevisionConflict
+from dotpol_platform.political_identity import initialize as init_entities, register as register_entity, list_entities, get_entity
 from dotpol_platform.documents import extract_document, DocumentEngineUnavailable
 from dotpol_platform.openclaw_gateway import probe_openclaw, audit_openclaw_security, verify_openclaw_rpc
 from dotpol_platform.research import search, ai_research
@@ -18,6 +19,12 @@ from dotpol_platform.ai import (status as model_status, probe_local_model, AIUna
 
 DB_PATH = Path(os.getenv('DOTPOL_DATA_DIR', str(Path.home()/'.dotpol')))/'dotpol.sqlite3'
 ALLOWED_ORIGINS = {'http://localhost:3000','http://127.0.0.1:3000'}
+
+
+class PoliticalEntityIn(BaseModel):
+    kind: Literal['jurisdiction','administrative-area','electoral-area','constituency','boundary-version','polling-station','person','party','alliance','organisation','office','election','contest']
+    name: str = Field(min_length=1,max_length=180)
+    source_id: str | None = None
 
 
 class ProjectIn(BaseModel):
@@ -50,6 +57,7 @@ class QuestionIn(BaseModel):
 
 def create_app(db_path: str | Path | None = None) -> FastAPI:
     store=Store(db_path or DB_PATH)
+    init_entities(store)
     app=FastAPI(title='Dotpol Local Gateway',version='0.1.0')
     app.add_middleware(CORSMiddleware,allow_origins=sorted(ALLOWED_ORIGINS),allow_credentials=False,
                        allow_methods=['GET','POST','PATCH'],allow_headers=['X-Dotpol-Local','Content-Type'])
@@ -140,6 +148,18 @@ def create_app(db_path: str | Path | None = None) -> FastAPI:
     @app.get('/api/projects/{project_id}')
     def get_project(project_id:str):
         return store.project(project_id)
+
+    @app.post('/api/projects/{project_id}/entities',status_code=201)
+    def create_entity(project_id:str,body:PoliticalEntityIn):
+        return register_entity(store,project_id,body.kind,body.name,body.source_id)
+
+    @app.get('/api/projects/{project_id}/entities')
+    def entities(project_id:str,kind:str|None=None):
+        return list_entities(store,project_id,kind)
+
+    @app.get('/api/projects/{project_id}/entities/{entity_id}')
+    def entity(project_id:str,entity_id:str):
+        return get_entity(store,project_id,entity_id)
 
     @app.get('/api/projects/{project_id}/sources')
     def list_sources(project_id:str):
