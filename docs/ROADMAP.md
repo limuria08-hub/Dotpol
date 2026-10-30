@@ -66,6 +66,21 @@ Agents may work concurrently only after shared contracts have an owning reviewer
 
 **Done when:** the same source/versioned election dataset produces auditable tables, maps, statistical findings and cited AI interpretations, with correct boundary dates and survey limitations.
 
+### P2.04 implementation slice — deterministic arithmetic (stacked on P2.01)
+
+**Branch:** `feat/p2-04-deterministic-election-metrics-20261030`. **Owner:** Agent C; Agent D verifies source semantics and Agent F owns regression review. Depends on reviewed P1 source/identity contracts and P2.01 normalized candidate rows. This is **not a completed P2.04 or P2.11 exit gate** without authentic source reconciliation and integrated analytics UX.
+
+Use the existing FastAPI gateway and imported P2.01 rows:
+
+- `GET /api/projects/{project_id}/election-results/imports/{import_id}/metrics` returns per-contest candidate/party declared-valid-vote shares, lead-vote margins, exact source IDs/hashes/CSV lines and missing-candidate-vote totals.
+- `POST /api/projects/{project_id}/election-results/compare` accepts `{"earlier_import_id":"...","later_import_id":"..."}`. It calculates *descriptive* percentage-point differences only for the same project, same declared constituency/boundary label, same election-name family, strictly increasing year and a party present in both imported contests. Missing party shares are **null, never zero**; unmatched/ambiguous boundaries are skipped, never silently conflated.
+- All percentage calculations are deterministic Python Decimal values rounded half-up to four places; calculation formulas and version `dotpol-election-metrics-v1` are returned. **No floating-point model calculations, forecast or election/political preferences inference.**
+- **No actual turnout**: enrolled electors/ballots cast are absent. A source-declared denominator cannot be silently substituted for registered electors. **No certified winner**: leader(s), margins and tie flags are descriptive only, even when imported votes add up to the source-declared total.
+- Existing P1 SQLite is authoritative; withdrawn sources cannot be newly analyzed. Imported data retains `user-uploaded-unverified` status. Same boundary *label* does not verify equal delimitation geometry.
+- Tests: `PYTHONPATH=platform/src:services/api python -m pytest tests/test_election_metrics.py -q`. Reference fixtures are synthetic. Verify against licensed official election data separately under P2.01–03 before claiming public results.
+
+**Still pending:** independent official return verification, time-valid GIS boundaries, detailed candidate/contest entity relationships (P2.02/03), complete turnout from the appropriate denominator, DuckDB/Perspective analytical workbench (P2.05), field-survey integration and real cited AI artifact (P2.10/11).
+
 ### P2.01 implementation slice — normalized candidate results (stacked on P1)
 
 **Branch:** `feat/p2-01-election-results-import-20261030`. **Owner:** Agent D + A for source/identity contracts; Agent F for tests. This initial import **does not satisfy full P2.01 official source verification, P2.02 candidate entity resolution, P2.03 delimitation reconciliation or P2.11 exit.** Completion remains unchecked until official datasets/rights and integration acceptance are verified.

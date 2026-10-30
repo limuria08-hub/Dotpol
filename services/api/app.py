@@ -17,6 +17,7 @@ from dotpol_platform.openclaw_gateway import probe_openclaw, audit_openclaw_secu
 from dotpol_platform.research import search, ai_research
 from dotpol_platform.cross_source import compare_sources
 from dotpol_platform.election_results import initialize as init_election_results, import_results, list_imports, get_import
+from dotpol_platform.election_metrics import analyze_import, compare_imports
 from dotpol_platform.ai import (status as model_status, probe_local_model, AIUnavailable, UngroundedAnswer, RemoteEvidenceConsentRequired)
 
 DB_PATH = Path(os.getenv('DOTPOL_DATA_DIR', str(Path.home()/'.dotpol')))/'dotpol.sqlite3'
@@ -31,6 +32,11 @@ class PoliticalEntityIn(BaseModel):
 
 class ElectionResultImportIn(BaseModel):
     source_id: str = Field(pattern=r'^[a-f0-9]{32}$')
+
+
+class ElectionHistoryCompareIn(BaseModel):
+    earlier_import_id: str = Field(pattern=r'^[a-f0-9]{32}$')
+    later_import_id: str = Field(pattern=r'^[a-f0-9]{32}$')
 
 
 class ProjectIn(BaseModel):
@@ -179,6 +185,14 @@ def create_app(db_path: str | Path | None = None) -> FastAPI:
     @app.get('/api/projects/{project_id}/election-results/imports/{import_id}')
     def election_import(project_id:str,import_id:str):
         return get_import(store,project_id,import_id)
+
+    @app.get('/api/projects/{project_id}/election-results/imports/{import_id}/metrics')
+    def election_metrics(project_id:str,import_id:str):
+        return analyze_import(store,project_id,import_id)
+
+    @app.post('/api/projects/{project_id}/election-results/compare')
+    def historical_election_comparison(project_id:str,body:ElectionHistoryCompareIn):
+        return compare_imports(store,project_id,body.earlier_import_id,body.later_import_id)
 
     @app.get('/api/projects/{project_id}/sources')
     def list_sources(project_id:str):
