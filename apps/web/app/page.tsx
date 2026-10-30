@@ -6,6 +6,7 @@ import {Button} from '../components/ui/button';
 import {Input} from '../components/ui/input';
 import {Label} from '../components/ui/label';
 import {SourceDetailsDialog} from '../components/source-details-dialog';
+import {AssistantResearchThread} from '../components/assistant-research-thread';
 
 const API='http://127.0.0.1:8765';
 function toBase64(bytes:Uint8Array){let data='';for(let i=0;i<bytes.length;i+=16384)data+=String.fromCharCode(...bytes.subarray(i,i+16384));return btoa(data)}
@@ -41,6 +42,7 @@ export default function Home(){
  const [loading,setLoading]=useState(false);
  const [ai,setAi]=useState<ModelStatus|null>(null);
  const [evidenceOnly,setEvidenceOnly]=useState(false);
+ const [assistantMode,setAssistantMode]=useState(false);
  const [remoteConsent,setRemoteConsent]=useState(false);
  const [probeStatus,setProbeStatus]=useState('');
  const [openClaw,setOpenClaw]=useState<OpenClawStatus|null>(null);
@@ -77,11 +79,12 @@ export default function Home(){
    await load(project);setMessage(`Imported ${file.name} with source checksum.`);
   }catch(e){setMessage((e as Error).message)}finally{setLoading(false)}
  }
- async function ask(){if(!project||!question.trim()||loading)return;
+ async function ask(input?:string){const query=typeof input==='string'?input:question;
+  if(!project||!query.trim()||loading)return;
   // Consent applies to this single request only, including errors and retries.
   const approvedForThisRequest=remoteConsent && ai?.provider==='openai-compatible';
   setRemoteConsent(false);setLoading(true);
-  try{const res=await api<{artifact:Artifact,retrieval_mode?:string,retrieval_degraded?:string|null}>(`/api/projects/${project.id}/research`,'POST',{question,mode:evidenceOnly?'extractive':'auto',allow_remote_evidence:approvedForThisRequest});
+  try{const res=await api<{artifact:Artifact,retrieval_mode?:string,retrieval_degraded?:string|null}>(`/api/projects/${project.id}/research`,'POST',{question:query,mode:evidenceOnly?'extractive':'auto',allow_remote_evidence:approvedForThisRequest});
    void openArtifact(res.artifact);setArtifacts(old=>[res.artifact,...old]);setQuestion('');setRemoteConsent(false);setMessage(res.artifact.generation_method==='ai-synthesis'?'AI research saved with verified source references.':res.artifact.generation_method==='no-evidence'?'No matching evidence. No political claims were generated.':'Source evidence saved. Configure a model to enable AI synthesis.');
    if(res.retrieval_degraded)setProbeStatus(res.retrieval_degraded);
   }catch(e){setMessage((e as Error).message)}finally{setLoading(false)}
@@ -188,7 +191,16 @@ export default function Home(){
       conversation={<section className="workspace"><h2>Ask LiOS.Pol AI</h2><p className="hint">AI uses retrieved project sources and verifiable citations. If no model is configured, evidence-only research remains available.</p><div className="ai-control"><label><input type="checkbox" checked={evidenceOnly} onChange={e=>{setEvidenceOnly(e.target.checked);setRemoteConsent(false)}}/> Evidence only (skip AI)</label><span>{ai?.configured?`Provider: ${ai.provider}`:'Connect local Ollama to enable AI synthesis'}</span></div>
     {ai?.provider==='ollama'&&ai.configured?<div className="ai-control"><button type="button" disabled={loading} onClick={()=>{void probe()}}>Check local model</button><span role="status">{probeStatus}</span></div>:null}
     {ai?.provider==='openai-compatible' && ai.configured && !evidenceOnly?<label className="ai-control remote-consent"><input type="checkbox" checked={remoteConsent} onChange={e=>setRemoteConsent(e.target.checked)}/> Approve sending the retrieved source excerpts and question to my configured external model for this one request.</label>:null}
-    <div className="ask"><Input aria-label="Research question" placeholder="Search local political datasets and documents" value={question} onChange={e=>{setQuestion(e.target.value);setRemoteConsent(false)}} onKeyDown={e=>{if(e.key==='Enter')void ask()}} /><Button variant="primary" disabled={loading||!question.trim()||(ai?.configured===true&&ai.provider==='openai-compatible'&&!evidenceOnly&&!remoteConsent)} onClick={ask}>{loading?'Working…':'Ask AI'}</Button></div>
+    <div className="conversation-mode" role="group" aria-label="Conversation renderer">
+     <Button variant={assistantMode?'outline':'secondary'} size="sm" aria-pressed={!assistantMode} onClick={()=>{setAssistantMode(false);setRemoteConsent(false)}}>Classic conversation</Button>
+     <Button variant={assistantMode?'secondary':'outline'} size="sm" aria-pressed={assistantMode} onClick={()=>{setAssistantMode(true);setRemoteConsent(false)}}>Assistant conversation</Button>
+    </div>
+    {assistantMode?<AssistantResearchThread key={project.id}
+     artifacts={artifacts} isRunning={loading}
+     isSendDisabled={loading||(ai?.configured===true&&ai.provider==='openai-compatible'&&!evidenceOnly&&!remoteConsent)}
+     onSubmit={(input)=>ask(input)} onDraftChange={()=>setRemoteConsent(false)}
+     onOpen={(id)=>{const a=artifacts.find(x=>x.id===id);if(a)void openArtifact(a)}}/>:<>
+    <div className="ask"><Input aria-label="Research question" placeholder="Search local political datasets and documents" value={question} onChange={e=>{setQuestion(e.target.value);setRemoteConsent(false)}} onKeyDown={e=>{if(e.key==='Enter')void ask()}} /><Button variant="primary" disabled={loading||!question.trim()||(ai?.configured===true&&ai.provider==='openai-compatible'&&!evidenceOnly&&!remoteConsent)} onClick={()=>{void ask()}}>{loading?'Working…':'Ask AI'}</Button></div>
         <section className="thread-list" aria-label="Research conversation">
      <h3>Research conversation</h3>
      {artifacts.length?artifacts.slice(0,12).map(a=><div className="thread-item" key={a.id}>
@@ -198,7 +210,7 @@ export default function Home(){
        <button type="button" aria-current={selected?.id===a.id?'true':undefined} aria-label={`Open artifact ${a.id} in workbench`} onClick={()=>{void openArtifact(a)}}><PanelRightOpen size={15} aria-hidden="true"/> Open in workbench</button>
       </div>
      </div>):<p className="hint">Import a source and ask a question to begin an evidence-linked conversation.</p>}
-    </section>
+    </section></>}
    </section>}
       workbench={selected?<article className="result"><div className="result-head"><span>{selected.generation_method==='ai-synthesis'?`AI synthesis · ${selected.model_id||'model unspecified'}`:selected.generation_method==='no-evidence'?'Evidence unavailable':'Evidence-only research'}</span><button onClick={()=>exportArtifact(selected)}>Export JSON</button></div><h3>{selected.question}</h3><div className="artifact-edit-bar"><span>Revision {selected.revision} · {selected.review_status==='user-edited-unverified'?'Edited — citations need review': 'Source-linked original — claims not fact-checked'}</span>
      {!editing?<button type="button" onClick={()=>setEditing(true)}>Edit in workbench</button>:<><button type="button" disabled={loading||!draft.trim()} onClick={()=>{void saveRevision()}}>Save revision</button><button type="button" disabled={loading} onClick={()=>{setEditing(false);setDraft(selected.answer)}}>Cancel</button></>}
