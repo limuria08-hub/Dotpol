@@ -1,12 +1,12 @@
 # Dotpol — Master Product & Delivery Plan
 
-**Updated:** 2026-10-29 · **Status:** Five-phase canonical execution plan · **Implementation:** not verified / not started per repository baseline
+**Updated:** 2026-10-30 · **Status:** Five-phase canonical execution plan · **Implementation:** P1 application work is in open PR #11; phases remain unverified until acceptance tests pass
 
 This is the **single short entry point** for planning and execution. Detailed requirements remain in the linked blueprint, contracts and ADRs; they should not be recopied into new plans. Changes to frozen architecture require an accepted ADR.
 
 ## 1. Product
 
-**Dotpol is a local-first, internal political-intelligence and election-operations platform.** It replaces disconnected notebooks, spreadsheets and apps with one workspace for research, public election data, mapping, surveys, authorized field operations, evidence-backed analysis and live operational coordination.
+**LiOS.Pol (Dotpol repository) is a local-first, AI-native political-intelligence, public-policy and election-operations platform.** It replaces disconnected notebooks, spreadsheets and apps with one workspace for research, public election data, mapping, surveys, authorized field operations, evidence-backed analysis and live operational coordination.
 
 **Product rule:** one canonical record and one owning subsystem per capability. Reuse maintained open-source components; write only domain contracts, integration glue and specialist political logic.
 
@@ -37,6 +37,19 @@ This is the **single short entry point** for planning and execution. Detailed re
 | Durable scheduled work | **Prefect** | `platform/automation` |
 | AI regression/security evaluation | **promptfoo** | `evaluations` |
 
+### Full-repository reuse without a second product
+
+Use the full capabilities of an external repo **through its supported APIs** where that is safer/faster than copying its application. This is our reuse policy, not a plan to merge many independent backends. [Detailed steps and agent owners](ROADMAP.md).
+
+| Full OSS service | Intended phase | Responsibility | Integration boundary |
+|---|---|---|---|
+| **OpenCloud** [server](https://github.com/opencloud-eu/opencloud) | P4 | Optional self-hosted file sharing, organization collaboration and document storage | External file service with approved OIDC/file API; Dotpol owns projects, political intelligence, source/evidence and access decisions. Separate `opencloud-eu/web` UI is AGPL-3.0 and is **not embedded**. |
+| **ODK Collect / Central** | P2 field pilot and P4 rollout | Offline field forms/submission workflows | Optional independent service with IDs mapped to canonical Dotpol records |
+| **OpenClaw** [gateway](https://github.com/openclaw/openclaw) | P5 | Optional WhatsApp/Telegram/other channel integrations, device actions and skills | Separate sandboxed/authenticated gateway invokes approved Dotpol tools. Dotpol **PydanticAI remains the AI research owner**. |
+| **Ollama** | P1 optional | Local model inference | User-managed loopback provider; no bundled model/cloud requirement |
+
+**OpenCloud and OpenClaw are separate projects.** Both are candidate services, not installed, copied or licence-cleared. For each exact release pin and audit subcomponents, network access, model/channel terms, permissions, resource costs, and local fallback. Full OpenCloud server is Apache-2.0 at the inspected root; its Vue web UI is AGPL-3.0. OpenClaw's inspected root licence is MIT, but extensions and downstream services require their own checks. Software can be free while its hosting, models and connectivity still have costs.
+
 **Not duplicates:** SQLite stores authoritative operational records; DuckDB calculates over analytical datasets; LanceDB indexes searchable content. Each has a different job. No second chat backend, search engine, map app, survey runtime or field database.
 
 **Fork plan:** [Vane is already forked](https://github.com/kiranvbiim-coder/Vane). **No further forks are required now.** Use upstream packages for the other selections; fork only if a reviewed modification truly cannot be made through published APIs. Finalize versions and exact component/asset licences when implementing. See [selected stack](SINGLE_STACK_SELECTION.md), [machine-readable owner list](../architecture/selected_stack.yml) and the [donor audit](DONOR_RESEARCH_2026-10-15.md) for supporting decisions.
@@ -50,8 +63,8 @@ The previous milestones numbered 0–12 remain **technical work packages and acc
 | **P1 — Foundation, AI and evidence-backed research** | 0, 1, 2, 3 | Architecture decisions, Next.js/FastAPI, local projects, authentication baseline, political ontology, ingestion, documents, local AI/BYOAI, retrieval, citations and saved artifacts | Clean local install; user imports public/synthetic data, asks a sourced question and reopens the project; works without paid services |
 | **P2 — Political data, election analytics, GIS and surveys** | 4, 5, 6 | Kepler/GeoPandas, DuckDB/Perspective, Statsmodels, versioned constituency and polling-site geometry, historical results, sampling, weighting, SurveyJS and ODK offline field pilot | One traceable dataset drives map, table, statistical analysis, survey and F1–F5 field pilot |
 | **P3 — Policy, media and advanced intelligence** | 7, 8, 9 | Reproducible simulation and calibration, public policy, governance, manifestos, legislation, media, narrative/event analysis and cited publications | Verified research workflows with source/version/uncertainty, no invented results |
-| **P4 — Hierarchical teams and election operations** | 10; operational continuation of 6 | Recursive admin/supervisor/sub-team hierarchy, scoped permissions, mobile tasks and reports, field sync, incident verification, aggregate authorized turnout observations and command centre | 1 admin → 3 coordinators → 10+ scoped staff scenario; offline retries, revocation, incident escalation and F6–F8 accepted |
-| **P5 — Automations, services and release** | 11, 12 | Durable monitoring, plugin/connector manifests, opt-in isolated services, security, backups, tests, licence inventory, performance and docs | Independently reproducible local and optional shared-mode installs; supported release gates pass |
+| **P4 — OpenCloud, hierarchical teams and election operations** | 10; operational continuation of 6 | Optional OpenCloud file-service integration; recursive admin/supervisor/sub-team hierarchy, scoped permissions, mobile tasks/reports, sync, incident verification, aggregate authorized turnout observations and command centre | 1 admin → 3 coordinators → 10+ scoped staff scenario; offline retries, revocation, incident escalation and F6–F8 accepted |
+| **P5 — OpenClaw, automations, services and release** | 11, 12 | Optional sandboxed OpenClaw channel/device gateway, monitoring, plugin manifests, opt-in isolated services, security, backups, tests, licence inventory, performance and docs | Independently reproducible local and optional shared-mode installs; supported release gates pass |
 
 **Scope invariant:** All political research, elections, psephology, GIS, statistics, policy, legislation, manifestos, public participation (optional), media, simulations, reporting, multilingual tooling, and hierarchical field operations remain in the complete vision. No individual inferred political-preference or persuasion targeting.
 
@@ -112,7 +125,7 @@ Approved station/microarea directory
 
 **Next vertical slice (P2 field pilot):** canonical station directory → supervisor assignment → one ODK offline facility form → verified status map → incident carryover. This is the first test of the **core field idea**; scale only after offline/security/privacy and role tests pass.
 
-**Later:** P2–P5 add elections, GIS, surveys, forecasting, policy/media, collaborative command centre and automation behind the same data/contracts.
+**Later:** P2–P5 add elections, GIS, surveys, forecasting, policy/media, OpenCloud-enabled authorized file collaboration, command centre and optional OpenClaw channel automations behind the same data/contracts.
 
 **Do not defer:** evidence IDs, access rules, provenance, no-network mode, sync idempotency and reproducible tests. **Do defer:** decorative features, extra donors, alternative frameworks, unused engines and unrelated forks.
 
@@ -121,7 +134,7 @@ Approved station/microarea directory
 A capability is **done** only when its code is integrated, tests pass, local install works, source/licence records exist and a real end-to-end use case passes. Documentation or a GitHub fork is **not** implementation.
 
 1. Follow accepted planning decisions [ADR-0001](DECISIONS/0001-foundation-module-ownership.md), [ADR-0002](DECISIONS/0002-one-stack-per-capability.md) and [ADR-0003](DECISIONS/0003-pre-election-microarea-operations.md); exact licenses, source permissions and component versions require review before code import.
-2. Use the [3–7-day preview execution checklist](RAPID_REUSE_SPRINT.md) and [MVP acceptance journeys](PRODUCT_MVP_AND_ACCEPTANCE.md); start only the selected first-release components.
+2. Work from the [five-phase agent checklist](ROADMAP.md), [machine-readable execution gates](../architecture/execution-plan.yml) and [MVP acceptance journeys](PRODUCT_MVP_AND_ACCEPTANCE.md); do not restart P1 PR #11. The older [rapid reuse sprint](RAPID_REUSE_SPRINT.md) is historical guidance, not a parallel master plan.
 3. Prepare lawful [field F1–F8 tests](PRE_ELECTION_MICROAREA_INTELLIGENCE.md) after the foundation and canonical station data exist.
 4. Open small coding PRs for foundation, data/research and web, then the field slice; require passing local and CI evidence before marking work complete.
 
