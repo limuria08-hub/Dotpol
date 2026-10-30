@@ -7,7 +7,7 @@ from typing import Literal
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, StrictInt
 from fastapi.responses import JSONResponse
 from dotpol_platform.store import Store, InvalidInput, NotFound, RevisionConflict
 from dotpol_platform.research import search, ai_research
@@ -36,7 +36,7 @@ class QuestionIn(BaseModel):
 
 class ArtifactRevisionIn(BaseModel):
     answer: str = Field(min_length=1, max_length=100000)
-    expected_revision: int = Field(ge=1)
+    expected_revision: StrictInt = Field(ge=1)
 
 
 def create_app(db_path: str | Path | None = None) -> FastAPI:
