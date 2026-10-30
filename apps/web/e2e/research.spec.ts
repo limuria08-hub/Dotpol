@@ -144,3 +144,44 @@ test('narrow viewport retains keyboard-accessible uploads without horizontal ove
     document.documentElement.scrollWidth <= window.innerWidth + 1,
   )).toBeTruthy();
 });
+
+
+test('required OpenClaw gateway status is explicit, opt-in and credential-free', async ({ page }) => {
+  let probeCount = 0;
+  let reply = {
+    component: 'openclaw', required_for_release: true, ready: false,
+    status: 'not-installed', detail: 'OpenClaw CLI is not installed. Required integration is incomplete.',
+  };
+  await page.route(`${API}/api/openclaw/status`, async route => {
+    probeCount += 1;
+    await route.fulfill({
+      status: 200, contentType: 'application/json',
+      body: JSON.stringify({ ...reply, secret: 'NEVER_SHOW_OPERATOR_TOKEN' }),
+    });
+  });
+  await page.goto('/');
+  const panel = page.getByRole('region', { name: 'Required OpenClaw gateway' });
+  await expect(panel).toBeVisible();
+  await expect(panel).toContainText('Required');
+  await expect(panel).toContainText('Local gateway not checked');
+  expect(probeCount).toBe(0); // Explicit probe only, not on initial page load.
+
+  await panel.getByRole('button', { name: 'Check gateway' }).click();
+  await expect(panel).toContainText('OpenClaw CLI is not installed');
+  expect(probeCount).toBe(1);
+  await expect(panel).not.toContainText('NEVER_SHOW_OPERATOR_TOKEN');
+
+  reply = {
+    component: 'openclaw', required_for_release: true, ready: true,
+    status: 'gateway-healthy', detail: 'OpenClaw health RPC succeeded. Channels and tools not yet verified.',
+  };
+  await panel.getByRole('button', { name: 'Check gateway' }).click();
+  await expect(panel).toContainText('OpenClaw health RPC succeeded');
+  await expect(panel).not.toContainText('NEVER_SHOW_OPERATOR_TOKEN');
+  expect(probeCount).toBe(2);
+
+  await page.route(`${API}/api/openclaw/status`, route => route.abort('failed'));
+  await panel.getByRole('button', { name: 'Check gateway' }).click();
+  await expect(panel).toContainText('Could not verify the local OpenClaw gateway');
+  await expect(panel.getByRole('button', { name: 'Check gateway' })).toBeEnabled();
+});
