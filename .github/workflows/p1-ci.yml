@@ -39,7 +39,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - run: npm ci --no-audit --no-fund
+      - run: npm install --no-audit --no-fund
+      - name: Export lockfile produced by GitHub npm install
+        run: |
+          node - <<'NODE'
+          const fs=require('node:fs');
+          const lock=fs.readFileSync('package-lock.json','utf8');
+          for(let i=0;i<lock.length;i+=4000) console.log('DOTPOL_LOCK_CHUNK '+JSON.stringify(lock.slice(i,i+4000)));
+          console.log('DOTPOL_LOCK_END');
+          NODE
       - run: npm run build
 
   search-index:
@@ -77,7 +85,7 @@ jobs:
       - name: Install local API and browser dependencies
         run: |
           python -m pip install -e '../../[test]'
-          npm ci --no-audit --no-fund
+          npm install --no-audit --no-fund
           npx playwright install --with-deps chromium
       - name: Build production web
         run: npm run build
