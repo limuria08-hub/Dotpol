@@ -171,3 +171,32 @@ DOTPOL_LIVE_OLLAMA_TEST=1 DOTPOL_AI_PROVIDER=ollama DOTPOL_AI_MODEL='<your-insta
 ```
 
 A successful run must list the configured model, actually invoke PydanticAI against the loopback Ollama API, and return a generated answer with valid saved-evidence references. Because the model response is nondeterministic, a rejected uncited/unfounded answer makes this acceptance test fail rather than silently switching to extractive mode. A real local-model pass has **not** been observed in the GitHub-hosted checks; do not mark the P1.05 live inference gate complete.
+
+
+## P1.08/UI-04 — Resizable conversation and canonical workbench
+
+The current **single Next.js application** uses the exact direct dependencies
+`react-resizable-panels@2.1.9` (MIT) and `lucide-react@0.469.0` (ISC, Feather
+attribution for applicable icon designs). See `apps/web/THIRD_PARTY_NOTICES.md`
+for the dependency ledger, source links and unclosed licence checks.
+
+A question submitted to the **existing** FastAPI `/api/projects/{id}/research`
+route creates one canonical SQLite Artifact. The conversation renders the persisted
+question/answer preview and **Open in workbench** opens that same ID. On desktop
+the conversation and artifact are resizable using a keyboard-operable handle;
+panel sizing is saved locally by `react-resizable-panels`. On narrow screens
+the same content stacks without creating a second editor or research store.
+Edits continue to use the original `PATCH` revision endpoint, source provenance,
+conflict protection and JSON export. The existing OpenClaw status remains separate
+and read-only; the UI does not copy gateway tokens or channel data.
+
+External BYOAI evidence consent is **consumed at submission time**, even if the
+provider request fails, and is cleared when editing the question or switching
+research modes/projects. Browser acceptance covers these privacy cases without
+contacting a real external model. A failed request never silently grants the next
+request permission.
+
+**Unfinished:** shadcn/Radix token adoption, assistant-ui custom REST adapter
+(only if compatible), Lexical editing, complete screen-reader/manual WCAG audit,
+full npm lockfile, package licence/SBOM review and real Ollama acceptance.
+Nothing about panel rendering certifies those unimplemented integrations.
