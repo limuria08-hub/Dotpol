@@ -230,3 +230,43 @@ test('OpenClaw security audit requires explicit click and keeps findings private
   await expect(panel).not.toContainText('HIDDEN-OPERATOR-TOKEN');
   expect(audits).toBe(2);
 });
+
+
+test('external model consent is one-request-only, including errors and changed questions', async ({ page }) => {
+  await page.route(`${API}/api/ai/status`, route => route.fulfill({
+    status: 200, contentType: 'application/json',
+    body: JSON.stringify({
+      status: 'ready-to-connect', configured: true,
+      provider: 'openai-compatible', model: 'synthetic-test',
+    }),
+  }));
+  const sentConsent: boolean[] = [];
+  await page.route(/\/api\/projects\/[^/]+\/research$/, async route => {
+    const body = route.request().postDataJSON();
+    sentConsent.push(body.allow_remote_evidence);
+    await route.fulfill({
+      status: 503, contentType: 'application/json',
+      body: JSON.stringify({ detail: 'Synthetic provider unavailable' }),
+    });
+  });
+  await makeProject(page, 'P1 consent regression ' + Date.now());
+  const question = page.getByRole('textbox', { name: 'Research question' });
+  const consent = page.getByRole('checkbox', { name: /Approve sending the retrieved source excerpts/ });
+  await question.fill('public budget');
+  await consent.check();
+  await page.getByRole('button', { name: 'Ask AI' }).click();
+  await expect(page.locator('p.status')).toContainText('Synthetic provider unavailable');
+  await expect(consent).not.toBeChecked();
+  expect(sentConsent).toEqual([true]);
+
+  // An edited question must invalidate an earlier affirmative permission.
+  await consent.check();
+  await question.fill('revised public budget');
+  await expect(consent).not.toBeChecked();
+  await expect(page.getByRole('button', { name: 'Ask AI' })).toBeDisabled();
+
+  await consent.check();
+  await page.getByRole('button', { name: 'Ask AI' }).click();
+  await expect(consent).not.toBeChecked();
+  expect(sentConsent).toEqual([true, true]);
+});
