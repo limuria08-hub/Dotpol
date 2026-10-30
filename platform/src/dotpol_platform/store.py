@@ -182,7 +182,7 @@ class Store:
 
     def save_artifact(self, project_id: str, question: str, answer: str, evidence: list[dict], *, generation_method: str = 'extractive', model_id: str | None = None) -> dict:
         self.project(project_id)
-        if not question.strip() or len(question) > 2000 or len(answer) > 100000:
+        if not question.strip() or len(question) > 2000 or len(answer.encode('utf-8')) > 100000:
             raise InvalidInput('Artifact question or answer length is invalid')
         if generation_method not in {'extractive','ai-synthesis','no-evidence'}:
             raise InvalidInput('Invalid generation method')
@@ -223,13 +223,18 @@ class Store:
         edited_at = now()
         with self._connect() as db:
             current = db.execute(
-                'SELECT revision FROM artifacts WHERE id=? AND project_id=?',
+                'SELECT revision, answer FROM artifacts WHERE id=? AND project_id=?',
                 (artifact_id, project_id)
             ).fetchone()
             if current is None:
                 raise NotFound('Artifact not found')
             if current['revision'] != expected_revision:
                 raise RevisionConflict('Artifact was changed elsewhere; reload before saving')
+            # Saving unchanged text is not a new edit or artificial history entry.
+            if current['answer'] == answer:
+                existing = db.execute('SELECT * FROM artifacts WHERE id=? AND project_id=?',
+                                      (artifact_id, project_id)).fetchone()
+                return self._artifact(existing)
             result = db.execute(
                 """UPDATE artifacts SET answer=?, revision=revision+1,
                    updated_at=?, last_editor='human'
