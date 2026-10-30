@@ -17,6 +17,7 @@ type ArtifactRevision={revision:number,answer:string,saved_at:string,origin:'gen
 type ModelStatus={status:string,configured:boolean,provider?:string,model?:string|null,message:string};
 type OpenClawStatus={component:'openclaw',required_for_release:boolean,ready:boolean,status:string,detail:string};
 type OpenClawAudit={component:'openclaw',required_for_release:boolean,audit_performed:boolean,review_required:boolean,status:string,detail:string,critical_count?:number,warning_count?:number,suppressed_count?:number};
+type OpenClawRpc={component:'openclaw',required_for_release:boolean,rpc_verified:boolean,status:string,detail:string};
 async function api<T>(path:string,method='GET',body?:unknown):Promise<T> {
  const response=await fetch(API+path,{method,headers:{'Content-Type':'application/json','X-Dotpol-Local':'1'},body:body?JSON.stringify(body):undefined,cache:'no-store'});
  const data=await response.json();
@@ -46,6 +47,8 @@ export default function Home(){
  const [checkingOpenClaw,setCheckingOpenClaw]=useState(false);
  const [openClawAudit,setOpenClawAudit]=useState<OpenClawAudit|null>(null);
  const [checkingOpenClawAudit,setCheckingOpenClawAudit]=useState(false);
+ const [openClawRpc,setOpenClawRpc]=useState<OpenClawRpc|null>(null);
+ const [checkingOpenClawRpc,setCheckingOpenClawRpc]=useState(false);
  async function refresh(){try{
   const list=await api<Project[]>('/api/projects');setProjects(list);
   setMessage('Local research engine connected.');
@@ -108,6 +111,19 @@ export default function Home(){
     detail:'Could not complete the local OpenClaw security audit.'});
   }finally{setCheckingOpenClawAudit(false)}
  }
+ async function checkOpenClawRpc(){
+  if(checkingOpenClawRpc)return;
+  setCheckingOpenClawRpc(true);
+  try{
+   const state=await api<OpenClawRpc>('/api/openclaw/rpc-check','POST');
+   setOpenClawRpc(state);
+  }catch{
+   // Avoid exposing Gateway RPC payloads, credentials or server traces.
+   setOpenClawRpc({component:'openclaw',required_for_release:true,
+    rpc_verified:false,status:'rpc-unavailable',
+    detail:'Could not verify the authenticated OpenClaw connection.'});
+  }finally{setCheckingOpenClawRpc(false)}
+ }
  async function openArtifact(a:Artifact){
   setSelected(a);setDraft(a.answer);setEditing(false);setRevisions([]);
   if(!project)return;
@@ -144,6 +160,12 @@ export default function Home(){
     <button type="button" disabled={checkingOpenClaw} onClick={()=>{void checkOpenClaw()}}>
      {checkingOpenClaw?'Checking…':'Check gateway'}
     </button>
+    <button type="button" disabled={checkingOpenClawRpc} onClick={()=>{void checkOpenClawRpc()}}>
+     {checkingOpenClawRpc?'Connecting…':'Verify connection'}
+    </button>
+    <p role="status" aria-live="polite" className={openClawRpc?.rpc_verified?'gateway-ready':'gateway-detail'}>
+     {checkingOpenClawRpc?'Checking authenticated Gateway RPC…':openClawRpc?.detail||'Authenticated connection not checked'}
+    </p>
     <button type="button" disabled={checkingOpenClawAudit} onClick={()=>{void runOpenClawAudit()}}>
      {checkingOpenClawAudit?'Auditing…':'Security audit'}
     </button>
