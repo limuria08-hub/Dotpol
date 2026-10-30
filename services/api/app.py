@@ -9,7 +9,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from fastapi.responses import JSONResponse
-from dotpol_platform.store import Store, InvalidInput, NotFound
+from dotpol_platform.store import Store, InvalidInput, NotFound, RevisionConflict
 from dotpol_platform.research import search, ai_research
 from dotpol_platform.ai import (status as model_status, probe_local_model, AIUnavailable, UngroundedAnswer, RemoteEvidenceConsentRequired)
 
@@ -32,6 +32,11 @@ class QuestionIn(BaseModel):
     question: str = Field(min_length=1,max_length=2000)
     mode: Literal['auto','ai','extractive'] = 'auto'
     allow_remote_evidence: bool = False
+
+
+class ArtifactRevisionIn(BaseModel):
+    answer: str = Field(min_length=1, max_length=100000)
+    expected_revision: int = Field(ge=1)
 
 
 def create_app(db_path: str | Path | None = None) -> FastAPI:
@@ -64,6 +69,10 @@ def create_app(db_path: str | Path | None = None) -> FastAPI:
     async def missing(request,exc):
         from fastapi.responses import JSONResponse
         return JSONResponse({'detail':str(exc)},status_code=404)
+
+    @app.exception_handler(RevisionConflict)
+    async def revision_conflict(request, exc):
+        return JSONResponse({'detail': str(exc), 'status': 'revision-conflict'}, status_code=409)
 
     @app.exception_handler(AIUnavailable)
     async def provider_unavailable(request, exc):
@@ -133,6 +142,14 @@ def create_app(db_path: str | Path | None = None) -> FastAPI:
     @app.get('/api/projects/{project_id}/artifacts/{artifact_id}')
     def artifact(project_id:str,artifact_id:str):
         return store.artifact(project_id,artifact_id)
+
+    @app.get('/api/projects/{project_id}/artifacts/{artifact_id}/revisions')
+    def artifact_revisions(project_id:str, artifact_id:str):
+        return store.artifact_revisions(project_id, artifact_id)
+
+    @app.post('/api/projects/{project_id}/artifacts/{artifact_id}/revisions')
+    def revise_artifact(project_id:str, artifact_id:str, body:ArtifactRevisionIn):
+        return store.revise_artifact(project_id, artifact_id, body.answer, body.expected_revision)
 
     return app
 
