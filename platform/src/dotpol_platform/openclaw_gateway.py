@@ -55,3 +55,58 @@ def probe_openclaw() -> dict:
                 "detail": "OpenClaw health RPC succeeded. Channels, permissions and tools require separate acceptance tests."}
     return {**result, "status": "unhealthy",
             "detail": "OpenClaw Gateway reported an unsuccessful health check."}
+
+
+def audit_openclaw_security() -> dict:
+    """Explicit, read-only baseline audit. Never expose findings or CLI output.
+
+    This is NOT a security clearance: deep/live checks, pairing and per-team
+    authorization require their own evidence in P4/P5.
+    """
+    base = {"component": "openclaw", "required_for_release": True,
+            "audit_performed": False, "review_required": True,
+            "status": "not-installed"}
+    executable = shutil.which("openclaw")
+    if not executable:
+        return {**base, "detail": "OpenClaw must be installed before its configuration can be audited."}
+    try:
+        completed = subprocess.run(
+            [executable, "security", "audit", "--json"],
+            check=False, capture_output=True, text=True, timeout=15,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return {**base, "status": "audit-unavailable",
+                "detail": "Local OpenClaw security audit could not finish."}
+    if completed.returncode != 0 or len(completed.stdout) > 2_000_000:
+        return {**base, "status": "audit-unavailable",
+                "detail": "OpenClaw security audit failed. Review it locally in the terminal."}
+    try:
+        report = json.loads(completed.stdout)
+    except (ValueError, TypeError):
+        return {**base, "status": "invalid-response",
+                "detail": "OpenClaw security audit returned an invalid report."}
+    if not isinstance(report, dict) or not isinstance(report.get("findings"), list):
+        return {**base, "status": "invalid-response",
+                "detail": "OpenClaw security audit report did not match the expected schema."}
+    summary = report.get("summary")
+    if not isinstance(summary, dict):
+        return {**base, "status": "invalid-response",
+                "detail": "OpenClaw security audit report did not include a valid summary."}
+    counts = {key: summary.get(key) for key in ("critical", "warn", "info")}
+    if any(type(value) is not int or value < 0 for value in counts.values()):
+        return {**base, "status": "invalid-response",
+                "detail": "OpenClaw security audit counts were invalid."}
+    suppressed = report.get("suppressedFindings", [])
+    if not isinstance(suppressed, list):
+        return {**base, "status": "invalid-response",
+                "detail": "OpenClaw security audit suppression data was invalid."}
+    review_required = bool(counts["critical"] or counts["warn"] or suppressed)
+    return {
+        **base, "audit_performed": True, "review_required": review_required,
+        "status": "findings-require-review" if review_required else "baseline-no-findings",
+        "critical_count": counts["critical"], "warning_count": counts["warn"],
+        "info_count": counts["info"], "suppressed_count": len(suppressed),
+        "detail": ("Review OpenClaw's full local security audit before enabling tools or channels."
+                   if review_required else
+                   "No warnings in the basic OpenClaw audit; deep checks, pairing and tool permissions remain unverified."),
+    }
