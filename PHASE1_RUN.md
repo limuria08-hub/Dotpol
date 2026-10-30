@@ -226,3 +226,48 @@ PYTHONPATH=platform/src:services/api pytest tests/test_openclaw_rpc.py -q
 
 A passing **real** RPC test demonstrates the installed OpenClaw CLI can complete an authenticated status request with its configured gateway. It does **not** grant per-organization role isolation, approve OpenClaw tools, establish channel pairing, demonstrate device commands, or prove a secure production deployment. Those remain P4/P5 gates. In particular, the CLI's identity may be an **operator credential**; do not forward user-submitted method names or data to the CLI and do not expose its credentials to the browser.
 
+
+
+## P1.08/UI-02 — Shared Radix/Tailwind controls with reproducible install
+
+The existing Next.js shell now uses a **small project-owned shadcn-style
+component layer** rather than adding a second UI application. Tailwind CSS v4
+runs through a local PostCSS plugin. Radix `react-slot`, `react-label`,
+and `react-dialog` back accessible Button, Label and source-provenance
+controls; Input is a local shared React component. The project, file-import,
+research and workbench flows still use the **same FastAPI/SQLite artifact and
+source IDs**. The source-provenance dialog displays the original canonical
+source ID, complete SHA-256, origin and status and closes via Escape with
+keyboard focus restored. No cloud assets, UI data store, new model service or
+hosted component provider are introduced.
+
+**Reproducible web dependency workflow:**
+
+```bash
+cd apps/web
+npm ci --no-audit --no-fund
+npm run build
+# With local API + web running, Chromium installed:
+npm run test:e2e
+```
+
+The checked-in `apps/web/package-lock.json` is generated from the successful
+Node 22 GitHub Actions install; both web and Chromium CI jobs use `npm ci`
+rather than floating npm installs. This pins the resolved dependency graph,
+but it does **not** replace a full transitive licence, SBOM or vulnerability
+audit. See `apps/web/THIRD_PARTY_NOTICES.md` for the installed subset and
+upstream licence references.
+
+**UI-03 boundary:** assistant-ui remains an **uninstalled candidate** until
+its external/local REST runtime is validated against the **existing**
+`POST /api/projects/{id}/research` contract. No Assistant Cloud,
+unreviewed model calls or duplicate thread database will be introduced.
+The current conversation already previews saved artifacts with their exact
+canonical IDs; this is the working fallback, not evidence that assistant-ui
+has been assimilated. Retain no-model, request-scoped remote consent and
+required OpenClaw controls during any future renderer evaluation.
+
+**Still open:** complete Radix/shadcn navigational coverage, manual WCAG
+screen-reader/keyboard audits, assistant-ui compatibility, real local Ollama
+and installed OpenClaw integration. A passing browser fixture verifies the
+specified journey only.
