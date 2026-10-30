@@ -39,6 +39,7 @@ class InvalidInput(Exception):
 
 
 class RevisionConflict(Exception):
+    """Stale artifact edit; preserves other edits instead of overwriting."""
     pass
 
 
@@ -64,24 +65,24 @@ class Store:
                     id TEXT PRIMARY KEY, project_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
                     name TEXT NOT NULL, kind TEXT NOT NULL, origin TEXT NOT NULL,
                     sha256 TEXT NOT NULL, content TEXT NOT NULL, imported_at TEXT NOT NULL,
-                    status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active','withdrawn'))
+                    status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active','withdrawn')),
+                file_sha256 TEXT, extraction_method TEXT
                 );
                 CREATE INDEX IF NOT EXISTS idx_sources_project ON sources(project_id);
                 CREATE TABLE IF NOT EXISTS artifacts (
                     id TEXT PRIMARY KEY, project_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
                     question TEXT NOT NULL, answer TEXT NOT NULL, evidence_json TEXT NOT NULL,
                     created_at TEXT NOT NULL, generation_method TEXT NOT NULL DEFAULT 'extractive', model_id TEXT,
-                    revision INTEGER NOT NULL DEFAULT 1, updated_at TEXT, last_editor TEXT NOT NULL DEFAULT 'original'
-                );
-                CREATE TABLE IF NOT EXISTS artifact_revisions (
-                    artifact_id TEXT NOT NULL REFERENCES artifacts(id) ON DELETE CASCADE,
-                    revision INTEGER NOT NULL, answer TEXT NOT NULL, edited_at TEXT NOT NULL,
-                    editor_kind TEXT NOT NULL CHECK(editor_kind IN ('original', 'human')),
-                    PRIMARY KEY (artifact_id, revision)
+                    revision INTEGER NOT NULL DEFAULT 1, updated_at TEXT
                 );
             """)
         # Migrate previously-created local P1 databases without destroying data.
         with self._connect() as db:
+            source_columns = {row['name'] for row in db.execute('PRAGMA table_info(sources)')}
+            if 'file_sha256' not in source_columns:
+                db.execute('ALTER TABLE sources ADD COLUMN file_sha256 TEXT')
+            if 'extraction_method' not in source_columns:
+                db.execute('ALTER TABLE sources ADD COLUMN extraction_method TEXT')
             columns = {row['name'] for row in db.execute('PRAGMA table_info(artifacts)')}
             if 'generation_method' not in columns:
                 db.execute("ALTER TABLE artifacts ADD COLUMN generation_method TEXT NOT NULL DEFAULT 'extractive'")
@@ -91,13 +92,19 @@ class Store:
                 db.execute("ALTER TABLE artifacts ADD COLUMN revision INTEGER NOT NULL DEFAULT 1")
             if 'updated_at' not in columns:
                 db.execute("ALTER TABLE artifacts ADD COLUMN updated_at TEXT")
-            if 'last_editor' not in columns:
-                db.execute("ALTER TABLE artifacts ADD COLUMN last_editor TEXT NOT NULL DEFAULT 'original'")
-            db.execute("UPDATE artifacts SET updated_at=created_at WHERE updated_at IS NULL")
-            # Preserve pre-upgrade artifacts as revision one without resetting existing edits.
+            db.execute("""CREATE TABLE IF NOT EXISTS artifact_revisions (
+                artifact_id TEXT NOT NULL REFERENCES artifacts(id) ON DELETE CASCADE,
+                revision INTEGER NOT NULL,
+                answer TEXT NOT NULL,
+                saved_at TEXT NOT NULL,
+                origin TEXT NOT NULL CHECK(origin IN ('generated','user-edited')),
+                PRIMARY KEY (artifact_id, revision)
+            )""")
+            # Non-destructive, repeatable migration of existing generated artifacts.
             db.execute("""INSERT OR IGNORE INTO artifact_revisions
-                (artifact_id, revision, answer, edited_at, editor_kind)
-                SELECT id, revision, answer, COALESCE(updated_at, created_at), last_editor FROM artifacts""")
+                (artifact_id,revision,answer,saved_at,origin)
+                SELECT id,1,answer,created_at,'generated' FROM artifacts""")
+            db.execute("UPDATE artifacts SET updated_at=created_at WHERE updated_at IS NULL")
 
     def create_project(self, title: str) -> dict:
         title = title.strip()
@@ -125,13 +132,13 @@ class Store:
         if not valid_id(value):
             raise InvalidInput('Invalid identifier')
 
-    def import_source(self, project_id: str, name: str, kind: str, content: str, origin: str = 'user-upload') -> dict:
+    def import_source(self, project_id: str, name: str, kind: str, content: str, origin: str = 'user-upload', *, file_sha256: str | None = None, extraction_method: str | None = None) -> dict:
         self.project(project_id)
         name = name.strip()
         if not name or len(name) > MAX_TITLE:
             raise InvalidInput('Source name must be 1–180 characters')
-        if kind not in {'txt', 'csv', 'json'}:
-            raise InvalidInput('Accepted formats: txt, csv, json')
+        if kind not in {'txt', 'csv', 'json', 'pdf', 'docx'}:
+            raise InvalidInput('Accepted formats: txt, csv, json, pdf, docx')
         if not isinstance(content, str) or not content.strip() or len(content.encode('utf-8')) > MAX_SOURCE_BYTES:
             raise InvalidInput('Source must contain at most 1 MiB of nonempty UTF-8 text')
         if origin not in {'user-upload', 'synthetic-demo'}:
@@ -148,15 +155,18 @@ class Store:
                     raise ValueError('CSV is empty')
             except (csv.Error, ValueError) as exc:
                 raise InvalidInput('CSV source is malformed') from exc
+        if kind in {'pdf', 'docx'} and (not file_sha256 or not extraction_method):
+            raise InvalidInput('Documents require the original file hash and extraction method')
         row = {
             'id': identifier(), 'project_id': project_id, 'name': name, 'kind': kind,
             'origin': origin, 'sha256': hashlib.sha256(content.encode('utf-8')).hexdigest(),
-            'content': content, 'imported_at': now(), 'status': 'active'
+            'content': content, 'imported_at': now(), 'status': 'active',
+            'file_sha256': file_sha256, 'extraction_method': extraction_method
         }
         with self._connect() as db:
             db.execute('''INSERT INTO sources
-                (id,project_id,name,kind,origin,sha256,content,imported_at,status)
-                VALUES (:id,:project_id,:name,:kind,:origin,:sha256,:content,:imported_at,:status)''', row)
+                (id,project_id,name,kind,origin,sha256,content,imported_at,status,file_sha256,extraction_method)
+                VALUES (:id,:project_id,:name,:kind,:origin,:sha256,:content,:imported_at,:status,:file_sha256,:extraction_method)''', row)
         return {k:v for k,v in row.items() if k!='content'}
 
     def sources(self, project_id: str) -> list[dict]:
@@ -182,7 +192,7 @@ class Store:
 
     def save_artifact(self, project_id: str, question: str, answer: str, evidence: list[dict], *, generation_method: str = 'extractive', model_id: str | None = None) -> dict:
         self.project(project_id)
-        if not question.strip() or len(question) > 2000 or len(answer.encode('utf-8')) > 100000:
+        if not question.strip() or len(question) > 2000 or len(answer) > 100000:
             raise InvalidInput('Artifact question or answer length is invalid')
         if generation_method not in {'extractive','ai-synthesis','no-evidence'}:
             raise InvalidInput('Invalid generation method')
@@ -198,73 +208,19 @@ class Store:
                 raise InvalidInput('Artifact evidence does not match source content')
         row = {'id': identifier(), 'project_id': project_id, 'question': question,
                'answer': answer, 'evidence_json': json.dumps(evidence), 'created_at': now(),
-               'generation_method': generation_method, 'model_id': model_id,
-               'revision': 1, 'updated_at': now(), 'last_editor': 'original'}
+               'generation_method': generation_method, 'model_id': model_id, 'revision': 1, 'updated_at': now()}
         with self._connect() as db:
-            db.execute('''INSERT INTO artifacts
-                      (id,project_id,question,answer,evidence_json,created_at,generation_method,model_id,revision,updated_at,last_editor)
-                      VALUES (:id,:project_id,:question,:answer,:evidence_json,:created_at,:generation_method,:model_id,
-                              :revision,:updated_at,:last_editor)''', row)
-            db.execute('''INSERT INTO artifact_revisions
-                      (artifact_id,revision,answer,edited_at,editor_kind)
-                      VALUES (:id,:revision,:answer,:updated_at,:last_editor)''', row)
+            db.execute('''INSERT INTO artifacts (id,project_id,question,answer,evidence_json,created_at,generation_method,model_id,revision,updated_at)
+                      VALUES (:id,:project_id,:question,:answer,:evidence_json,:created_at,:generation_method,:model_id,:revision,:updated_at)''', row)
+            db.execute('''INSERT INTO artifact_revisions (artifact_id,revision,answer,saved_at,origin)
+                       VALUES (?,1,?,?,'generated')''', (row['id'],answer,row['created_at']))
         return self._artifact(row)
-
-    def revise_artifact(self, project_id: str, artifact_id: str, answer: str, expected_revision: int) -> dict:
-        """Save a human revision under the same artifact ID, retaining the original
-        generation metadata and evidence. Revision conflicts never overwrite newer work.
-        """
-        self.project(project_id)
-        self._check_id(artifact_id)
-        if not isinstance(answer, str) or not answer.strip() or len(answer.encode('utf-8')) > 100000:
-            raise InvalidInput('Edited answer must contain 1–100000 UTF-8 bytes')
-        if not isinstance(expected_revision, int) or isinstance(expected_revision, bool) or expected_revision < 1:
-            raise InvalidInput('Expected revision must be a positive integer')
-        edited_at = now()
-        with self._connect() as db:
-            current = db.execute(
-                'SELECT revision, answer FROM artifacts WHERE id=? AND project_id=?',
-                (artifact_id, project_id)
-            ).fetchone()
-            if current is None:
-                raise NotFound('Artifact not found')
-            if current['revision'] != expected_revision:
-                raise RevisionConflict('Artifact was changed elsewhere; reload before saving')
-            # Saving unchanged text is not a new edit or artificial history entry.
-            if current['answer'] == answer:
-                existing = db.execute('SELECT * FROM artifacts WHERE id=? AND project_id=?',
-                                      (artifact_id, project_id)).fetchone()
-                return self._artifact(existing)
-            result = db.execute(
-                """UPDATE artifacts SET answer=?, revision=revision+1,
-                   updated_at=?, last_editor='human'
-                   WHERE id=? AND project_id=? AND revision=?""",
-                (answer, edited_at, artifact_id, project_id, expected_revision)
-            )
-            if result.rowcount != 1:
-                raise RevisionConflict('Artifact was changed elsewhere; reload before saving')
-            db.execute(
-                """INSERT INTO artifact_revisions
-                   (artifact_id,revision,answer,edited_at,editor_kind)
-                   VALUES (?,?,?,?,?)""",
-                (artifact_id, expected_revision + 1, answer, edited_at, 'human')
-            )
-            row = db.execute('SELECT * FROM artifacts WHERE id=?', (artifact_id,)).fetchone()
-        return self._artifact(row)
-
-    def artifact_revisions(self, project_id: str, artifact_id: str) -> list[dict]:
-        self.artifact(project_id, artifact_id)
-        with self._connect() as db:
-            return [dict(row) for row in db.execute(
-                """SELECT revision, answer, edited_at, editor_kind
-                   FROM artifact_revisions WHERE artifact_id=? ORDER BY revision""",
-                (artifact_id,)
-            )]
 
     @staticmethod
     def _artifact(row):
         out=dict(row)
         out['evidence']=json.loads(out.pop('evidence_json'))
+        out['review_status']='user-edited-unverified' if out['revision'] > 1 else 'source-linked-unreviewed'
         return out
 
     def artifacts(self, project_id: str) -> list[dict]:
@@ -281,3 +237,41 @@ class Store:
         if row is None:
             raise NotFound('Artifact not found')
         return self._artifact(row)
+
+    def revise_artifact(self, project_id: str, artifact_id: str, answer: str, expected_revision: int) -> dict:
+        """Optimistic concurrency; edit answer only, never fabricated source/evidence refs.
+
+        Human edits are explicitly marked unverified while the original AI/source
+        generation metadata and complete revision history remain immutable.
+        """
+        self.project(project_id)
+        self._check_id(artifact_id)
+        if not isinstance(answer, str) or not answer.strip() or len(answer.encode('utf-8')) > 100000:
+            raise InvalidInput('Artifact answer must be 1–100000 UTF-8 bytes')
+        if type(expected_revision) is not int or expected_revision < 1:
+            raise InvalidInput('Expected revision must be a positive integer')
+        with self._connect() as db:
+            db.execute('BEGIN IMMEDIATE')
+            current=db.execute('SELECT * FROM artifacts WHERE id=? AND project_id=?', (artifact_id,project_id)).fetchone()
+            if current is None:
+                raise NotFound('Artifact not found')
+            if current['revision'] != expected_revision:
+                raise RevisionConflict('Artifact was modified by another edit. Reload before saving.')
+            # Avoid artificial new history entries for unchanged content.
+            if current['answer'] == answer:
+                return self._artifact(current)
+            revision = expected_revision + 1
+            saved_at = now()
+            db.execute("""UPDATE artifacts SET answer=?,revision=?,updated_at=?
+                          WHERE id=? AND project_id=?""", (answer,revision,saved_at,artifact_id,project_id))
+            db.execute("""INSERT INTO artifact_revisions(artifact_id,revision,answer,saved_at,origin)
+                          VALUES (?,?,?,?,'user-edited')""", (artifact_id,revision,answer,saved_at))
+            updated=db.execute('SELECT * FROM artifacts WHERE id=? AND project_id=?', (artifact_id,project_id)).fetchone()
+        return self._artifact(updated)
+
+    def artifact_history(self, project_id: str, artifact_id: str) -> list[dict]:
+        self.artifact(project_id,artifact_id)
+        with self._connect() as db:
+            return [dict(r) for r in db.execute(
+                'SELECT revision,answer,saved_at,origin FROM artifact_revisions WHERE artifact_id=? ORDER BY revision',
+                (artifact_id,))]

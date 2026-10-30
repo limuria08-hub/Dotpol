@@ -39,7 +39,7 @@ npm install
 npm run dev
 ```
 
-Open `http://127.0.0.1:3000` or `http://localhost:3000`. Create a project, import a source and ask about a phrase inside it. Open a saved artifact, inspect line/source hash, edit its text and save a new revision under the same artifact ID, review revision history, or export JSON. Human edits retain original evidence references but are explicitly labelled as human-authored; unchanged citations do not prove new claims. Files are sent only to the local FastAPI process. Maximum input size is 1 MiB per file for this preview. Do not expose the service beyond localhost; no organization authentication is implemented.
+Open `http://127.0.0.1:3000` or `http://localhost:3000`. Create a project, import a source and ask about a phrase inside it. Open a saved artifact, inspect line/source hash and export JSON. Files are sent only to the local FastAPI process. Maximum input size is 1 MiB per file for this preview. Do not expose the service beyond localhost; no organization authentication is implemented.
 
 ## Test
 
@@ -50,35 +50,12 @@ cd apps/web && npm run build
 
 The browser build requires dependencies to have been installed; not yet verified locally because npm dependencies are unavailable here. CI will attempt the build in GitHub Actions.
 
-## P1 browser acceptance (P1.12)
-
-The CI browser suite exercises the **production Next.js build** against the localhost FastAPI gateway with a temporary SQLite data directory. It uses synthetic inputs, a deliberately unconfigured Ollama model, and literal local search, so no hosted service, model download, or personal data is needed.
-
-From a clean checkout, start the API and web with the commands above, then:
-
-```bash
-cd apps/web
-npm install
-npx playwright install chromium
-npm run test:e2e
-```
-
-GitHub Actions also installs Chromium OS dependencies, builds the app and runs `npm run test:e2e` as the `browser-e2e` job. Current checks cover importing a source, evidence-only research, same-ID human revision and reload, no-evidence abstention, cross-tab stale-revision rejection, and narrow-viewport overflow. Playwright traces and screenshots are collected on failures, not committed. These tests do **not** certify a real AI model, production authentication, or complete accessibility; those remain separate acceptance gates.
-
 ## P1 checklist status
 
 - **Implemented, locally tested:** SQLite persistence, import validation, scoped source records, SHA-256 lineage, exact-evidence citation checks, deterministic retrieval, no-evidence state, source withdrawal, API origin/host/mutation checks.
-- **Implemented, not yet browser-tested:** Next.js research workspace, file import, saved artifacts, same-ID editing with revision history and JSON export.
+- **Implemented, not yet browser-tested:** Next.js research workspace, file import, saved artifacts and JSON export.
 - **Implemented with mocked AI service tests (live model not verified):** PydanticAI local Ollama and opt-in HTTPS BYOAI adapter, source-grounded AI synthesis path, citation validation, model metadata and persistence, no-model fallback.
 - **Not implemented:** LanceDB hybrid retrieval, Docling PDF parsing, organization login, independent OS release and comprehensive security review. A live model run and browser build remain verification gates. Do not mark P1 verified or released.
-
-## Artifact editing and revision safety (P1.09)
-
-Artifacts retain a stable ID in chat, saved research and the workbench. The local API supports:
-- `GET /api/projects/{project_id}/artifacts/{artifact_id}/revisions` — original answer plus dated human revisions.
-- `POST /api/projects/{project_id}/artifacts/{artifact_id}/revisions` — `{"answer":"...","expected_revision":1}` with the required `X-Dotpol-Local: 1` header.
-
-A matching revision increments the version without changing the artifact ID, original source references, generation method or model provenance. A stale edit returns **409 revision-conflict**; invalid text/versions return 422, and cross-project artifact references return 404. Old SQLite databases are migrated in place and legacy artifacts backfilled as revision 1. This is single-user localhost editing, **not** multiuser permissions, a semantic citation checker or an externally audited collaborative editor. A user must re-check evidence after modifying content. Python API/migration regression tests cover this behavior; real-browser E2E acceptance is still outstanding.
 
 ## Trust boundaries
 
@@ -95,3 +72,32 @@ Data and citations are linked to original text but source correctness is not gua
 ## Optional LanceDB keyword index (next P1 retrieval integration)
 
 The normal local-only retrieval path uses verified project source lines. To enable the selected LanceDB full-text engine, install `python -m pip install -e '.[test,search]'` and set `DOTPOL_SEARCH_ENGINE=auto` (default) or `lancedb`. Index data is derived under `DOTPOL_DATA_DIR/search-index/<project>`; SQLite remains canonical. A missing or failed index is reported as a degraded literal scan, never falsely as indexed retrieval. Every index hit is checked against current source bytes, project ID, line number, SHA-256 and active/withdrawn state. This provides **keyword FTS**, not semantic embeddings or hybrid vector retrieval yet. Run `pytest tests/test_search_index.py -q` with the optional package installed to verify real index rebuild and withdrawal.
+
+## P1.03 Optional Docling document import (2026-10-30)
+
+The existing **one local gateway** additionally accepts PDF/DOCX through
+`POST /api/projects/{project_id}/documents` when the optional dependency is installed:
+
+```bash
+python -m pip install -e '.[documents]'
+```
+
+The existing UI sends an in-memory base64 payload (maximum **1 MiB** original
+binary). The gateway uses Docling's `DocumentStream` converter; PDFs use
+`NativePdfFormatOption` for **model-free, non-OCR extraction**, avoiding implicit
+model downloads. Scanned/image-only PDFs are not supported in this preview.
+
+Document sources preserve **two different hashes**: `file_sha256` for the exact
+original uploaded binary and `sha256` for the extracted UTF-8 markdown that
+search/citations actually reference. `extraction_method` records the parser.
+The DB migration adds nullable metadata columns; older TXT/CSV/JSON sources
+retain the same behavior. Import rejects invalid base64, mismatched signatures,
+path-like names, empty extracted content and oversized output without saving a
+source. Missing Docling returns a truthful 503 rather than an unsupported claim.
+
+**Verification boundary:** automated tests exercise the importer contract through
+an in-process Docling stand-in, NOT a live Docling PDF/DOCX conversion. The real
+Docling dependency, production Next.js build, real Ollama inference, OCR, hybrid
+semantic retrieval and independent clean-install still need verification.
+Run `python -m pytest -q` to exercise the P1 core tests. This opt-in parser is
+**not** a mandatory service for local AI research.

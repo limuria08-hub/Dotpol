@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+from starlette.concurrency import run_in_threadpool
 from typing import Literal
 
 from fastapi import FastAPI, Request
@@ -10,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, StrictInt
 from fastapi.responses import JSONResponse
 from dotpol_platform.store import Store, InvalidInput, NotFound, RevisionConflict
+from dotpol_platform.documents import extract_document, DocumentEngineUnavailable
 from dotpol_platform.research import search, ai_research
 from dotpol_platform.ai import (status as model_status, probe_local_model, AIUnavailable, UngroundedAnswer, RemoteEvidenceConsentRequired)
 
@@ -28,10 +30,10 @@ class SourceIn(BaseModel):
     origin: Literal['user-upload','synthetic-demo']='user-upload'
 
 
-class QuestionIn(BaseModel):
-    question: str = Field(min_length=1,max_length=2000)
-    mode: Literal['auto','ai','extractive'] = 'auto'
-    allow_remote_evidence: bool = False
+class DocumentIn(BaseModel):
+    name: str = Field(min_length=1, max_length=180)
+    kind: Literal['pdf', 'docx']
+    content_base64: str = Field(min_length=1, max_length=1398110)
 
 
 class ArtifactRevisionIn(BaseModel):
@@ -39,11 +41,17 @@ class ArtifactRevisionIn(BaseModel):
     expected_revision: StrictInt = Field(ge=1)
 
 
+class QuestionIn(BaseModel):
+    question: str = Field(min_length=1,max_length=2000)
+    mode: Literal['auto','ai','extractive'] = 'auto'
+    allow_remote_evidence: bool = False
+
+
 def create_app(db_path: str | Path | None = None) -> FastAPI:
     store=Store(db_path or DB_PATH)
     app=FastAPI(title='Dotpol Local Gateway',version='0.1.0')
     app.add_middleware(CORSMiddleware,allow_origins=sorted(ALLOWED_ORIGINS),allow_credentials=False,
-                       allow_methods=['GET','POST'],allow_headers=['X-Dotpol-Local','Content-Type'])
+                       allow_methods=['GET','POST','PATCH'],allow_headers=['X-Dotpol-Local','Content-Type'])
 
     @app.middleware('http')
     async def localhost_only(request:Request,call_next):
@@ -71,8 +79,12 @@ def create_app(db_path: str | Path | None = None) -> FastAPI:
         return JSONResponse({'detail':str(exc)},status_code=404)
 
     @app.exception_handler(RevisionConflict)
-    async def revision_conflict(request, exc):
-        return JSONResponse({'detail': str(exc), 'status': 'revision-conflict'}, status_code=409)
+    async def edit_conflict(request,exc):
+        return JSONResponse({'detail':str(exc),'status':'revision-conflict'},status_code=409)
+
+    @app.exception_handler(DocumentEngineUnavailable)
+    async def docling_missing(request, exc):
+        return JSONResponse({'detail':str(exc),'status':'document-engine-unavailable'},status_code=503)
 
     @app.exception_handler(AIUnavailable)
     async def provider_unavailable(request, exc):
@@ -118,6 +130,14 @@ def create_app(db_path: str | Path | None = None) -> FastAPI:
     def add_source(project_id:str,body:SourceIn):
         return store.import_source(project_id,body.name,body.kind,body.content,body.origin)
 
+    @app.post('/api/projects/{project_id}/documents', status_code=201)
+    async def add_document(project_id: str, body: DocumentIn):
+        store.project(project_id)
+        content, file_hash, engine = await run_in_threadpool(
+            extract_document, body.name, body.kind, body.content_base64)
+        return store.import_source(project_id, body.name, body.kind, content,
+                                   file_sha256=file_hash, extraction_method=engine)
+
     @app.get('/api/projects/{project_id}/sources/{source_id}')
     def source(project_id:str,source_id:str):
         return store.source(project_id,source_id)
@@ -143,13 +163,13 @@ def create_app(db_path: str | Path | None = None) -> FastAPI:
     def artifact(project_id:str,artifact_id:str):
         return store.artifact(project_id,artifact_id)
 
-    @app.get('/api/projects/{project_id}/artifacts/{artifact_id}/revisions')
-    def artifact_revisions(project_id:str, artifact_id:str):
-        return store.artifact_revisions(project_id, artifact_id)
+    @app.patch('/api/projects/{project_id}/artifacts/{artifact_id}')
+    def revise_artifact(project_id:str,artifact_id:str,body:ArtifactRevisionIn):
+        return store.revise_artifact(project_id,artifact_id,body.answer,body.expected_revision)
 
-    @app.post('/api/projects/{project_id}/artifacts/{artifact_id}/revisions')
-    def revise_artifact(project_id:str, artifact_id:str, body:ArtifactRevisionIn):
-        return store.revise_artifact(project_id, artifact_id, body.answer, body.expected_revision)
+    @app.get('/api/projects/{project_id}/artifacts/{artifact_id}/revisions')
+    def artifact_revisions(project_id:str,artifact_id:str):
+        return store.artifact_history(project_id,artifact_id)
 
     return app
 
