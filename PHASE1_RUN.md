@@ -135,5 +135,7 @@ It discovers the installed OpenClaw CLI and executes the documented `openclaw he
 - The read-only probe does not replace PydanticAI's evidence-grounded political research tool chain. OpenClaw retains ownership of its own gateway, channel/device pairing and skills.
 - OpenClaw's upstream security guide recommends **one trust boundary per gateway**; use distinct gateway instances/credentials for mutually untrusted organizations. Do not expose full operator tokens to browser clients.
 
+The Next.js shell now includes a compact **OpenClaw · Required** status control. The user explicitly clicks **Check gateway** to query this local API; the browser never contacts the OpenClaw gateway directly and does not receive operator credentials. Playwright covers the initial not-checked state, not-installed and healthy results, failed calls, and response-secret omission. A green UI test does not certify actual installed channel/device readiness.
+
 Automated tests mock the OpenClaw CLI and cover missing installation, startup, errors, timeouts, sanitized health, and rejected remote origins. **Real installed gateway integration remains pending** until live local test and P4/P5 acceptance. Avoid claiming complete OpenClaw integration based solely on this status endpoint.
 
