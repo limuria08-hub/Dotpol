@@ -18,3 +18,27 @@
 .gateway-status button:disabled{cursor:wait;opacity:.65}
 .side-footer{margin-top:12px}
 @media(max-width:800px){.gateway-status{margin-top:12px}.gateway-status p{min-height:0}}
+
+/* P1.08/UI-04: one responsive source / conversation / canonical artifact surface. */
+.research-single,.research-stacked{min-width:0}
+.research-stacked{display:flex;flex-direction:column;gap:14px}
+.research-split{height:min(78vh,900px)!important;min-height:540px}
+.research-panel{min-width:0;min-height:0;overflow:auto}
+.research-panel>.workspace{height:100%;min-height:0;overflow:auto}
+.research-panel>.result{margin:0;height:100%;overflow:auto}
+.research-resize-handle{display:flex;flex:0 0 12px;align-items:center;justify-content:center;color:#a4b5c8;border-radius:8px;background:#1d2b3e;cursor:col-resize}
+.research-resize-handle:hover,.research-resize-handle:focus-visible{background:#364a63;color:#ffe5a2}
+.research-resize-handle:focus-visible{outline:2px solid #f3cc6b;outline-offset:2px}
+.research-stacked .result{margin:0}
+.thread-list{border-top:1px solid #304054;margin-top:24px;padding-top:16px;min-width:0}
+.thread-list h3{font-size:14px;color:#e2eaf3;margin:0 0 12px}
+.thread-item{padding:14px;margin:12px 0;background:#1b2a3d;border:1px solid #30445b;border-radius:10px;overflow-wrap:anywhere}
+.thread-question{font-size:13px;font-weight:700;color:#f5e2b2}
+.thread-preview{font-size:13px;line-height:1.6;color:#c4d1df;white-space:pre-wrap;overflow-wrap:anywhere;max-height:112px;overflow:hidden}
+.thread-item-footer{display:flex;gap:8px;justify-content:space-between;align-items:center;flex-wrap:wrap}
+.thread-item-footer small{color:#9aadc0;font-size:11px}
+.thread-item-footer button{display:inline-flex;align-items:center;gap:6px;padding:8px 10px;background:#283b53;border:1px solid #405d78;border-radius:8px;color:#f2d181;cursor:pointer;font-size:12px}
+.thread-item-footer button:hover,.thread-item-footer button[aria-current="true"]{background:#3b506c}
+.thread-item-footer button:focus-visible{outline:2px solid #f3cc6b;outline-offset:2px}
+@media(max-width:1050px){.columns{grid-template-columns:1fr;gap:14px}.research-split{height:auto!important;min-height:0}.research-stacked .pane,.research-stacked .workspace{min-height:0}}
+@media(prefers-reduced-motion:reduce){.research-resize-handle,.thread-item-footer button{transition:none}}
