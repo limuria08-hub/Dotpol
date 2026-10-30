@@ -76,3 +76,13 @@
 .assistant-composer-send:disabled{opacity:.45;cursor:not-allowed}
 .assistant-composer-send:focus-visible{outline:2px solid #fff;outline-offset:2px}
 @media(max-width:600px){.assistant-composer{align-items:stretch;flex-direction:column}.assistant-composer-send{justify-content:center}}
+
+/* UI-06: Lexical is a transient plain-text editor, not a second Artifact store. */
+.lexical-report-container{position:relative;min-width:0;margin:16px 0 8px}
+.lexical-report-input{min-height:210px;max-height:55vh;overflow-y:auto;white-space:pre-wrap;overflow-wrap:anywhere;padding:15px 16px;background:#0e1b2c;color:#eaf1f9;border:1px solid #506079;border-radius:9px;font:inherit;font-size:14px;line-height:1.7;outline:none}
+.lexical-report-input:focus-visible{outline:2px solid #f3cc6b;outline-offset:2px}
+.lexical-report-placeholder{pointer-events:none;position:absolute;top:15px;left:16px;font-size:14px;color:#9dadc2}
+.lexical-report-input:not(:empty)~.lexical-report-placeholder{display:none}
+.lexical-report-note,.lexical-byte-status{font-size:12px;line-height:1.6;color:#b3c4d7}
+.lexical-byte-status{margin:5px 0 16px}
+@media(max-width:600px){.lexical-report-input{min-height:170px;max-height:40vh}}

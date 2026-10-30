@@ -19,7 +19,9 @@
     "@radix-ui/react-slot": "1.5.0",
     "clsx": "2.1.1",
     "tailwind-merge": "3.7.0",
-    "@assistant-ui/react": "0.15.32"
+    "@assistant-ui/react": "0.15.32",
+    "lexical": "0.52.0",
+    "@lexical/react": "0.52.0"
   },
   "devDependencies": {
     "typescript": "^5.9.0",

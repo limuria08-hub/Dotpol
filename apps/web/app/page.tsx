@@ -7,6 +7,7 @@ import {Input} from '../components/ui/input';
 import {Label} from '../components/ui/label';
 import {SourceDetailsDialog} from '../components/source-details-dialog';
 import {AssistantResearchThread} from '../components/assistant-research-thread';
+import {ReportLexicalEditor} from '../components/report-lexical-editor';
 
 const API='http://127.0.0.1:8765';
 function toBase64(bytes:Uint8Array){let data='';for(let i=0;i<bytes.length;i+=16384)data+=String.fromCharCode(...bytes.subarray(i,i+16384));return btoa(data)}
@@ -218,9 +219,9 @@ export default function Home(){
     </section></>}
    </section>}
       workbench={selected?<article className="result"><div className="result-head"><span>{selected.generation_method==='ai-synthesis'?`AI synthesis · ${selected.model_id||'model unspecified'}`:selected.generation_method==='no-evidence'?'Evidence unavailable':'Evidence-only research'}</span><button onClick={()=>exportArtifact(selected)}>Export JSON</button></div><h3>{selected.question}</h3><div className="artifact-edit-bar"><span>Revision {selected.revision} · {selected.review_status==='user-edited-unverified'?'Edited — citations need review': 'Source-linked original — claims not fact-checked'}</span>
-     {!editing?<button type="button" onClick={()=>setEditing(true)}>Edit in workbench</button>:<><button type="button" disabled={loading||!draft.trim()} onClick={()=>{void saveRevision()}}>Save revision</button><button type="button" disabled={loading} onClick={()=>{setEditing(false);setDraft(selected.answer)}}>Cancel</button></>}
+     {!editing?<button type="button" onClick={()=>setEditing(true)}>Edit in workbench</button>:<><button type="button" disabled={loading||!draft.trim()||new TextEncoder().encode(draft).length>100000} onClick={()=>{void saveRevision()}}>Save revision</button><button type="button" disabled={loading} onClick={()=>{setEditing(false);setDraft(selected.answer)}}>Cancel</button></>}
     </div>
-    {editing?<textarea aria-label="Edit research artifact" className="artifact-editor" value={draft} onChange={e=>setDraft(e.target.value)} maxLength={100000} />:<pre>{selected.answer}</pre>}
+    {editing?<><ReportLexicalEditor key={`${selected.id}:${selected.revision}`} artifactId={selected.id} initialText={selected.answer} onChange={setDraft}/><p role="status" className="lexical-byte-status">{new TextEncoder().encode(draft).length.toLocaleString()} / 100,000 UTF-8 bytes{new TextEncoder().encode(draft).length>100000?' · Shorten report before saving':''}</p></>:<pre>{selected.answer}</pre>}
     <h4>Source evidence and provenance</h4>
      {selected.evidence.length?selected.evidence.map((e,i)=><details key={`${e.source_id}-${e.line}-${i}`}><summary>[{i+1}] {e.source_name} · line {e.line}</summary><blockquote>{e.excerpt}</blockquote><small>Source ID: {e.source_id} · SHA-256: {e.sha256}</small></details>):<p className="hint">No matching evidence. The system did not invent an answer.</p>}
      <details><summary>Revision history ({revisions.length})</summary>{revisions.map(rev=><div className="revision-entry" key={rev.revision}><strong>Revision {rev.revision} · {rev.origin}</strong><small>{new Date(rev.saved_at).toLocaleString()}</small><pre>{rev.answer}</pre></div>)}</details>
