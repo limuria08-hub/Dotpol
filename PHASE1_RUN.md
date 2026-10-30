@@ -317,3 +317,23 @@ PYTHONPATH=platform/src:services/api python -m pytest tests/test_political_ident
 
 **Limitations:** first release creates user-declared identities only, not verified external political identifiers, matching/aliases, election results, dated boundaries or identity resolution. A successful backup test is not a substitute for a complete OS-specific restore drill and key/secret backup; OpenClaw retains its *separate* own settings/credentials and should be backed up through its supported mechanism.
 
+
+
+## P1.07 — Cross-source research comparison (same research engine)
+
+The existing project search produces verified source line references and persists one artifact. The additional `POST /api/projects/{id}/compare` route uses **that same search adapter**, groups up to two matching lines per source (at most six sources), and saves one canonical comparison artifact for opening, revisioning and exporting in the existing workbench. It does **not** introduce another index, model gateway or backend. The API includes `source_count`, `comparison_ready`, `retrieval_mode`, `retrieval_degraded`, and the saved `artifact`.
+
+```bash
+curl -X POST -H 'X-Dotpol-Local: 1' -H 'Content-Type: application/json' \
+  -d '{"question":"public budget","mode":"extractive"}' \
+  http://127.0.0.1:8765/api/projects/PROJECT_ID/compare
+```
+
+If fewer than two independent project sources match, the report states that comparison is **not supported**. If at least two match, it produces a **source excerpt matrix**, not a fabricated agreement/disagreement judgment. Original hashes, source IDs, lines and excerpts must pass the existing SQLite artifact verification. Withdrawn/cross-project sources cannot appear in newly saved comparisons. The current API is deliberately deterministic and does **not** claim to be a completed autonomous multi-step research agent.
+
+```bash
+PYTHONPATH=platform/src:services/api python -m pytest tests/test_cross_source.py -q
+```
+
+Remaining P1.07 quality gate: evaluate independent sources with real user-supplied documents, run configured local AI synthesis against the verified matrix, and review conclusions/limitations before accepting an evidence-grounded research brief.
+
