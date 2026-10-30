@@ -74,6 +74,13 @@ def test_edit_reopen_history_and_optimistic_conflict(tmp_path, monkeypatch):
     assert again.json()["revision"] == 3
     assert len(reopened.get(endpoint + "/revisions").json()) == 3
 
+    # Unchanged content is not a new revision.
+    unchanged = post(reopened, endpoint + "/revisions", {
+        "answer": "Reviewed and amended a second time.", "expected_revision": 3,
+    })
+    assert unchanged.status_code == 200 and unchanged.json()["revision"] == 3
+    assert len(reopened.get(endpoint + "/revisions").json()) == 3
+
 
 def test_revision_validation_scope_and_local_request_guard(tmp_path):
     c = client(tmp_path)
@@ -91,6 +98,7 @@ def test_revision_validation_scope_and_local_request_guard(tmp_path):
     assert post(c, endpoint, {"answer": "valid", "expected_revision": 0}).status_code == 422
     assert post(c, endpoint, {"answer": "valid", "expected_revision": True}).status_code == 422
     assert post(c, endpoint, {"answer": "x" * 100001, "expected_revision": 1}).status_code == 422
+    assert post(c, endpoint, {"answer": "🌐" * 30000, "expected_revision": 1}).status_code == 422  # UTF-8 byte limit
     other = f"/api/projects/{p2}/artifacts/{artifact['id']}/revisions"
     assert c.get(other).status_code == 404
     assert post(c, other, {"answer": "bad scope", "expected_revision": 1}).status_code == 404
