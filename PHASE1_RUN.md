@@ -224,6 +224,8 @@ DOTPOL_LIVE_OPENCLAW_TEST=1 PYTHONPATH=platform/src:services/api \
 PYTHONPATH=platform/src:services/api pytest tests/test_openclaw_rpc.py -q
 ```
 
+The LiOS.Pol sidebar has a user-triggered **Verify connection** control alongside **Check gateway** and **Security audit**. It requests only `POST /api/openclaw/rpc-check` and displays the sanitized success/failure summary. No authenticated RPC is attempted automatically when the UI loads. The browser never receives the raw Gateway status document, operator token, session identities, channel metadata or CLI stderr. Browser regression checks cover the opt-in action, absent gateway, successful RPC, transport errors and dropped credential fields. `rpc-connected` confirms only the CLI-authenticated read-only status operation, **not** authorization for OpenClaw agent tool calls.
+
 A passing **real** RPC test demonstrates the installed OpenClaw CLI can complete an authenticated status request with its configured gateway. It does **not** grant per-organization role isolation, approve OpenClaw tools, establish channel pairing, demonstrate device commands, or prove a secure production deployment. Those remain P4/P5 gates. In particular, the CLI's identity may be an **operator credential**; do not forward user-submitted method names or data to the CLI and do not expose its credentials to the browser.
 
 
