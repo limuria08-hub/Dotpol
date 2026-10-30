@@ -351,3 +351,32 @@ PYTHONPATH=platform/src:services/api python -m pytest tests/test_approved_tools.
 
 **Important:** This module does **not** authenticate users or issue real organization grants. Do not build an OpenClaw operator-CLI tool proxy from it. P4 owns actor membership and recursive team access; P5 owns paired OpenClaw channel/device transport. Live privileged tool execution stays disabled until those identities and policy checks work end to end.
 
+
+
+## P1 release decision gate — do not infer real-service success from CI mocks
+
+**Canonical workstream:** issue #6 and this PR #11. The numbered Phase 1 packages remain the only accepted roadmap; do not create a replacement P1 plan.
+
+| Gate | Evidence | Current verdict |
+|---|---|---|
+| P1.02/P1.10 SQLite, source/artifact persistence, canonical IDs | `tests/test_phase1.py`, `tests/test_artifact_revisions.py`, `tests/test_political_identity.py` | Repeatable automated coverage; backup restore drill included |
+| P1.03 document ingestion | Mocked tests plus `tests/test_live_docling_conversion.py` | Real native Docling remains **unverified** until opt-in gate runs |
+| P1.04 search | `tests/test_search_index.py` on GitHub with LanceDB dependency | FTS verified when CI succeeds; **vector/hybrid not claimed** |
+| P1.05 AI model | Source-grounding and consent tests, opt-in `test_live_ollama_inference.py` | Real configured Ollama synthesis remains **unverified** until opt-in gate runs |
+| P1.06 tool policy | `tests/test_approved_tools.py` | Deterministic typed tools reject ungranted commands; no external OpenClaw tool grant yet |
+| P1.07 research | `tests/test_ai_grounding.py`, `tests/test_cross_source.py` | Source comparison and grounding covered; no autonomous full web research claimed |
+| P1.08/P1.09 web/workbench | GitHub production build, Playwright, exact artifact ID tests | Manual accessibility and complete component audit pending |
+| P1.11 OpenClaw required | Health, audit, authenticated RPC contract tests, `test_live_openclaw_rpc.py` | **Real installed gateway/paired session remains unverified**; P4/P5 own channels/skills |
+| P1.12 exit | Clean CI, no-model/no-network, installed model/Docling/Gateway, manual quality | **Not accepted until all real gates and review evidence pass** |
+
+**One-shot local runtime acceptance (no auto-install/download):**
+
+```bash
+# Install Python dependencies, Docling and a preselected local Ollama model explicitly.
+# Install/configure/start the required OpenClaw Gateway locally and pair as needed.
+export DOTPOL_AI_MODEL='<installed-local-ollama-model>'
+bash scripts/p1-live-acceptance.sh
+```
+
+The script checks installed executables first, then enables the three opt-in **real** Docling, Ollama and OpenClaw tests. It fails instead of silently using a mock, hosted model or skipped test. Do not run it on an untrusted shared operator gateway. Preserve captured pass/fail evidence in the P1 tracking issue before marking the phase accepted.
+
