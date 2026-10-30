@@ -77,6 +77,8 @@ def search_fts(store, project_id: str, query: str, limit: int) -> list[dict]:
             if meta is None or meta['sha256'] != hit.get('sha256'):
                 continue
             original = store.source(project_id, meta['id'])
+            if original['status'] != 'active' or original['sha256'] != meta['sha256']:
+                continue
             number = hit.get('line')
             lines = original['content'].splitlines()
             if not isinstance(number, int) or not 1 <= number <= len(lines) or lines[number - 1] != hit.get('text'):
