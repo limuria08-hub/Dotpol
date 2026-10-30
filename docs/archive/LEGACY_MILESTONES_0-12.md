@@ -158,7 +158,7 @@ Deliverables:
 
 `domains/fieldops` reuses station geography, `Task`, `FieldUpdate`, SurveyJS/ODK collection and evidence contracts. Scope: authorized station assessments, offline idempotent submissions, human review and verified aggregate issue maps. Phase 10 consumes the same operations records; no second booth CRM or individual political preference profiling.
 
-**Exit:** pass F1–F5 in the [field specification](PRE_ELECTION_MICROAREA_INTELLIGENCE.md) with permitted/synthetic data. See [Master Plan](MASTER_PLAN.md).
+**Exit:** pass F1–F5 in the [field specification](../PRE_ELECTION_MICROAREA_INTELLIGENCE.md) with permitted/synthetic data. See [Master Plan](../MASTER_PLAN.md).
 
 #### Legacy milestone 7 — Forecasting, simulation and aggregate digital twin
 
@@ -234,7 +234,7 @@ Deliverables:
 
 **Rule:** war room consumes shared fieldops/election/GIS/survey/media engines; it does not rebuild them. No individual political-preference/voter tracking or voter-level persuasion functionality.
 
-**Exit gate:** live operational information can be combined with existing intelligence while preserving source/time/verification states, with station incidents, discrepancy review, safe aggregated reporting and access-controlled alerts tested end-to-end. See [pre-election handoff requirements](PRE_ELECTION_MICROAREA_INTELLIGENCE.md).
+**Exit gate:** live operational information can be combined with existing intelligence while preserving source/time/verification states, with station incidents, discrepancy review, safe aggregated reporting and access-controlled alerts tested end-to-end. See [pre-election handoff requirements](../PRE_ELECTION_MICROAREA_INTELLIGENCE.md).
 
 #### Legacy milestone 11 — Automation, plugins and open platform
 
