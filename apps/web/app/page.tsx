@@ -9,6 +9,7 @@ type Evidence={source_id:string,source_name:string,sha256:string,line:number,exc
 type Artifact={id:string,question:string,answer:string,evidence:Evidence[],created_at:string,generation_method:string,model_id:string|null,revision:number,updated_at:string,review_status:string};
 type ArtifactRevision={revision:number,answer:string,saved_at:string,origin:'generated'|'user-edited'};
 type ModelStatus={status:string,configured:boolean,provider?:string,model?:string|null,message:string};
+type OpenClawStatus={component:'openclaw',required_for_release:boolean,ready:boolean,status:string,detail:string};
 async function api<T>(path:string,method='GET',body?:unknown):Promise<T> {
  const response=await fetch(API+path,{method,headers:{'Content-Type':'application/json','X-Dotpol-Local':'1'},body:body?JSON.stringify(body):undefined,cache:'no-store'});
  const data=await response.json();
@@ -34,6 +35,8 @@ export default function Home(){
  const [evidenceOnly,setEvidenceOnly]=useState(false);
  const [remoteConsent,setRemoteConsent]=useState(false);
  const [probeStatus,setProbeStatus]=useState('');
+ const [openClaw,setOpenClaw]=useState<OpenClawStatus|null>(null);
+ const [checkingOpenClaw,setCheckingOpenClaw]=useState(false);
  async function refresh(){try{
   const list=await api<Project[]>('/api/projects');setProjects(list);
   setMessage('Local research engine connected.');
@@ -69,6 +72,18 @@ export default function Home(){
   }catch(e){setMessage((e as Error).message)}finally{setLoading(false)}
  }
  async function probe(){try{setProbeStatus('Checking local Ollama…');const result=await api<{status:string,detail:string,ready:boolean}>('/api/ai/probe-local','POST',{});setProbeStatus(`${result.status}: ${result.detail}`)}catch(e){setProbeStatus((e as Error).message)}}
+ async function checkOpenClaw(){
+  if(checkingOpenClaw)return;
+  setCheckingOpenClaw(true);
+  try{
+   const state=await api<OpenClawStatus>('/api/openclaw/status');
+   setOpenClaw(state);
+  }catch{
+   // Do not show raw gateway or HTTP errors in the UI.
+   setOpenClaw({component:'openclaw',required_for_release:true,ready:false,status:'unreachable',
+    detail:'Could not verify the local OpenClaw gateway.'});
+  }finally{setCheckingOpenClaw(false)}
+ }
  async function openArtifact(a:Artifact){
   setSelected(a);setDraft(a.answer);setEditing(false);setRevisions([]);
   if(!project)return;
@@ -97,7 +112,16 @@ export default function Home(){
    <div className="side-section"><h3>Projects</h3><input aria-label="New project name" value={title} onChange={e=>setTitle(e.target.value)} maxLength={180}/>
     <button disabled={loading} onClick={create}>+ New project</button></div>
    <div className="project-list">{projects.map(p=><button key={p.id} className={project?.id===p.id?'active':''} onClick={()=>load(p)}>{p.title}</button>)}</div>
-   <div className="side-footer"><span className="dot"/> Local-only research preview</div>
+   <section className="gateway-status" aria-label="Required OpenClaw gateway">
+    <div className="gateway-title"><strong>OpenClaw</strong><span>Required</span></div>
+    <p role="status" aria-live="polite" className={openClaw?.ready?'gateway-ready':'gateway-detail'}>
+     {checkingOpenClaw?'Checking local gateway…':openClaw?.detail||'Local gateway not checked'}
+    </p>
+    <button type="button" disabled={checkingOpenClaw} onClick={()=>{void checkOpenClaw()}}>
+     {checkingOpenClaw?'Checking…':'Check gateway'}
+    </button>
+   </section>
+   <div className="side-footer"><span className="dot"/> Local research preview</div>
   </aside>
   <main className="main"><header><div><p className="eyebrow">WORKSPACE / RESEARCH</p><h1>{project?.title||'Your political research workspace'}</h1></div><span className="label">{ai?.configured?`AI · ${ai.model} (configured)`:'AI · model not configured'}</span></header>
    <p role="status" className="status">{message}</p>
