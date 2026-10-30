@@ -4,7 +4,7 @@ const API = 'http://127.0.0.1:8765';
 
 async function makeProject(page: Page, name: string) {
   await page.goto('/');
-  await expect(page.getByRole('status').first()).toContainText('Local research engine connected.');
+  await expect(page.locator('p.status')).toContainText('Local research engine connected.');
   await page.getByRole('textbox', { name: 'New project name' }).fill(name);
   await page.getByRole('button', { name: '+ New project' }).click();
   await expect(page.getByRole('heading', { name })).toBeVisible();
@@ -34,7 +34,7 @@ test('real browser: import → cited extract → same-ID edit → restart/reopen
     mimeType: 'text/plain',
     buffer: Buffer.from(source),
   });
-  await expect(page.getByRole('status').first()).toContainText('Imported synthetic-budget.txt');
+  await expect(page.locator('p.status')).toContainText('Imported synthetic-budget.txt');
 
   await page.getByRole('checkbox', { name: /Evidence only/ }).check();
   const result = await ask(page, 'water budget');
@@ -93,7 +93,7 @@ test('stale browser edit is rejected and cannot overwrite the newer revision', a
     mimeType: 'text/plain',
     buffer: Buffer.from('Synthetic public report: water budget is 88 units.'),
   });
-  await expect(page.getByRole('status').first()).toContainText('Imported record.txt');
+  await expect(page.locator('p.status')).toContainText('Imported record.txt');
   const result = await ask(page, 'water budget');
   const artifactId: string = result.artifact.id;
   const projectId: string = result.artifact.project_id;
@@ -139,7 +139,7 @@ test('narrow viewport retains keyboard-accessible uploads without horizontal ove
     mimeType: 'text/plain',
     buffer: Buffer.from('Synthetic keyboard source: local import verified.'),
   });
-  await expect(page.getByRole('status').first()).toContainText('Imported keyboard-source.txt');
+  await expect(page.locator('p.status')).toContainText('Imported keyboard-source.txt');
   expect(await page.evaluate(() =>
     document.documentElement.scrollWidth <= window.innerWidth + 1,
   )).toBeTruthy();
