@@ -49,7 +49,7 @@ def research(store, project_id: str, question: str) -> dict:
             'ai_generated':False,'model_status':'not-invoked','generation_method':artifact['generation_method']}
 
 
-async def ai_research(store, project_id: str, question: str, mode: str = 'auto') -> dict:
+async def ai_research(store, project_id: str, question: str, mode: str = 'auto', *, allow_remote_evidence: bool = False) -> dict:
     """AI-native research route: retrieve authoritative snippets before model generation.
 
     In auto mode, use the shared AI gateway when configured. If no model is
@@ -70,7 +70,7 @@ async def ai_research(store, project_id: str, question: str, mode: str = 'auto')
         reply = research(store, project_id, question)
         reply['model_status'] = 'not-configured' if mode == 'auto' else 'not-requested'
         return reply
-    answer, cited, model_id = await synthesize(question, result['matches'])
+    answer, cited, model_id = await synthesize(question, result['matches'], allow_remote_evidence=allow_remote_evidence)
     # AI cited refs are exact verified source lines; the model cannot invent an
     # evidence ID or write model-generated source records.
     artifact = store.save_artifact(project_id, question, answer, cited,
