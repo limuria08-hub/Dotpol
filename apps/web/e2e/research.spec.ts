@@ -110,7 +110,7 @@ test('stale browser edit is rejected and cannot overwrite the newer revision', a
   await expect(page.locator('article.result')).toContainText('Revision 2 · Edited — citations need review');
 
   await second.getByRole('button', { name: 'Save revision' }).click();
-  await expect(second.getByRole('status').first()).toContainText('modified by another edit');
+  await expect(second.locator('p.status')).toContainText('modified by another edit');
   const stored = await request.get(`${API}/api/projects/${projectId}/artifacts/${artifactId}`);
   expect(stored.ok()).toBeTruthy();
   const artifact = await stored.json();
