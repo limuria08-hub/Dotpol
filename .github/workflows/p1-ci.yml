@@ -64,7 +64,7 @@ jobs:
       DOTPOL_AI_PROVIDER: ollama
       DOTPOL_AI_MODEL: ""
       DOTPOL_SEARCH_ENGINE: literal
-      DOTPOL_DATA_DIR: ${{ runner.temp }}/dotpol-browser-data
+      DOTPOL_DATA_DIR: /tmp/dotpol-browser-data
       NEXT_TELEMETRY_DISABLED: "1"
     steps:
       - uses: actions/checkout@v4
