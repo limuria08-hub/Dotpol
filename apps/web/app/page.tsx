@@ -1,5 +1,7 @@
 'use client';
 import {useEffect, useRef, useState} from 'react';
+import {PanelRightOpen} from 'lucide-react';
+import {ResearchSplit} from '../components/research-split';
 
 const API='http://127.0.0.1:8765';
 function toBase64(bytes:Uint8Array){let data='';for(let i=0;i<bytes.length;i+=16384)data+=String.fromCharCode(...bytes.subarray(i,i+16384));return btoa(data)}
@@ -126,15 +128,29 @@ export default function Home(){
   <main className="main"><header><div><p className="eyebrow">WORKSPACE / RESEARCH</p><h1>{project?.title||'Your political research workspace'}</h1></div><span className="label">{ai?.configured?`AI · ${ai.model} (configured)`:'AI · model not configured'}</span></header>
    <p role="status" className="status">{message}</p>
    {!project?<section className="empty"><h2>Create or open a project</h2><p>Import authorized source data and examine verifiable research excerpts. No paid API or cloud account required.</p></section>:
-   <div className="columns"><section className="pane"><h2>Sources</h2><p className="hint">TXT, CSV, JSON, PDF or DOCX. PDF/DOCX require optional local Docling.</p>
+   <div className="columns">
+    <section className="pane"><h2>Sources</h2><p className="hint">TXT, CSV, JSON, PDF or DOCX. PDF/DOCX require optional local Docling.</p>
     <div className="upload-control"><button type="button" className="upload" disabled={loading} onClick={()=>sourceInputRef.current?.click()}>Import source</button><input ref={sourceInputRef} className="file-input-hidden" type="file" tabIndex={-1} accept=".txt,.csv,.json,.pdf,.docx" disabled={loading} onChange={e=>{void importFile(e.target.files?.[0]||null);e.target.value=''}} /></div>
     <ul className="source-list">{sources.map(s=><li key={s.id}><strong>{s.name}</strong><small>{s.kind.toUpperCase()} · {s.status}<br/>SHA-256: {s.sha256.slice(0,16)}…</small></li>)}</ul>
     <h2>Saved research</h2><div className="artifact-list">{artifacts.map(a=><button key={a.id} onClick={()=>{void openArtifact(a)}}>{a.question}<small>{new Date(a.updated_at||a.created_at).toLocaleString()} · rev {a.revision}</small></button>)}</div>
-   </section><section className="workspace"><h2>Ask LiOS.Pol AI</h2><p className="hint">AI uses retrieved project sources and verifiable citations. If no model is configured, evidence-only research remains available.</p><div className="ai-control"><label><input type="checkbox" checked={evidenceOnly} onChange={e=>setEvidenceOnly(e.target.checked)}/> Evidence only (skip AI)</label><span>{ai?.configured?`Provider: ${ai.provider}`:'Connect local Ollama to enable AI synthesis'}</span></div>
+   </section>
+    <ResearchSplit showWorkbench={Boolean(selected)}
+      conversation={<section className="workspace"><h2>Ask LiOS.Pol AI</h2><p className="hint">AI uses retrieved project sources and verifiable citations. If no model is configured, evidence-only research remains available.</p><div className="ai-control"><label><input type="checkbox" checked={evidenceOnly} onChange={e=>setEvidenceOnly(e.target.checked)}/> Evidence only (skip AI)</label><span>{ai?.configured?`Provider: ${ai.provider}`:'Connect local Ollama to enable AI synthesis'}</span></div>
     {ai?.provider==='ollama'&&ai.configured?<div className="ai-control"><button type="button" disabled={loading} onClick={()=>{void probe()}}>Check local model</button><span role="status">{probeStatus}</span></div>:null}
     {ai?.provider==='openai-compatible' && ai.configured && !evidenceOnly?<label className="ai-control remote-consent"><input type="checkbox" checked={remoteConsent} onChange={e=>setRemoteConsent(e.target.checked)}/> Approve sending the retrieved source excerpts and question to my configured external model for this one request.</label>:null}
     <div className="ask"><input aria-label="Research question" placeholder="Search local political datasets and documents" value={question} onChange={e=>setQuestion(e.target.value)} onKeyDown={e=>{if(e.key==='Enter')void ask()}} /><button disabled={loading||!question.trim()||(ai?.configured===true&&ai.provider==='openai-compatible'&&!evidenceOnly&&!remoteConsent)} onClick={ask}>{loading?'Working…':'Ask AI'}</button></div>
-    {selected?<article className="result"><div className="result-head"><span>{selected.generation_method==='ai-synthesis'?`AI synthesis · ${selected.model_id||'model unspecified'}`:selected.generation_method==='no-evidence'?'Evidence unavailable':'Evidence-only research'}</span><button onClick={()=>exportArtifact(selected)}>Export JSON</button></div><h3>{selected.question}</h3><div className="artifact-edit-bar"><span>Revision {selected.revision} · {selected.review_status==='user-edited-unverified'?'Edited — citations need review': 'Source-linked original — claims not fact-checked'}</span>
+        <section className="thread-list" aria-label="Research conversation">
+     <h3>Research conversation</h3>
+     {artifacts.length?artifacts.slice(0,12).map(a=><div className="thread-item" key={a.id}>
+      <div className="thread-question">{a.question}</div>
+      <p className="thread-preview">{a.answer.slice(0,350)}{a.answer.length>350?'…':''}</p>
+      <div className="thread-item-footer"><small>{a.generation_method==='ai-synthesis'?'AI synthesis':a.generation_method==='no-evidence'?'No evidence':'Evidence only'} · revision {a.revision}</small>
+       <button type="button" aria-current={selected?.id===a.id?'true':undefined} aria-label={`Open artifact ${a.id} in workbench`} onClick={()=>{void openArtifact(a)}}><PanelRightOpen size={15} aria-hidden="true"/> Open in workbench</button>
+      </div>
+     </div>):<p className="hint">Import a source and ask a question to begin an evidence-linked conversation.</p>}
+    </section>
+   </section>}
+      workbench={{selected?<article className="result"><div className="result-head"><span>{selected.generation_method==='ai-synthesis'?`AI synthesis · ${selected.model_id||'model unspecified'}`:selected.generation_method==='no-evidence'?'Evidence unavailable':'Evidence-only research'}</span><button onClick={()=>exportArtifact(selected)}>Export JSON</button></div><h3>{selected.question}</h3><div className="artifact-edit-bar"><span>Revision {selected.revision} · {selected.review_status==='user-edited-unverified'?'Edited — citations need review': 'Source-linked original — claims not fact-checked'}</span>
      {!editing?<button type="button" onClick={()=>setEditing(true)}>Edit in workbench</button>:<><button type="button" disabled={loading||!draft.trim()} onClick={()=>{void saveRevision()}}>Save revision</button><button type="button" disabled={loading} onClick={()=>{setEditing(false);setDraft(selected.answer)}}>Cancel</button></>}
     </div>
     {editing?<textarea aria-label="Edit research artifact" className="artifact-editor" value={draft} onChange={e=>setDraft(e.target.value)} maxLength={100000} />:<pre>{selected.answer}</pre>}
@@ -142,7 +158,9 @@ export default function Home(){
      {selected.evidence.length?selected.evidence.map((e,i)=><details key={`${e.source_id}-${e.line}-${i}`}><summary>[{i+1}] {e.source_name} · line {e.line}</summary><blockquote>{e.excerpt}</blockquote><small>Source ID: {e.source_id} · SHA-256: {e.sha256}</small></details>):<p className="hint">No matching evidence. The system did not invent an answer.</p>}
      <details><summary>Revision history ({revisions.length})</summary>{revisions.map(rev=><div className="revision-entry" key={rev.revision}><strong>Revision {rev.revision} · {rev.origin}</strong><small>{new Date(rev.saved_at).toLocaleString()}</small><pre>{rev.answer}</pre></div>)}</details>
     </article>:<div className="empty"><h3>Start with a source</h3><p>Upload a text or table file, ask a question, and open a saved evidence-linked artifact here.</p></div>}
-   </section></div>}
+}
+    />
+   </div>}
    <footer>Phase 1 · AI-native research foundation · Local-first · Evidence verification required</footer>
   </main>
  </div>
