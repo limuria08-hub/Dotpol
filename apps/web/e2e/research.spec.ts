@@ -360,3 +360,72 @@ test('OpenClaw authenticated RPC verification is explicit, local, and credential
   await expect(gateway).toContainText('Could not verify the authenticated OpenClaw connection');
   await expect(verify).toBeEnabled();
 });
+
+
+test('assistant-ui external runtime sends via existing research API and reopens the same persisted artifact', async ({ page, request }) => {
+  const title='P1 assistant adapter '+Date.now();
+  await makeProject(page,title);
+  await page.locator('input[type="file"]').setInputFiles({
+    name:'public-synthetic.txt',mimeType:'text/plain',
+    buffer:Buffer.from('Synthetic public education allocation: 64 units in 2026.'),
+  });
+  await expect(page.locator('p.status')).toContainText('Imported public-synthetic.txt');
+  await page.getByRole('button',{name:'Assistant conversation'}).click();
+  const composer=page.getByRole('textbox',{name:'Assistant research question'});
+  await expect(composer).toBeVisible();
+  const response=page.waitForResponse(x=>x.url().includes('/research')&&x.request().method()==='POST');
+  await composer.fill('education allocation');
+  await page.getByRole('button',{name:'Send assistant research question'}).click();
+  const reply=await response;
+  expect(reply.ok()).toBeTruthy();
+  expect(reply.request().postDataJSON().question).toBe('education allocation');
+  const data=await reply.json();
+  const id:string=data.artifact.id;
+  const pid:string=data.artifact.project_id;
+  expect(data.artifact.generation_method).toBe('extractive');
+  const open=page.getByRole('button',{name:`Open artifact ${id} in workbench`});
+  await expect(open).toBeVisible();
+  await expect(page.getByLabel('Assistant research conversation')).toContainText('64 units');
+  await open.click();
+  await expect(page.locator('article.result')).toContainText('64 units');
+  const stored=await request.get(`${API}/api/projects/${pid}/artifacts/${id}`);
+  expect(stored.ok()).toBeTruthy();
+  expect((await stored.json()).id).toBe(id);
+
+  await page.reload();
+  await page.getByRole('button',{name:title,exact:true}).click();
+  await page.getByRole('button',{name:'Assistant conversation'}).click();
+  await expect(page.getByRole('button',{name:`Open artifact ${id} in workbench`})).toBeVisible();
+  await page.getByRole('button',{name:`Open artifact ${id} in workbench`}).click();
+  await expect(page.locator('article.result')).toContainText('64 units');
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBeTruthy();
+});
+
+test('assistant-ui composer requires per-request BYOAI permission and clears it on provider error', async ({page})=>{
+  await page.route(`${API}/api/ai/status`,route=>route.fulfill({
+    status:200,contentType:'application/json',
+    body:JSON.stringify({status:'ready',configured:true,provider:'openai-compatible',model:'synthetic-test'}),
+  }));
+  const sends:boolean[]=[];
+  await page.route(/\/api\/projects\/[^/]+\/research$/,async route=>{
+    sends.push(route.request().postDataJSON().allow_remote_evidence);
+    await route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({detail:'Synthetic remote failure'})});
+  });
+  await makeProject(page,'P1 assistant consent '+Date.now());
+  await page.getByRole('button',{name:'Assistant conversation'}).click();
+  const composer=page.getByRole('textbox',{name:'Assistant research question'});
+  await composer.fill('public budget');
+  const consent=page.getByRole('checkbox',{name:/Approve sending the retrieved source excerpts/});
+  const send=page.getByRole('button',{name:'Send assistant research question'});
+  await expect(send).toBeDisabled();
+  await consent.check();
+  await expect(send).toBeEnabled();
+  await composer.fill('revised budget');
+  await expect(consent).not.toBeChecked();
+  await expect(send).toBeDisabled();
+  await consent.check();
+  await send.click();
+  await expect(page.locator('p.status')).toContainText('Synthetic remote failure');
+  await expect(consent).not.toBeChecked();
+  expect(sends).toEqual([true]);
+});
