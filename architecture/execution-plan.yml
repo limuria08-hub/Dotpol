@@ -17,23 +17,20 @@ rules:
   source_and_model_provenance_required: true
   no_individual_political_preference_inference: true
   legacy_milestones_are_not_phases: true
-  no_mandatory_external_services: true
+  no_mandatory_paid_or_hosted_services: true
+  openclaw_required_for_release: true
   one_canonical_artifact_and_team_state: true
   no_parallel_AI_or_chat_backend: true
-service_candidates:
-  opencloud:
-    upstream: opencloud-eu/opencloud
-    role: "Optional isolated file/share collaboration service, NOT Dotpol file/record authority"
-    planned_phase: P4
-    status: "candidate-not-integrated"
-    required_checks: [oidc, file_api, webdav_or_graph_api, permission_mapping, component_licences, resource_limits, offline_fallback]
-    exclude_embedded_frontend: opencloud-eu/web
+required_integrations:
   openclaw:
     upstream: openclaw/openclaw
-    role: "Optional isolated channel/device/skill gateway, NOT Dotpol AI/domain authority"
-    planned_phase: P5
-    status: "candidate-not-integrated"
-    required_checks: [version_pin, sandbox, gateway_auth, channel_pairing, tool_permissions, source_licences, data_egress, no_cloud_fallback]
+    role: "Required maintained local channel/device/skills/agent gateway; Dotpol AI/data remain authoritative"
+    foundation_phase: P1
+    teams_phase: P4
+    release_phase: P5
+    required_for_release: true
+    status: "required-not-integrated"
+    required_checks: [version_pin, sandbox, gateway_auth, channel_pairing, tool_permissions, source_licences, data_egress, local_first_zero_paid_path, gateway_restart_recovery]
     policy: "Dotpol PydanticAI owns research; OpenClaw may call only approved scoped Dotpol tools"
 selected_runtime_authority:
   ai: "PydanticAI via platform/ai"
@@ -44,6 +41,7 @@ selected_runtime_authority:
   service_orchestration: "Docker Compose optional; K3s not required"
   donor_adoption: "dependency | isolated-service | selectively-adapted-fork | reference"
   active_implementation_pr: 11
+  full_release_requires_openclaw_gateway: true
   UI_task_issue: 12
 phases:
   - id: P1
@@ -61,6 +59,7 @@ phases:
       - "Import authorized source data; inspect provenance"
       - "Search/citations and no-evidence abstention work"
       - "Chat artifacts open in workbench and can be saved/reopened"
+      - "OpenClaw local gateway discovery and readiness contract tested (P1.11)"
       - "OSS UI uses one Next.js renderer with tested FastAPI adapter and artifact ID"
     exit_evidence: "Clean-install J1 journey with local/no-model and model-enabled tests"
   - id: P2
@@ -97,7 +96,7 @@ phases:
   - id: P4
     tracking_issue: 9
     work_packages: [P4.01, P4.02, P4.03, P4.04, P4.05, P4.06, P4.07, P4.08, P4.09, P4.10]
-    title: Recursive teams, mobile operations and command centre
+    title: Recursive teams, OpenClaw communications and command centre
     legacy_milestones: [6, 10]
     status: not-verified
     owner_lanes: [auth, fieldops, warroom]
@@ -109,20 +108,20 @@ phases:
       - "Assignments, incidents, conflict review, escalation audited"
       - "Aggregate reports retain official/field distinction and timestamps"
       - "Election-day handoff passes F6-F8"
-      - "Optional OpenCloud API/permissions/file-sharing journey passes without embedding its web UI"
+      - "OpenClaw authorized channel-to-task/report flow verified, with role and trust-boundary isolation"
     exit_evidence: "J5/J6 nested-team and incident exercise with denial/recovery tests"
   - id: P5
     tracking_issue: 10
     work_packages: [P5.01, P5.02, P5.03, P5.04, P5.05, P5.06, P5.07, P5.08, P5.09, P5.10]
-    title: Automations, optional services, hardening and release
+    title: Required OpenClaw gateway, automations, hardening and release
     legacy_milestones: [11, 12]
     status: not-verified
     owner_lanes: [automation, security, qa-release]
     depends_on: [P1, P2, P3, P4]
     checkpoints:
       - "Plugin/connector/tool/service manifests and permission gates tested"
-      - "Optional isolated OpenClaw channel/device gateway authorized, sandboxed and role scoped"
-      - "Optional ODK/Ollama/event services run independently"
+      - "Required OpenClaw gateway installed, authenticated, sandboxed, role scoped and live-tested"
+      - "OpenClaw gateway lifecycle included in supported local install; ODK/Ollama optional integrations supported"
       - "Compose service profiles, K3s optional only"
       - "Donor pin/licence/attribution/SBOM records complete"
       - "AI/deterministic/field/security/E2E and load tests pass"
