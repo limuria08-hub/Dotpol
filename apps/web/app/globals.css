@@ -6,3 +6,15 @@
 
 
 .artifact-actions{display:flex;gap:8px;flex-wrap:wrap}.artifact-edit-label{display:block;margin-top:18px;color:#c5d4e4;font-size:13px}.artifact-editor{display:block;width:100%;margin-top:10px;padding:14px;min-height:220px;border:1px solid #52647b;border-radius:9px;background:#0f1b2a;color:#f1f4f8;resize:vertical;font:inherit;line-height:1.6}.artifact-editor:focus-visible{outline:2px solid #f3cc6b;outline-offset:2px}.revision-entry{margin:12px 0;padding:12px;background:#101b29;border-radius:8px;border:1px solid #33445b}.revision-entry strong{font-size:12px;color:#e6eff7}.revision-entry pre{max-height:220px;overflow:auto}.result-head{gap:14px;align-items:center;flex-wrap:wrap}
+
+/* P1.11: required OpenClaw status; no raw gateway diagnostics in the browser. */
+.gateway-status{border:1px solid #35475b;border-radius:10px;padding:12px;margin-top:auto}
+.gateway-title{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px}
+.gateway-title span{font-size:10px;color:#f2d181;letter-spacing:.03em}
+.gateway-status p{font-size:11px;line-height:1.5;min-height:30px;margin:10px 0;color:#aebfd0;overflow-wrap:anywhere}
+.gateway-status .gateway-ready{color:#9cdebd}
+.gateway-status button{border:1px solid #52647b;color:#eef2f6;background:#1b2b3f;padding:8px 11px;border-radius:8px;cursor:pointer;font-size:12px}
+.gateway-status button:focus-visible{outline:2px solid #f3cc6b;outline-offset:2px}
+.gateway-status button:disabled{cursor:wait;opacity:.65}
+.side-footer{margin-top:12px}
+@media(max-width:800px){.gateway-status{margin-top:12px}.gateway-status p{min-height:0}}
