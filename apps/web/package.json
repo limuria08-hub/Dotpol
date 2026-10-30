@@ -31,5 +31,10 @@
     "@tailwindcss/postcss": "4.3.3",
     "postcss": "8.5.31",
     "@axe-core/playwright": "4.14.0"
+  },
+  "overrides": {
+    "next": {
+      "postcss": "8.5.31"
+    }
   }
 }
