@@ -2,6 +2,8 @@
 
 **Updated 2026-10-29. Canonical delivery structure: five phases only.** Milestones 0–12 retained below as detailed work packages mapped to these five phases, not alternative phases. This document works with [Master Plan](MASTER_PLAN.md), [ADR-0004](DECISIONS/0004-five-phase-execution-and-service-isolation.md), and the single-owner [capability registry](../architecture/capabilities.yml). No untested item may be marked complete.
 
+**Open-source UI execution:** [OSS UI Adoption Plan](OSS_UI_ADOPTION_PLAN.md) defines agent-ready UI-01–UI-09 across P1–P5. UI integration uses one Next.js shell and Dotpol backend, and must not displace the five phase structure.
+
 ## P1 — Foundation, AI, political data and cited research (former 0–3)
 
 **Goal:** one installable local AI political-research terminal, one canonical data/evidence model, one research interface.
