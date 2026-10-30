@@ -28,6 +28,7 @@ async function api<T>(path:string,method='GET',body?:unknown):Promise<T> {
 
 export default function Home(){
  const sourceInputRef=useRef<HTMLInputElement>(null);
+ const activeProjectIdRef=useRef<string|null>(null);
  const [projects,setProjects]=useState<Project[]>([]);
  const [project,setProject]=useState<Project|null>(null);
  const [sources,setSources]=useState<Source[]>([]);
@@ -56,7 +57,7 @@ export default function Home(){
   setMessage('Local research engine connected.');
   const state=await api<ModelStatus>('/api/ai/status');setAi(state);
  }catch(e){setMessage((e as Error).message)}}
- async function load(p:Project){setProject(p);setSelected(null);setRevisions([]);setEditing(false);setDraft('');setRemoteConsent(false);
+ async function load(p:Project){activeProjectIdRef.current=p.id;setProject(p);setSelected(null);setRevisions([]);setEditing(false);setDraft('');setRemoteConsent(false);
   try {const [s,a]=await Promise.all([api<Source[]>(`/api/projects/${p.id}/sources`),api<Artifact[]>(`/api/projects/${p.id}/artifacts`)]);
    setSources(s);setArtifacts(a);
   }catch(e){setMessage((e as Error).message)}
@@ -81,13 +82,17 @@ export default function Home(){
  }
  async function ask(input?:string){const query=typeof input==='string'?input:question;
   if(!project||!query.trim()||loading)return;
+  const targetProject=project;
   // Consent applies to this single request only, including errors and retries.
   const approvedForThisRequest=remoteConsent && ai?.provider==='openai-compatible';
   setRemoteConsent(false);setLoading(true);
-  try{const res=await api<{artifact:Artifact,retrieval_mode?:string,retrieval_degraded?:string|null}>(`/api/projects/${project.id}/research`,'POST',{question:query,mode:evidenceOnly?'extractive':'auto',allow_remote_evidence:approvedForThisRequest});
+  try{const res=await api<{artifact:Artifact,retrieval_mode?:string,retrieval_degraded?:string|null}>(`/api/projects/${targetProject.id}/research`,'POST',{question:query,mode:evidenceOnly?'extractive':'auto',allow_remote_evidence:approvedForThisRequest});
+   // Late answers belong to the project that issued the request. Never render
+   // them in another project's current conversation after a project switch.
+   if(activeProjectIdRef.current!==targetProject.id)return;
    void openArtifact(res.artifact);setArtifacts(old=>[res.artifact,...old]);setQuestion('');setRemoteConsent(false);setMessage(res.artifact.generation_method==='ai-synthesis'?'AI research saved with verified source references.':res.artifact.generation_method==='no-evidence'?'No matching evidence. No political claims were generated.':'Source evidence saved. Configure a model to enable AI synthesis.');
    if(res.retrieval_degraded)setProbeStatus(res.retrieval_degraded);
-  }catch(e){setMessage((e as Error).message)}finally{setLoading(false)}
+  }catch(e){if(activeProjectIdRef.current===targetProject.id)setMessage((e as Error).message)}finally{setLoading(false)}
  }
  async function probe(){try{setProbeStatus('Checking local Ollama…');const result=await api<{status:string,detail:string,ready:boolean}>('/api/ai/probe-local','POST',{});setProbeStatus(`${result.status}: ${result.detail}`)}catch(e){setProbeStatus((e as Error).message)}}
  async function checkOpenClaw(){
