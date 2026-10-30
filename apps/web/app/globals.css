@@ -52,3 +52,27 @@
 .thread-item-footer button:focus-visible{outline:2px solid #f3cc6b;outline-offset:2px}
 @media(max-width:1050px){.columns{grid-template-columns:1fr;gap:14px}.research-split{height:auto!important;min-height:0}.research-stacked .pane,.research-stacked .workspace{min-height:0}}
 @media(prefers-reduced-motion:reduce){.research-resize-handle,.thread-item-footer button{transition:none}}
+
+
+/* UI-03 assistant-ui ExternalStoreRuntime, project-owned Tailwind/Radix visual system.
+ * No remote message store; all artifacts come from the existing local API. */
+.conversation-mode{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.assistant-research-thread{display:flex;flex-direction:column;gap:12px;min-width:0;min-height:280px;margin-top:14px;border-top:1px solid #304054;padding-top:14px}
+.assistant-thread-viewport{display:flex;flex-direction:column;gap:14px;overflow-y:auto;max-height:460px;min-height:150px;padding:4px 6px}
+.assistant-message{display:flex;flex-direction:column;gap:8px;max-width:100%;overflow-wrap:anywhere}
+.assistant-message-user{align-items:flex-end}
+.assistant-message-answer{align-items:flex-start}
+.assistant-message-content{max-width:100%;white-space:pre-wrap;line-height:1.65;background:#213146;border:1px solid #35485d;border-radius:12px;padding:10px 13px;color:#e4ecf5;font-size:13px}
+.assistant-message-user .assistant-message-content{background:#304053;color:#f6ead1}
+.assistant-message-content p{margin:0}
+.assistant-artifact-actions{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;width:100%}
+.assistant-evidence-label{color:#a7bad0;font-size:11px}
+.assistant-artifact-actions button{display:inline-flex;align-items:center;gap:6px;border:1px solid #405d78;border-radius:8px;background:#283b53;color:#f2d181;padding:7px 10px;cursor:pointer;font-size:12px}
+.assistant-artifact-actions button:focus-visible{outline:2px solid #f3cc6b;outline-offset:2px}
+.assistant-composer{display:flex;align-items:flex-end;gap:10px;margin-top:4px;padding:8px;background:#111e2c;border:1px solid #394b61;border-radius:12px}
+.assistant-composer-input{flex:1;min-width:0;min-height:66px;max-height:200px;resize:vertical;background:transparent;border:0;color:#ecf2f8;font:inherit;font-size:13px;padding:9px;outline:none}
+.assistant-composer-input:focus-visible{outline:2px solid #f3cc6b;outline-offset:2px;border-radius:6px}
+.assistant-composer-send{display:inline-flex;align-items:center;gap:6px;flex-shrink:0;background:#f3cc6b;color:#171a21;padding:10px;border:0;border-radius:9px;font-weight:700;cursor:pointer}
+.assistant-composer-send:disabled{opacity:.45;cursor:not-allowed}
+.assistant-composer-send:focus-visible{outline:2px solid #fff;outline-offset:2px}
+@media(max-width:600px){.assistant-composer{align-items:stretch;flex-direction:column}.assistant-composer-send{justify-content:center}}
