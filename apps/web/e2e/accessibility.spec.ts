@@ -66,7 +66,7 @@ test('390px stacked workbench remains accessible and does not overflow',async({p
   await importEvidence(page);
   await page.getByRole('button',{name:'Assistant conversation'}).click();
   await page.getByRole('textbox',{name:'Assistant research question'}).fill('education budget');
-  await page.getByRole('button',{name:'Send assistant research question'}).click();
+  await page.getByRole('button',{name:'Ask AI'}).click();
   await expect(page.locator('article.result')).toContainText('42 units');
   await assertAccessible(page,'narrow assistant view');
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1)).toBe(true);
@@ -85,7 +85,7 @@ test('local no-model UI makes zero requests to external origin during research f
   await importEvidence(page);
   await page.getByRole('button',{name:'Assistant conversation'}).click();
   await page.getByRole('textbox',{name:'Assistant research question'}).fill('education budget');
-  await page.getByRole('button',{name:'Send assistant research question'}).click();
+  await page.getByRole('button',{name:'Ask AI'}).click();
   await expect(page.locator('article.result')).toContainText('42 units');
   await expect(page.getByRole('button',{name:'Check gateway'})).toBeVisible();
   expect(unexpected,'Local app must not request remote assets or services without opt-in').toEqual([]);
