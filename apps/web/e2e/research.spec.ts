@@ -125,11 +125,21 @@ test('narrow viewport retains keyboard-accessible uploads without horizontal ove
   await makeProject(page, title);
   await expect(page.getByRole('heading', { name: 'Ask LiOS.Pol AI' })).toBeVisible();
 
-  // The visible upload button must be reachable by Tab; its hidden native
-  // input is activated from that button and is not a competing tab stop.
-  await page.getByRole('button', { name: title, exact: true }).focus();
-  await page.keyboard.press('Tab');
-  await expect(page.getByRole('button', { name: 'Import source' })).toBeFocused();
+  // Keyboard activation must open the native file chooser and complete an
+  // actual source import (not just focus a hidden input programmatically).
+  const importButton = page.getByRole('button', { name: 'Import source' });
+  await expect(importButton).toBeEnabled();
+  await importButton.focus();
+  await expect(importButton).toBeFocused();
+  const chooserPromise = page.waitForEvent('filechooser');
+  await page.keyboard.press('Enter');
+  const chooser = await chooserPromise;
+  await chooser.setFiles({
+    name: 'keyboard-source.txt',
+    mimeType: 'text/plain',
+    buffer: Buffer.from('Synthetic keyboard source: local import verified.'),
+  });
+  await expect(page.getByRole('status').first()).toContainText('Imported keyboard-source.txt');
   expect(await page.evaluate(() =>
     document.documentElement.scrollWidth <= window.innerWidth + 1,
   )).toBeTruthy();
