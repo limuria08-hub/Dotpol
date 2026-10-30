@@ -12,6 +12,7 @@ type Artifact={id:string,question:string,answer:string,evidence:Evidence[],creat
 type ArtifactRevision={revision:number,answer:string,saved_at:string,origin:'generated'|'user-edited'};
 type ModelStatus={status:string,configured:boolean,provider?:string,model?:string|null,message:string};
 type OpenClawStatus={component:'openclaw',required_for_release:boolean,ready:boolean,status:string,detail:string};
+type OpenClawAudit={component:'openclaw',required_for_release:boolean,audit_performed:boolean,review_required:boolean,status:string,detail:string,critical_count?:number,warning_count?:number,suppressed_count?:number};
 async function api<T>(path:string,method='GET',body?:unknown):Promise<T> {
  const response=await fetch(API+path,{method,headers:{'Content-Type':'application/json','X-Dotpol-Local':'1'},body:body?JSON.stringify(body):undefined,cache:'no-store'});
  const data=await response.json();
@@ -39,6 +40,8 @@ export default function Home(){
  const [probeStatus,setProbeStatus]=useState('');
  const [openClaw,setOpenClaw]=useState<OpenClawStatus|null>(null);
  const [checkingOpenClaw,setCheckingOpenClaw]=useState(false);
+ const [openClawAudit,setOpenClawAudit]=useState<OpenClawAudit|null>(null);
+ const [checkingOpenClawAudit,setCheckingOpenClawAudit]=useState(false);
  async function refresh(){try{
   const list=await api<Project[]>('/api/projects');setProjects(list);
   setMessage('Local research engine connected.');
@@ -86,6 +89,18 @@ export default function Home(){
     detail:'Could not verify the local OpenClaw gateway.'});
   }finally{setCheckingOpenClaw(false)}
  }
+ async function runOpenClawAudit(){
+  if(checkingOpenClawAudit)return;
+  setCheckingOpenClawAudit(true);
+  try{
+   const state=await api<OpenClawAudit>('/api/openclaw/audit','POST');
+   setOpenClawAudit(state);
+  }catch{
+   setOpenClawAudit({component:'openclaw',required_for_release:true,
+    audit_performed:false,review_required:true,status:'audit-unavailable',
+    detail:'Could not complete the local OpenClaw security audit.'});
+  }finally{setCheckingOpenClawAudit(false)}
+ }
  async function openArtifact(a:Artifact){
   setSelected(a);setDraft(a.answer);setEditing(false);setRevisions([]);
   if(!project)return;
@@ -122,6 +137,12 @@ export default function Home(){
     <button type="button" disabled={checkingOpenClaw} onClick={()=>{void checkOpenClaw()}}>
      {checkingOpenClaw?'Checking…':'Check gateway'}
     </button>
+    <button type="button" disabled={checkingOpenClawAudit} onClick={()=>{void runOpenClawAudit()}}>
+     {checkingOpenClawAudit?'Auditing…':'Security audit'}
+    </button>
+    <p role="status" aria-live="polite" className={openClawAudit?.audit_performed&&!openClawAudit.review_required?'gateway-ready':'gateway-detail'}>
+     {openClawAudit?.detail||'Security audit not run'}
+    </p>
    </section>
    <div className="side-footer"><span className="dot"/> Local research preview</div>
   </aside>
