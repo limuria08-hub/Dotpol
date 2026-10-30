@@ -9,7 +9,7 @@ type SourceSummary={id:string;name:string;sha256:string;kind:string;status:strin
 export function SourceDetailsDialog({source}:{source:SourceSummary}){
  return <Dialog.Root>
   <Dialog.Trigger asChild>
-   <Button variant="ghost" size="sm" aria-label={`Inspect source ${source.name}`}>
+   <Button variant="ghost" size="sm" aria-label={`Source details — Inspect source ${source.name}`}>
     <FileText size={15} aria-hidden="true"/> Source details
    </Button>
   </Dialog.Trigger>
