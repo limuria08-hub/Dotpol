@@ -116,10 +116,16 @@ test('stale browser edit is rejected and cannot overwrite the newer revision', a
   await second.close();
 });
 
-test('narrow viewport supports local research without horizontal overflow', async ({ page }) => {
+test('narrow viewport retains keyboard-accessible uploads without horizontal overflow', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await makeProject(page, 'P1 mobile ' + Date.now());
+  const title = 'P1 mobile ' + Date.now();
+  await makeProject(page, title);
   await expect(page.getByRole('heading', { name: 'Ask LiOS.Pol AI' })).toBeVisible();
+
+  // The source input must remain in keyboard order even when visually hidden.
+  await page.getByRole('button', { name: title, exact: true }).focus();
+  await page.keyboard.press('Tab');
+  await expect(page.locator('input[type="file"]')).toBeFocused();
   expect(await page.evaluate(() =>
     document.documentElement.scrollWidth <= window.innerWidth + 1,
   )).toBeTruthy();
