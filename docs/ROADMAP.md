@@ -15,7 +15,7 @@
 | **Selective assimilation** | Copy only reviewed modules with copyright notices, test and upstream pin | Existing Vane fork, India-election parsers, selected OPOL routines | Do not bulk-merge the whole donor app |
 | **Reference only** | Learn design/contracts, import **no** source code without separate approval | Open Politics HQ, full civic apps and unrelated backend frameworks | Don't introduce competing stacks |
 
-**OpenClaw is REQUIRED for the completed LiOS.Pol product**, not an optional gateway. Reuse the full maintained `openclaw/openclaw` local agent/channel/device/skills system through supported interfaces. Adopt its authenticated WebSocket gateway and CLI rather than copying the complete application. P1 proves gateway lifecycle/readiness and safe contracts; P4 brings authorized team/channel workflows; P5 verifies full integration. OpenClaw does not displace PydanticAI's evidence-grounded political research or Dotpol's canonical records. **OpenCloud is excluded from scope entirely** and must not be added as a donor, adapter or runtime.
+**OpenClaw is REQUIRED for the completed LiOS.Pol product**, not an optional gateway. Reuse the full maintained `openclaw/openclaw` local agent/channel/device/skills system through supported interfaces. Adopt its authenticated WebSocket gateway and CLI rather than copying the complete application. P1 proves gateway lifecycle/readiness and safe contracts; P4 brings authorized team/channel workflows; P5 verifies full integration. OpenClaw does not displace PydanticAI's evidence-grounded political research or Dotpol's canonical records. Do not add any unrelated file-collaboration donor, adapter or runtime.
 
 ### Permanent agent lanes and ownership
 
@@ -112,7 +112,7 @@ Agents may work concurrently only after shared contracts have an owning reviewer
 - [ ] **P5.09 · F — Resilience/security:** AI prompt-injection, remote-consent, unauthorized tool/cross-team access, API exposure, secrets, offline/reconnect, throughput and restore tests.
 - [ ] **P5.10 · F — Exit gate:** reproducible local and approved shared deployment, final integrated research→analysis→field→report flows, release artifacts and contributor documentation.
 
-**Done when:** local first-run, optional organization deployment and optional OpenClaw channels are independently reproducible, secure, maintained and fully documented.
+**Done when:** local first-run, optional organization deployment and required OpenClaw channels are independently reproducible, secure, maintained and fully documented.
 
 ## Execution protocol and completion gates
 
