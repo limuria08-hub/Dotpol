@@ -29,6 +29,7 @@
     "@playwright/test": "^1.56.1",
     "tailwindcss": "4.3.3",
     "@tailwindcss/postcss": "4.3.3",
-    "postcss": "8.5.31"
+    "postcss": "8.5.31",
+    "@axe-core/playwright": "4.14.0"
   }
 }
