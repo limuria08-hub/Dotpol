@@ -66,6 +66,22 @@ Agents may work concurrently only after shared contracts have an owning reviewer
 
 **Done when:** the same source/versioned election dataset produces auditable tables, maps, statistical findings and cited AI interpretations, with correct boundary dates and survey limitations.
 
+### P2.01 implementation slice — normalized candidate results (stacked on P1)
+
+**Branch:** `feat/p2-01-election-results-import-20261030`. **Owner:** Agent D + A for source/identity contracts; Agent F for tests. This initial import **does not satisfy full P2.01 official source verification, P2.02 candidate entity resolution, P2.03 delimitation reconciliation or P2.11 exit.** Completion remains unchecked until official datasets/rights and integration acceptance are verified.
+
+1. Import a CSV as an existing P1 project source; original bytes are represented by its canonical source content and SHA-256. To avoid claiming official ECI support, normalize reviewed source columns explicitly to this fixed v1 schema:
+   `election,year,constituency,boundary_version,candidate,party,votes,total_valid_votes`.
+2. Invoke `POST /api/projects/{project_id}/election-results/import` with `{"source_id":"<existing-project-source-id>"}`. Get import details at `GET /api/projects/{project_id}/election-results/imports/{import_id}`.
+3. The importer is local and deterministic. It validates year, numeric votes, unique candidate labels per contest, matching declared denominators and one boundary version per contest; it refuses totals exceeded by supplied candidate votes. A single SQLite transaction writes normalized result rows plus reused P1 election/party/constituency/boundary-version IDs. No model or remote provider runs.
+4. Each result row links to the **source file hash, project, import ID and original CSV physical line**. The quality report exposes whether supplied candidate votes cover their *own declared* total. This is **not** official validation, source independence, a winners list, an inference about voter preferences, or proof of constituency boundary equivalence.
+5. If a source is withdrawn later, imports retain an explicit withdrawn source status and cannot be used as current verified evidence. An identical source ID cannot be imported twice; revised sources require new source IDs and provenance.
+6. Use `PYTHONPATH=platform/src:services/api python -m pytest tests/test_election_results.py -q`. Local fixture: synthetic constituencies and candidates, not real voters or official results.
+
+**Next prerequisite before connecting actual ECI records:** review ECI's official [statistical reports](https://www.eci.gov.in/statistical-reports) and each chosen data resource's usage rights and field semantics, then add a **single mapping adapter** that outputs the normalized CSV. Do not bulk-import open-source election datasets or mark ECI integration verified without source-by-source checks.
+
+
+
 ## Phase 3 — Policy, legislation, media, governance and advanced simulations
 **Epic:** [#8](https://github.com/limuria08-hub/Dotpol/issues/8) · **Former milestones:** 7–9 · **Owners:** D, C, B, E.
 
