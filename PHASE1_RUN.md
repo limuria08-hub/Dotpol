@@ -1,6 +1,6 @@
 # Dotpol Phase 1 — runnable local research foundation
 
-**Implementation scope:** local projects, TXT/CSV/JSON imports, SHA-256 source lineage, exact line-level retrieval, AI-native cited research with a configured model, artifact persistence, no-key mode, a Next.js workspace and safety tests. The shared model gateway uses PydanticAI and supports local Ollama or explicitly configured HTTPS BYOAI. A real model has not been exercised in this environment. This is **not** full political ETL, LanceDB hybrid indexing, advanced GIS or organization login. See the [five-phase roadmap](docs/ROADMAP.md).
+**Implementation scope:** local projects, TXT/CSV/JSON imports and optional local Docling PDF/DOCX conversion, SHA-256 source lineage, exact line-level retrieval, AI-native cited research with a configured model, artifact persistence, no-key mode, a Next.js workspace and safety tests. The shared model gateway uses PydanticAI and supports local Ollama or explicitly configured HTTPS BYOAI. A real model has not been exercised in this environment. This is **not** full political ETL, LanceDB hybrid indexing, advanced GIS or organization login. See the [five-phase roadmap](docs/ROADMAP.md).
 
 ## Requirements
 
@@ -39,7 +39,7 @@ npm install
 npm run dev
 ```
 
-Open `http://127.0.0.1:3000` or `http://localhost:3000`. Create a project, import a source and ask about a phrase inside it. Open a saved artifact, inspect line/source hash and export JSON. Files are sent only to the local FastAPI process. Maximum input size is 1 MiB per file for this preview. Do not expose the service beyond localhost; no organization authentication is implemented.
+Open `http://127.0.0.1:3000` or `http://localhost:3000`. Create a project, import a source and ask about a phrase inside it. Open a saved artifact, inspect its evidence, edit under the same artifact ID, inspect revision history and export JSON. Human edits remain explicitly unverified until their claims are independently reviewed. Files are sent only to the local FastAPI process. Maximum input size is 1 MiB per file for this preview. Do not expose the service beyond localhost; no organization authentication is implemented.
 
 ## Test
 
@@ -48,14 +48,23 @@ python -m pytest -q
 cd apps/web && npm run build
 ```
 
-The browser build requires dependencies to have been installed; not yet verified locally because npm dependencies are unavailable here. CI will attempt the build in GitHub Actions.
+The browser build requires installed npm dependencies; GitHub Actions independently builds the production app. For a local browser acceptance run, start both the API and web as described above, then:
+
+```bash
+cd apps/web
+npm install
+npx playwright install chromium
+npm run test:e2e
+```
+
+The CI `browser-e2e` job installs Chromium's OS dependencies, starts the local API and production Next.js application, then tests browser import, evidence-only research, saved revisions/reopen, cross-tab conflicts, no-evidence abstention and keyboard-accessible upload. It does not substitute for testing a real model or public deployment.
 
 ## P1 checklist status
 
 - **Implemented, locally tested:** SQLite persistence, import validation, scoped source records, SHA-256 lineage, exact-evidence citation checks, deterministic retrieval, no-evidence state, source withdrawal, API origin/host/mutation checks.
-- **Implemented, not yet browser-tested:** Next.js research workspace, file import, saved artifacts and JSON export.
+- **Implemented and subject to Chromium acceptance:** Next.js research workspace, source import, saved artifacts with PATCH-based human edits and revision history, JSON export and keyboard-accessible file-picker button.
 - **Implemented with mocked AI service tests (live model not verified):** PydanticAI local Ollama and opt-in HTTPS BYOAI adapter, source-grounded AI synthesis path, citation validation, model metadata and persistence, no-model fallback.
-- **Not implemented:** LanceDB hybrid retrieval, Docling PDF parsing, organization login, independent OS release and comprehensive security review. A live model run and browser build remain verification gates. Do not mark P1 verified or released.
+- **Not verified/complete:** LanceDB hybrid retrieval, live Docling engine conversion (optional adapter only), organization login, real-model inference, independent OS release and comprehensive security review. Do not mark P1 verified or released.
 
 ## Trust boundaries
 
@@ -63,15 +72,21 @@ Data and citations are linked to original text but source correctness is not gua
 
 ## P1 current verification ledger (2026-10-30)
 
-- Local backend verification: `PYTHONPATH=platform/src:services/api pytest -q` — **11 passed** (including external model per-request consent, local-only model probe, and provider endpoint guards).
-- Browser: not built here. `npm install --offline` returned `ENOTCACHED` for dependencies. GitHub CI is the required next build verification.
+- Backend verification: `python -m pytest -q` is executed on every implementation PR by GitHub CI, including request-consent, migration, revision-conflict, document-adapter and source-evidence tests. Use the latest linked PR check for the current result.
+- Browser: GitHub CI builds the production Next.js application and runs Playwright/Chromium against the real localhost API. Synthetic-only/no-model browser journeys are distinct from real Ollama inference.
 - Real Ollama inference: **not verified**; explicit probe verifies only that the configured model is listed, not that it produces a correct answer.
 - Trust: PydanticAI prompt citations are validated for existing IDs, lines and hashes, **not** semantically fact-checked claim by claim; review is required for high-stakes claims.
-- Auth, paid-free local AI availability, comprehensive hybrid retrieval, document/OCR import and full Phase 1 security remain open acceptance gates.
+- Auth, real local AI inference, hybrid retrieval, live Docling extraction/OCR, accessibility audit, dependency locks and full Phase 1 security remain open acceptance gates.
 
 ## Optional LanceDB keyword index (next P1 retrieval integration)
 
 The normal local-only retrieval path uses verified project source lines. To enable the selected LanceDB full-text engine, install `python -m pip install -e '.[test,search]'` and set `DOTPOL_SEARCH_ENGINE=auto` (default) or `lancedb`. Index data is derived under `DOTPOL_DATA_DIR/search-index/<project>`; SQLite remains canonical. A missing or failed index is reported as a degraded literal scan, never falsely as indexed retrieval. Every index hit is checked against current source bytes, project ID, line number, SHA-256 and active/withdrawn state. This provides **keyword FTS**, not semantic embeddings or hybrid vector retrieval yet. Run `pytest tests/test_search_index.py -q` with the optional package installed to verify real index rebuild and withdrawal.
+
+## P1.09 Canonical artifact revision contract
+
+- `PATCH /api/projects/{project_id}/artifacts/{artifact_id}` accepts `{"answer":"...","expected_revision":1}` with the required local mutation header.
+- `GET /api/projects/{project_id}/artifacts/{artifact_id}/revisions` returns immutable generation/human-edit snapshots. The UI displays history, allows editing and reopening, and retains **the same artifact ID** across revisions.
+- Concurrent stale edits receive HTTP 409; a human edit is flagged `user-edited-unverified`. Original source evidence and AI generation metadata are preserved but **do not automatically validate edited claims**. No extra document database or model gateway is created.
 
 ## P1.03 Optional Docling document import (2026-10-30)
 
