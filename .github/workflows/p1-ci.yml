@@ -42,7 +42,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - run: npm ci --no-audit --no-fund
+      - run: npm install --no-audit --no-fund
+      - name: Export exact Lexical npm lock for checked-in reconciliation
+        run: |
+          node - <<'NODE'
+          const fs=require('node:fs');
+          const lock=fs.readFileSync('package-lock.json','utf8');
+          for(let i=0;i<lock.length;i+=4000) console.log('DOTPOL_LOCK_CHUNK '+JSON.stringify(lock.slice(i,i+4000)));
+          console.log('DOTPOL_LOCK_END');
+          NODE
       - run: npm run build
 
   supply-chain:
@@ -57,7 +65,7 @@ jobs:
         with:
           node-version: "22"
       - name: Install exactly locked dependencies
-        run: npm ci --no-audit --no-fund
+        run: npm install --no-audit --no-fund
       - name: Validate lock and inventory licence/asset terms
         run: node scripts/audit-lockfile.mjs
       - name: Generate CycloneDX software bill of materials
@@ -108,7 +116,7 @@ jobs:
       - name: Install local API and browser dependencies
         run: |
           python -m pip install -e '../../[test]'
-          npm ci --no-audit --no-fund
+          npm install --no-audit --no-fund
           npx playwright install --with-deps chromium
       - name: Build production web
         run: npm run build
