@@ -46,11 +46,11 @@ test('real browser: import → cited extract → same-ID edit → restart/reopen
   const id: string = result.artifact.id;
   const projectId: string = result.artifact.project_id;
   await expect(page.locator('article.result')).toContainText('120 units');
-  await page.getByRole('button', { name: 'Edit', exact: true }).click();
+  await page.getByRole('button', { name: 'Edit in workbench', exact: true }).click();
   const revisedText = 'Human-reviewed summary: synthetic water budget is 120 units.';
-  await page.getByLabel('Edit the saved research text').fill(revisedText);
+  await page.getByLabel('Edit research artifact').fill(revisedText);
   await page.getByRole('button', { name: 'Save revision' }).click();
-  await expect(page.locator('article.result')).toContainText('Human-edited revision 2');
+  await expect(page.locator('article.result')).toContainText('Revision 2 · Edited — citations need review');
   await expect(page.locator('article.result')).toContainText(revisedText);
 
   const stored = await request.get(`${API}/api/projects/${projectId}/artifacts/${id}`);
@@ -58,7 +58,7 @@ test('real browser: import → cited extract → same-ID edit → restart/reopen
   const artifact = await stored.json();
   expect(artifact.id).toBe(id);
   expect(artifact.revision).toBe(2);
-  expect(artifact.last_editor).toBe('human');
+  expect(artifact.review_status).toBe('user-edited-unverified');
   expect(artifact.generation_method).toBe('extractive');
   expect(artifact.evidence).toEqual(result.artifact.evidence);
 
@@ -70,7 +70,7 @@ test('real browser: import → cited extract → same-ID edit → restart/reopen
   await expect(page.locator('article.result')).toContainText(revisedText);
   await page.locator('article.result').getByText('Revision history (2)').click();
   await expect(page.locator('.revision-entry')).toHaveCount(2);
-  await expect(page.locator('.revision-entry').first()).toContainText('original');
+  await expect(page.locator('.revision-entry').first()).toContainText('generated');
   await expect(page.locator('.revision-entry').last()).toContainText(revisedText);
 });
 
@@ -101,16 +101,16 @@ test('stale browser edit is rejected and cannot overwrite the newer revision', a
   await second.goto('/');
   await second.getByRole('button', { name: title, exact: true }).click();
   await second.locator('.artifact-list').getByRole('button', { name: /water budget/ }).click();
-  await second.getByRole('button', { name: 'Edit', exact: true }).click();
-  await second.getByLabel('Edit the saved research text').fill('Stale second-tab edit');
+  await second.getByRole('button', { name: 'Edit in workbench', exact: true }).click();
+  await second.getByLabel('Edit research artifact').fill('Stale second-tab edit');
 
-  await page.getByRole('button', { name: 'Edit', exact: true }).click();
-  await page.getByLabel('Edit the saved research text').fill('First-tab accepted edit');
+  await page.getByRole('button', { name: 'Edit in workbench', exact: true }).click();
+  await page.getByLabel('Edit research artifact').fill('First-tab accepted edit');
   await page.getByRole('button', { name: 'Save revision' }).click();
-  await expect(page.locator('article.result')).toContainText('Human-edited revision 2');
+  await expect(page.locator('article.result')).toContainText('Revision 2 · Edited — citations need review');
 
   await second.getByRole('button', { name: 'Save revision' }).click();
-  await expect(second.getByRole('status').first()).toContainText('changed elsewhere');
+  await expect(second.getByRole('status').first()).toContainText('modified by another edit');
   const stored = await request.get(`${API}/api/projects/${projectId}/artifacts/${artifactId}`);
   expect(stored.ok()).toBeTruthy();
   const artifact = await stored.json();
