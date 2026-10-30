@@ -329,11 +329,11 @@ curl -X POST -H 'X-Dotpol-Local: 1' -H 'Content-Type: application/json' \
   http://127.0.0.1:8765/api/projects/PROJECT_ID/compare
 ```
 
-If fewer than two independent project sources match, the report states that comparison is **not supported**. If at least two match, it produces a **source excerpt matrix**, not a fabricated agreement/disagreement judgment. Original hashes, source IDs, lines and excerpts must pass the existing SQLite artifact verification. Withdrawn/cross-project sources cannot appear in newly saved comparisons. The current API is deliberately deterministic and does **not** claim to be a completed autonomous multi-step research agent.
+If fewer than two distinct project source records appear among retrieved matches, the report states that comparison is **not supported**. If at least two records match, it produces a **source excerpt matrix**, not a fabricated agreement/disagreement judgment. Original hashes, source IDs, lines and excerpts must pass the existing SQLite artifact verification. Withdrawn/cross-project sources cannot appear in newly saved comparisons. The current API is deliberately deterministic and does **not** claim to be a completed autonomous multi-step research agent.
 
 ```bash
 PYTHONPATH=platform/src:services/api python -m pytest tests/test_cross_source.py -q
 ```
 
-Remaining P1.07 quality gate: evaluate independent sources with real user-supplied documents, run configured local AI synthesis against the verified matrix, and review conclusions/limitations before accepting an evidence-grounded research brief.
+Remaining P1.07 quality gate: evaluate source independence and original provenance of with real user-supplied documents, run configured local AI synthesis against the verified matrix, and review conclusions/limitations before accepting an evidence-grounded research brief.
 
