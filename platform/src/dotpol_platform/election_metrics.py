@@ -163,11 +163,7 @@ def compare_imports(store: Store, project_id: str, earlier_id: str,
             continue
         old, new = old[0], new[0]
         if old["year"] >= new["year"]:
-            skipped.append({
-                "constituency_id": key[0], "boundary_version_id": key[1],
-                "reason": "Comparison requires strictly increasing election years.",
-            })
-            continue
+            raise InvalidInput("Historical comparison requires strictly increasing election years")
         if _election_family(store, project_id, old["election_id"], old["year"]) != _election_family(
             store, project_id, new["election_id"], new["year"]
         ):
