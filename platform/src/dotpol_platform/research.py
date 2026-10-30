@@ -1,4 +1,5 @@
 """Deterministic source retrieval, preserving exact project-scoped line evidence."""
+import os
 import re
 from .store import InvalidInput
 
@@ -15,6 +16,21 @@ def search(store, project_id: str, question: str, limit: int = 8) -> dict:
     words = terms(question)
     if not 1 <= limit <= 25:
         raise InvalidInput('Limit must be 1–25')
+    # Selected one-index strategy: LanceDB when installed. A failed index
+    # is explicitly reported as degraded, then safe canonical-source text
+    # matching remains available without introducing a second index.
+    backend = os.getenv('DOTPOL_SEARCH_ENGINE', 'auto').strip().lower()
+    if backend not in {'auto', 'literal', 'lancedb'}:
+        raise InvalidInput('Unknown search engine')
+    degraded = None
+    if words and backend != 'literal':
+        from .search_index import search_fts, SearchIndexUnavailable
+        try:
+            hits = search_fts(store, project_id, ' '.join(words), limit)
+            return {'query': question, 'matches': hits, 'has_evidence': bool(hits),
+                    'mode': 'lancedb-fts', 'notice': 'Indexed keyword matches are validated against active project source lines; matches alone do not prove claims.'}
+        except SearchIndexUnavailable:
+            degraded = 'LanceDB FTS unavailable; used canonical-source literal retrieval instead.'
     candidates=[]
     for source_meta in store.sources(project_id):
         if source_meta['status']!='active':
@@ -34,11 +50,12 @@ def search(store, project_id: str, question: str, limit: int = 8) -> dict:
     candidates.sort(key=lambda pair:(-pair[0],pair[1]['source_name'],pair[1]['line']))
     matches=[item for _,item in candidates[:limit]]
     return {'query':question,'matches':matches,'has_evidence':bool(matches),'mode':'literal-line-retrieval',
+            'degraded': degraded,
             'notice':'Results match source text. A match alone does not prove a political claim.'}
 
 
-def research(store, project_id: str, question: str) -> dict:
-    result=search(store,project_id,question)
+def research(store, project_id: str, question: str, *, retrieved: dict | None = None) -> dict:
+    result=retrieved if retrieved is not None else search(store,project_id,question)
     if not result['has_evidence']:
         answer='No matching evidence in the active sources of this project. No answer was inferred.'
     else:
@@ -46,7 +63,8 @@ def research(store, project_id: str, question: str) -> dict:
         answer='Matching source excerpts (not an AI-generated conclusion):\n'+'\n'.join(snippets)
     artifact=store.save_artifact(project_id,question,answer,result['matches'], generation_method='extractive' if result['has_evidence'] else 'no-evidence')
     return {'answer':answer,'artifact':artifact,'has_evidence':result['has_evidence'],
-            'ai_generated':False,'model_status':'not-invoked','generation_method':artifact['generation_method']}
+            'ai_generated':False,'model_status':'not-invoked','generation_method':artifact['generation_method'],
+            'retrieval_mode':result['mode'],'retrieval_degraded':result.get('degraded')}
 
 
 async def ai_research(store, project_id: str, question: str, mode: str = 'auto', *, allow_remote_evidence: bool = False) -> dict:
@@ -65,9 +83,10 @@ async def ai_research(store, project_id: str, question: str, mode: str = 'auto',
             'No matching evidence in this project. LiOS.Pol will not generate an unsupported political claim.',
             [], generation_method='no-evidence')
         return {'answer': artifact['answer'], 'artifact': artifact, 'has_evidence': False,
-                'ai_generated': False, 'model_status': 'not-invoked-no-evidence', 'generation_method': 'no-evidence'}
+                'ai_generated': False, 'model_status': 'not-invoked-no-evidence', 'generation_method': 'no-evidence',
+                'retrieval_mode': result['mode'], 'retrieval_degraded': result.get('degraded')}
     if mode == 'extractive' or (mode == 'auto' and not config().get('configured')):
-        reply = research(store, project_id, question)
+        reply = research(store, project_id, question, retrieved=result)
         reply['model_status'] = 'not-configured' if mode == 'auto' else 'not-requested'
         return reply
     answer, cited, model_id = await synthesize(question, result['matches'], allow_remote_evidence=allow_remote_evidence)
@@ -76,4 +95,5 @@ async def ai_research(store, project_id: str, question: str, mode: str = 'auto',
     artifact = store.save_artifact(project_id, question, answer, cited,
                                    generation_method='ai-synthesis', model_id=model_id)
     return {'answer': answer, 'artifact': artifact, 'has_evidence': bool(cited),
-            'ai_generated': True, 'model_status': 'completed', 'generation_method': 'ai-synthesis'}
+            'ai_generated': True, 'model_status': 'completed', 'generation_method': 'ai-synthesis',
+            'retrieval_mode': result['mode'], 'retrieval_degraded': result.get('degraded')}
