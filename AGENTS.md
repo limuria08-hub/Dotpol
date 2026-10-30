@@ -33,6 +33,17 @@ If a requested change conflicts with these documents, do not silently invent a n
 - UI is a view over canonical Project/Artifact/Source/RoleGrant IDs. A chat artifact and full workbench must be *the same persisted object*; no visual-only mock data or parallel stores.
 - Ship accessibility/mobile/keyboard and local/no-cloud tests; preserve remote AI consent and no-model behavior while replacing handcrafted UI.
 
+## Clean-repo and full-repository reuse contract
+
+- There is **ONE active plan:** [MASTER_PLAN](docs/MASTER_PLAN.md) for direction, [ROADMAP](docs/ROADMAP.md) for numbered task checklists, and [architecture/execution-plan.yml](architecture/execution-plan.yml) for machine gates. The historical 0–12 requirements are archived for traceability; do not revive them as a separate roadmap.
+- **Do not remove or overwrite unfinished Phase 1 work:** [PR #11](https://github.com/limuria08-hub/Dotpol/pull/11) is the existing AI-native implementation branch. Review/merge its tested components when gates pass; never create a competing app skeleton. UI work follows issue #12.
+- **Don't add root files, redundant plans, empty directories, code dumps, duplicate dependencies or unused forks.** Keep code in its owning module, integration protocols in existing docs and source/licence evidence in donor registries. Do not delete technical/historical evidence without archiving and link checks.
+- Upstream reuse is one of **dependency**, **full isolated service**, **narrow adapted fork**, **reference only**. A whole repo can run as an API sidecar without its code being merged or bundled into Dotpol.
+- **OpenCloud (P4)** is an optional full self-hosted *file/collaboration backend* (`opencloud-eu/opencloud`); its independent AGPL web UI (`opencloud-eu/web`) must not be embedded without separately approved licensing. Authorize each remote file access and keep projects/political evidence in Dotpol.
+- **OpenClaw (P5)** is an optional full *messaging/device/agent gateway* (`openclaw/openclaw`); keep `platform/ai`/PydanticAI as the sole political AI owner. No unrestricted host tools or unreviewed skills. Map channel identities to scoped Dotpol permissions and require explicit consent/credential management.
+- **Neither OpenCloud nor OpenClaw is required** for local-only/₹0 core. Their licences, versions, bundled assets and adapter capabilities must be verified before adoption. Mark every candidate unintegrated until a real successful journey/test demonstrates otherwise.
+- Phase owner lanes **A Platform; B AI/Research; C GIS/Analytics; D Political Intelligence; E UX/Field; F Integration/QA**. Use IDs P1.01–P5.10 from ROADMAP in every PR and scope change. One canonical owner per capability.
+
 ## Five-phase execution contract
 
 - **P1** foundation + evidence-backed research; **P2** elections/GIS/statistics/psephology/field pilot; **P3** policy/media/simulation; **P4** recursive teams/mobile/war room; **P5** automations, optional services and release.
