@@ -6,6 +6,7 @@ DOTPOL_AI_PROVIDER=ollama and DOTPOL_AI_MODEL=<installed model>. It never
 downloads a model or contacts an external provider automatically.
 """
 import os
+import asyncio
 import pytest
 
 from dotpol_platform import ai
@@ -15,12 +16,11 @@ from dotpol_platform import ai
     os.getenv("DOTPOL_LIVE_OLLAMA_TEST") != "1",
     reason="Real Ollama inference requires an explicit opt-in and installed model",
 )
-@pytest.mark.asyncio
-async def test_real_local_ollama_infers_and_cites_source():
+def test_real_local_ollama_infers_and_cites_source():
     cfg = ai.config()
     assert cfg.get("provider") == "ollama", "Live test must use local Ollama, never a remote BYOAI provider"
     assert cfg.get("configured"), "Set DOTPOL_AI_MODEL to a locally installed Ollama model"
-    listed = await ai.probe_local_model()
+    listed = asyncio.run(ai.probe_local_model())
     assert listed["ready"], f"Configured local model not ready: {listed['status']}"
 
     evidence = [{
@@ -28,10 +28,10 @@ async def test_real_local_ollama_infers_and_cites_source():
         "sha256": "b" * 64, "line": 1,
         "excerpt": "The fictional public research project recorded 73 percent turnout in 2024.",
     }]
-    answer, cited, model_id = await ai.synthesize(
+    answer, cited, model_id = asyncio.run(ai.synthesize(
         "In what year did the fictional project record turnout? Cite the line.",
         evidence,
-    )
+    ))
     assert answer.strip() and "[1]" in answer
     assert cited == evidence
     assert model_id == f"ollama:{cfg['model']}"
