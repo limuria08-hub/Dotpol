@@ -38,6 +38,10 @@ class InvalidInput(Exception):
     pass
 
 
+class RevisionConflict(Exception):
+    pass
+
+
 class Store:
     def __init__(self, db_path: str | Path):
         self.db_path = Path(db_path).expanduser().resolve()
@@ -66,7 +70,14 @@ class Store:
                 CREATE TABLE IF NOT EXISTS artifacts (
                     id TEXT PRIMARY KEY, project_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
                     question TEXT NOT NULL, answer TEXT NOT NULL, evidence_json TEXT NOT NULL,
-                    created_at TEXT NOT NULL, generation_method TEXT NOT NULL DEFAULT 'extractive', model_id TEXT
+                    created_at TEXT NOT NULL, generation_method TEXT NOT NULL DEFAULT 'extractive', model_id TEXT,
+                    revision INTEGER NOT NULL DEFAULT 1, updated_at TEXT, last_editor TEXT NOT NULL DEFAULT 'original'
+                );
+                CREATE TABLE IF NOT EXISTS artifact_revisions (
+                    artifact_id TEXT NOT NULL REFERENCES artifacts(id) ON DELETE CASCADE,
+                    revision INTEGER NOT NULL, answer TEXT NOT NULL, edited_at TEXT NOT NULL,
+                    editor_kind TEXT NOT NULL CHECK(editor_kind IN ('original', 'human')),
+                    PRIMARY KEY (artifact_id, revision)
                 );
             """)
         # Migrate previously-created local P1 databases without destroying data.
@@ -76,6 +87,17 @@ class Store:
                 db.execute("ALTER TABLE artifacts ADD COLUMN generation_method TEXT NOT NULL DEFAULT 'extractive'")
             if 'model_id' not in columns:
                 db.execute("ALTER TABLE artifacts ADD COLUMN model_id TEXT")
+            if 'revision' not in columns:
+                db.execute("ALTER TABLE artifacts ADD COLUMN revision INTEGER NOT NULL DEFAULT 1")
+            if 'updated_at' not in columns:
+                db.execute("ALTER TABLE artifacts ADD COLUMN updated_at TEXT")
+            if 'last_editor' not in columns:
+                db.execute("ALTER TABLE artifacts ADD COLUMN last_editor TEXT NOT NULL DEFAULT 'original'")
+            db.execute("UPDATE artifacts SET updated_at=created_at WHERE updated_at IS NULL")
+            # Preserve pre-upgrade artifacts as revision one without resetting existing edits.
+            db.execute("""INSERT OR IGNORE INTO artifact_revisions
+                (artifact_id, revision, answer, edited_at, editor_kind)
+                SELECT id, revision, answer, COALESCE(updated_at, created_at), last_editor FROM artifacts""")
 
     def create_project(self, title: str) -> dict:
         title = title.strip()
@@ -176,11 +198,63 @@ class Store:
                 raise InvalidInput('Artifact evidence does not match source content')
         row = {'id': identifier(), 'project_id': project_id, 'question': question,
                'answer': answer, 'evidence_json': json.dumps(evidence), 'created_at': now(),
-               'generation_method': generation_method, 'model_id': model_id}
+               'generation_method': generation_method, 'model_id': model_id,
+               'revision': 1, 'updated_at': now(), 'last_editor': 'original'}
         with self._connect() as db:
-            db.execute('''INSERT INTO artifacts (id,project_id,question,answer,evidence_json,created_at,generation_method,model_id)
-                      VALUES (:id,:project_id,:question,:answer,:evidence_json,:created_at,:generation_method,:model_id)''', row)
+            db.execute('''INSERT INTO artifacts
+                      (id,project_id,question,answer,evidence_json,created_at,generation_method,model_id,revision,updated_at,last_editor)
+                      VALUES (:id,:project_id,:question,:answer,:evidence_json,:created_at,:generation_method,:model_id,
+                              :revision,:updated_at,:last_editor)''', row)
+            db.execute('''INSERT INTO artifact_revisions
+                      (artifact_id,revision,answer,edited_at,editor_kind)
+                      VALUES (:id,:revision,:answer,:updated_at,:last_editor)''', row)
         return self._artifact(row)
+
+    def revise_artifact(self, project_id: str, artifact_id: str, answer: str, expected_revision: int) -> dict:
+        """Save a human revision under the same artifact ID, retaining the original
+        generation metadata and evidence. Revision conflicts never overwrite newer work.
+        """
+        self.project(project_id)
+        self._check_id(artifact_id)
+        if not isinstance(answer, str) or not answer.strip() or len(answer) > 100000:
+            raise InvalidInput('Edited answer must contain 1–100000 characters')
+        if not isinstance(expected_revision, int) or isinstance(expected_revision, bool) or expected_revision < 1:
+            raise InvalidInput('Expected revision must be a positive integer')
+        edited_at = now()
+        with self._connect() as db:
+            current = db.execute(
+                'SELECT revision FROM artifacts WHERE id=? AND project_id=?',
+                (artifact_id, project_id)
+            ).fetchone()
+            if current is None:
+                raise NotFound('Artifact not found')
+            if current['revision'] != expected_revision:
+                raise RevisionConflict('Artifact was changed elsewhere; reload before saving')
+            result = db.execute(
+                """UPDATE artifacts SET answer=?, revision=revision+1,
+                   updated_at=?, last_editor='human'
+                   WHERE id=? AND project_id=? AND revision=?""",
+                (answer, edited_at, artifact_id, project_id, expected_revision)
+            )
+            if result.rowcount != 1:
+                raise RevisionConflict('Artifact was changed elsewhere; reload before saving')
+            db.execute(
+                """INSERT INTO artifact_revisions
+                   (artifact_id,revision,answer,edited_at,editor_kind)
+                   VALUES (?,?,?,?,?)""",
+                (artifact_id, expected_revision + 1, answer, edited_at, 'human')
+            )
+            row = db.execute('SELECT * FROM artifacts WHERE id=?', (artifact_id,)).fetchone()
+        return self._artifact(row)
+
+    def artifact_revisions(self, project_id: str, artifact_id: str) -> list[dict]:
+        self.artifact(project_id, artifact_id)
+        with self._connect() as db:
+            return [dict(row) for row in db.execute(
+                """SELECT revision, answer, edited_at, editor_kind
+                   FROM artifact_revisions WHERE artifact_id=? ORDER BY revision""",
+                (artifact_id,)
+            )]
 
     @staticmethod
     def _artifact(row):
