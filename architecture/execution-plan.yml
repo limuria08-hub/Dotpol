@@ -1,7 +1,7 @@
 # Single execution plan for agents and collaborators. Specifications live in docs/ROADMAP.md.
 # None of these phases is verified complete. Status only changes with linked PR/tests.
-version: "1.0"
-as_of: "2026-10-29"
+version: "1.1"
+as_of: "2026-10-30"
 plan: lios-pol-five-phase
 status: planning-approved-implementation-unverified
 three_day_sprint:
@@ -17,8 +17,38 @@ rules:
   source_and_model_provenance_required: true
   no_individual_political_preference_inference: true
   legacy_milestones_are_not_phases: true
+  no_mandatory_external_services: true
+  one_canonical_artifact_and_team_state: true
+  no_parallel_AI_or_chat_backend: true
+service_candidates:
+  opencloud:
+    upstream: opencloud-eu/opencloud
+    role: "Optional isolated file/share collaboration service, NOT Dotpol file/record authority"
+    planned_phase: P4
+    status: "candidate-not-integrated"
+    required_checks: [oidc, file_api, webdav_or_graph_api, permission_mapping, component_licences, resource_limits, offline_fallback]
+    exclude_embedded_frontend: opencloud-eu/web
+  openclaw:
+    upstream: openclaw/openclaw
+    role: "Optional isolated channel/device/skill gateway, NOT Dotpol AI/domain authority"
+    planned_phase: P5
+    status: "candidate-not-integrated"
+    required_checks: [version_pin, sandbox, gateway_auth, channel_pairing, tool_permissions, source_licences, data_egress, no_cloud_fallback]
+    policy: "Dotpol PydanticAI owns research; OpenClaw may call only approved scoped Dotpol tools"
+selected_runtime_authority:
+  ai: "PydanticAI via platform/ai"
+  operational_local: SQLite
+  analytics: DuckDB
+  retrieval: LanceDB
+  UI: Next.js
+  service_orchestration: "Docker Compose optional; K3s not required"
+  donor_adoption: "dependency | isolated-service | selectively-adapted-fork | reference"
+  active_implementation_pr: 11
+  UI_task_issue: 12
 phases:
   - id: P1
+    tracking_issue: 6
+    work_packages: [P1.01, P1.02, P1.03, P1.04, P1.05, P1.06, P1.07, P1.08, P1.09, P1.10, P1.11, P1.12]
     title: Foundation, AI, data and cited research
     legacy_milestones: [0, 1, 2, 3]
     status: not-verified
@@ -31,8 +61,11 @@ phases:
       - "Import authorized source data; inspect provenance"
       - "Search/citations and no-evidence abstention work"
       - "Chat artifacts open in workbench and can be saved/reopened"
+      - "OSS UI uses one Next.js renderer with tested FastAPI adapter and artifact ID"
     exit_evidence: "Clean-install J1 journey with local/no-model and model-enabled tests"
   - id: P2
+    tracking_issue: 7
+    work_packages: [P2.01, P2.02, P2.03, P2.04, P2.05, P2.06, P2.07, P2.08, P2.09, P2.10, P2.11]
     title: Elections, GIS, statistics, psephology and field pilot
     legacy_milestones: [4, 5, 6]
     status: not-verified
@@ -47,6 +80,8 @@ phases:
       - "Offline approved site checks pass F1-F5"
     exit_evidence: "J2/J3 analyses and F1-F5 verified with reference fixtures"
   - id: P3
+    tracking_issue: 8
+    work_packages: [P3.01, P3.02, P3.03, P3.04, P3.05, P3.06, P3.07, P3.08, P3.09, P3.10]
     title: Policy, legislation, governance, media and simulation
     legacy_milestones: [7, 8, 9]
     status: not-verified
@@ -60,6 +95,8 @@ phases:
       - "Evidence-backed research/exports pass source challenge tests"
     exit_evidence: "J4 policy evidence journey and tested analytical report"
   - id: P4
+    tracking_issue: 9
+    work_packages: [P4.01, P4.02, P4.03, P4.04, P4.05, P4.06, P4.07, P4.08, P4.09, P4.10]
     title: Recursive teams, mobile operations and command centre
     legacy_milestones: [6, 10]
     status: not-verified
@@ -72,8 +109,11 @@ phases:
       - "Assignments, incidents, conflict review, escalation audited"
       - "Aggregate reports retain official/field distinction and timestamps"
       - "Election-day handoff passes F6-F8"
+      - "Optional OpenCloud API/permissions/file-sharing journey passes without embedding its web UI"
     exit_evidence: "J5/J6 nested-team and incident exercise with denial/recovery tests"
   - id: P5
+    tracking_issue: 10
+    work_packages: [P5.01, P5.02, P5.03, P5.04, P5.05, P5.06, P5.07, P5.08, P5.09, P5.10]
     title: Automations, optional services, hardening and release
     legacy_milestones: [11, 12]
     status: not-verified
@@ -81,6 +121,7 @@ phases:
     depends_on: [P1, P2, P3, P4]
     checkpoints:
       - "Plugin/connector/tool/service manifests and permission gates tested"
+      - "Optional isolated OpenClaw channel/device gateway authorized, sandboxed and role scoped"
       - "Optional ODK/Ollama/event services run independently"
       - "Compose service profiles, K3s optional only"
       - "Donor pin/licence/attribution/SBOM records complete"

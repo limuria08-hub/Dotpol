@@ -3,6 +3,38 @@
 **IMPLEMENTATION SELECTION:** Follow the [one-stack decision](SINGLE_STACK_SELECTION.md) and [selected_stack.yml](../architecture/selected_stack.yml), not the historical candidate alternatives in this matrix. Adopted planning [ADR-0002](DECISIONS/0002-one-stack-per-capability.md) controls any deliberate architectural changes.
 
 
+## Full-stack service decisions — OpenCloud, OpenClaw and ODK (2026-10-30)
+
+**Full upstream capability through APIs; do not wholesale import the app into Dotpol.**
+
+| Project | Exact repository | Integration class / phase | What we reuse | What we do NOT copy | Adoption status |
+|---|---|---|---|---|---|
+| **OpenCloud server** | `opencloud-eu/opencloud` | Optional full **external service**, P4 | Self-hosted storage, sharing, collaboration, OIDC and approved file interoperability | Its internal files DB/state or a second Dotpol identity/data backend | **Candidate, not installed**; Apache-2.0 root verified, version/component/auth tests pending |
+| **OpenCloud web** | `opencloud-eu/web` | **Do not embed**; external/reference | Integrate server API instead of the separate Vue UI | AGPL-3.0 frontend copied into our Next.js app | **Reference/excluded from embedded core** |
+| **OpenClaw** | `openclaw/openclaw` | Optional full **isolated gateway**, P5 | Channel/messaging gateway, device nodes, agent skills, explicitly approved tool invocation | Second political/AI orchestration owner, competing chat UI or unrestricted plugin execution | **Candidate, not installed**; MIT root verified, extensions/security/versions pending |
+| **ODK Collect/Central** | `getodk/collect`, `getodk/central` | Optional interoperable field service, P2/P4 | Offline surveys, forms, submissions and API | Second Dotpol field-ops CRM/task DB | **Selected interoperability direction**, install/rights/tests pending |
+
+**Different names, different responsibilities:** OpenCloud = file collaboration; OpenClaw = AI channels/tools/devices. Neither is a mandatory local runtime dependency. Their services may have storage/internet/model costs even where software has no licence fee.
+
+**Integration verification order:** (1) canonical owner and API contract; (2) exact upstream tag/commit, component/asset/model licences; (3) sandbox/permissions, service isolation, credentials and user consent; (4) API compatibility and outage fallback; (5) real end-to-end user journey and repeatable CI; (6) update donor lock/attribution after adoption.
+
+## Open-source UI adoption (2026-10-30)
+
+Read [UI adoption plan](OSS_UI_ADOPTION_PLAN.md). The existing **Next.js + FastAPI + PydanticAI** architecture is unchanged; the projects below are UI-focused candidates, not new backends or already integrated dependencies.
+
+| Upstream | UI responsibility | Integration class | Status |
+|---|---|---|---|
+| `shadcn-ui/ui` + `radix-ui/primitives` | accessible shell components, dialogs, controls | selective source/components | proposed; exact pins/notice/test pending |
+| `assistant-ui/assistant-ui` | chat thread/AI tool renderers over Dotpol FastAPI REST adapter | candidate dependency | prove adapter and consent/citation states; do not use Assistant Cloud |
+| `bvaughn/react-resizable-panels` | split chat/workbench | candidate dependency | proposed, test narrow screens |
+| `lucide-icons/lucide` | icon system | candidate dependency | proposed, retain ISC/derived notices |
+| `facebook/lexical` | report edit surface | P1/P3 candidate | artifact persistence contract required |
+| `xyflow/xyflow` | team and entity graph visualization | P3/P4 candidate | not authoritative relationship DB |
+| `kiranvbiim-coder/Vane` | source/citation/progress patterns, not duplicate chat thread | **existing fork** | not yet assimilated |
+| `perspective-dev/perspective`, `keplergl/kepler.gl`, `surveyjs/survey-library` | analyst grid / GIS / web surveys | existing selected domain UI engines | defer to relevant phases; retain original owner |
+
+Avoid installing TanStack Table as a second analytical workbench, MapLibre as a second standalone map or additional chat server runtimes. The frontend uses the existing Dotpol gateway; this section does not approve any unreviewed dependency.
+
 ## Five-phase catalogue extension (2026-10-29; NOT adopted by this plan)
 
 Follow the existing single selected stack (ADR-0002) and [five-phase master plan](MASTER_PLAN.md). These are optional/candidate/ref-only supplements, *not* 17 new core services or forks. All have `integrated: false` and `component_license_reviewed: false` in [candidate registry](../architecture/donor-candidates.yml) pending actual independent checks.
