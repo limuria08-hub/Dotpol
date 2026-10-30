@@ -15,6 +15,7 @@ from dotpol_platform.political_identity import initialize as init_entities, regi
 from dotpol_platform.documents import extract_document, DocumentEngineUnavailable
 from dotpol_platform.openclaw_gateway import probe_openclaw, audit_openclaw_security, verify_openclaw_rpc
 from dotpol_platform.research import search, ai_research
+from dotpol_platform.cross_source import compare_sources
 from dotpol_platform.ai import (status as model_status, probe_local_model, AIUnavailable, UngroundedAnswer, RemoteEvidenceConsentRequired)
 
 DB_PATH = Path(os.getenv('DOTPOL_DATA_DIR', str(Path.home()/'.dotpol')))/'dotpol.sqlite3'
@@ -193,6 +194,10 @@ def create_app(db_path: str | Path | None = None) -> FastAPI:
     @app.post('/api/projects/{project_id}/research')
     async def ask(project_id:str,body:QuestionIn):
         return await ai_research(store,project_id,body.question,body.mode, allow_remote_evidence=body.allow_remote_evidence)
+
+    @app.post('/api/projects/{project_id}/compare')
+    def compare(project_id:str,body:QuestionIn):
+        return compare_sources(store,project_id,body.question)
 
     @app.get('/api/projects/{project_id}/artifacts')
     def artifacts(project_id:str):
