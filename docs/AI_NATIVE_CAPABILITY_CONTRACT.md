@@ -52,3 +52,11 @@ Minimum typed tool fields: `project_id`, `actor_scope` (when team mode exists), 
 - P5: independent clean install, local-only mode, input prompt injection, model unavailability, licence and regression gates.
 
 **Status standard:** specified ≠ coded ≠ locally tested ≠ CI verified ≠ working with a real model ≠ released.
+
+## Provider trust and consent acceptance (P1)
+
+- Ollama uses loopback endpoints only, no model download or network probe at startup. A user-invoked local probe checks model listing, not inference correctness.
+- External BYOAI evidence transmission requires affirmative consent attached to the individual research request; environment variables alone do not permit transfer.
+- The API denies non-consenting remote requests before initiating provider traffic. The UI resets consent after each successful generation or project switch.
+- Research artifacts record generation method, model ID and validated source references. Valid IDs do not imply claim-level semantic correctness; high-stakes assertions require inspection of original source passages.
+- Automated tests must exercise denied remote calls, permitted one-off external generation, opt-in local probing and bad-provider endpoints.
