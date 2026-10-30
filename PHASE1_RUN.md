@@ -117,6 +117,21 @@ semantic retrieval and independent clean-install still need verification.
 Run `python -m pytest -q` to exercise the P1 core tests. This opt-in parser is
 **not** a mandatory service for local AI research.
 
+
+### Explicit OpenClaw baseline security audit (P1.11)
+
+The Phase 1 research shell has a **Security audit** control beneath the OpenClaw gateway check. Only a user click triggers the local FastAPI endpoint:
+
+```bash
+curl -X POST -H 'X-Dotpol-Local: 1' http://127.0.0.1:8765/api/openclaw/audit
+```
+
+The backend executes **`openclaw security audit --json`** (ordinary read-only mode, **never** `--fix`, `--deep`, or `--token`). It requires the installed local OpenClaw binary, never starts OpenClaw, and never saves or returns raw findings, channel identities, credentials, local file paths or stderr. The response contains only nonnegative `critical_count`, `warning_count`, `info_count`, `suppressed_count`, `audit_performed`, `review_required`, and a fixed status/detail. Invalid outputs, timeouts, nonzero exit codes, or missing install fail closed. A suppressed finding always requires review even when active warning counts are zero.
+
+**A clean basic audit does not certify secure operation.** OpenClaw's trust model is one trusted operator/group per gateway. A production OpenClaw integration still requires authenticated/personalized channel access, paired devices, effective tool sandboxing, exact plugin permissions, deep/live audit, and real end-to-end channel tests. This feature is not a finished P4/P5 gateway integration.
+
+Backend tests: `pytest tests/test_openclaw_audit.py -q`. Browser tests: `cd apps/web && npm run test:e2e` (requires the local API/web and Playwright). CI remains the authoritative production build verification after this change.
+
 ## P1.11 — Required OpenClaw Gateway foundation (2026-10-30)
 
 **Product decision:** OpenClaw is a **required component of a complete LiOS.Pol release**, not an optional service. OpenCloud is not part of this product. The five-phase canonical plan assigns readiness/contracts to P1, authorized team/channel integration to P4, and full gateway, skills, devices, automations, lifecycle and security acceptance to P5.
