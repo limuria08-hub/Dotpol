@@ -8,9 +8,13 @@ Its goal is to bring research, elections, psephology, GIS, surveys, forecasting,
 
 **[Dotpol Master Plan](docs/MASTER_PLAN.md)** — the single concise product and delivery plan. It now defines **five execution phases**, preserving former milestones 0–12 as detailed acceptance work packages; it also covers the selected stack, research, political data, pre-election field intelligence, nested teams, election-day operations and release gates. Detailed specifications below are supporting reference, not competing plans.
 
+**To start development:** use the [numbered five-phase agent checklist](docs/ROADMAP.md) and [machine-readable phase gates](architecture/execution-plan.yml), then read [AGENTS.md](AGENTS.md). Old 0–12 technical milestones are preserved in [docs/archive](docs/archive/LEGACY_MILESTONES_0-12.md) for reference, not parallel execution.
+
+**Full-repo reuse:** OpenCloud server (file collaboration, P4) and OpenClaw gateway (channels/devices/skills, P5) are optional *external services*, not replacement Dotpol backends. Follow the [donor registry](architecture/donor-candidates.yml), [service boundaries](docs/ARCHITECTURE.md) and our [UI plan](docs/OSS_UI_ADOPTION_PLAN.md). Neither service is installed in the default local core.
+
 ## Project status
 
-**Five-phase planning baseline accepted for documentation — implementation not verified.**
+**Canonical plan consolidated; Phase 1 application implementation is under review in [PR #11](https://github.com/limuria08-hub/Dotpol/pull/11). Do not treat its code as merged or Phase 1 as released.**
 
 Dotpol has a consolidated [master plan](docs/MASTER_PLAN.md) and selected stack; implementation and verification remain ahead. The repository should not accumulate duplicate implementations, competing frameworks, or frequently changing architectural choices.
 
@@ -147,7 +151,7 @@ Tests + provenance + documentation
 
 ## Current phase
 
-**P1: Foundation and architecture consolidation (implementation requires actual tests).**
+**P1: AI-native foundation integration in progress on PR #11 (not yet merged/fully accepted).**
 
 Before major implementation, approve any remaining architecture/licence gates, verify contracts and create small independently tested integration PRs. Historic milestone numbers elsewhere in specs refer to work packages mapped in ROADMAP.md, not additional phases.
 
