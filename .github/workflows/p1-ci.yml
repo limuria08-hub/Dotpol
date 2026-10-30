@@ -46,9 +46,9 @@ jobs:
           const fs = require('node:fs');
           const lock = fs.readFileSync('package-lock.json', 'utf8');
           for (let i=0;i<lock.length;i+=4000) {
-            process.stdout.write('DOTPOL_LOCK_CHUNK ' + JSON.stringify(lock.slice(i,i+4000)) + '\\n');
+            console.log('DOTPOL_LOCK_CHUNK ' + JSON.stringify(lock.slice(i,i+4000)));
           }
-          process.stdout.write('DOTPOL_LOCK_END\\n');
+          console.log('DOTPOL_LOCK_END');
           NODE
       - run: npm run build
 
