@@ -5,6 +5,7 @@ from fastapi.testclient import TestClient
 from app import create_app
 from dotpol_platform.store import Store, InvalidInput, NotFound
 from dotpol_platform.election_results import initialize, import_results, COLUMNS
+from dotpol_platform.political_identity import list_entities
 from dotpol_platform.election_metrics import analyze_import, compare_imports, _percent
 
 HEADER = ",".join(COLUMNS) + "\n"
@@ -95,10 +96,7 @@ def test_guarded_historical_swings_same_user_declared_boundary(tmp_path):
     assert c["boundary_match_type"] == "same_user_declared_boundary_label_only"
     assert c["officially_comparable"] is False
     changes = {x["party_id"]: x for x in c["party_share_changes"]}
-    parties = {x["party_id"]: x["name"] for x in (
-        __import__("dotpol_platform.political_identity", fromlist=["list_entities"])
-        .list_entities(db, p, "party")
-    )}
+    parties = {x["id"]: x["name"] for x in list_entities(db, p, "party")}
     named = {parties[pid]: row for pid, row in changes.items()}
     assert named["Party A"]["earlier_share_pct"] == "60.0000"
     assert named["Party A"]["later_share_pct"] == "50.0000"
