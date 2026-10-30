@@ -47,7 +47,7 @@ test('real browser: import → cited extract → same-ID edit → restart/reopen
   const projectId: string = result.artifact.project_id;
   await expect(page.locator('article.result')).toContainText('120 units');
   // UI-04: this is the SAME persisted artifact opened from the real conversation.
-  const openInWorkbench = page.getByRole('button', { name: `Open artifact ${id} in workbench` });
+  const openInWorkbench = page.getByRole('button', { name: `Open in workbench for artifact ${id}` });
   await expect(openInWorkbench).toBeVisible();
   await openInWorkbench.click();
   await expect(page.locator('article.result')).toContainText('Water budget');
@@ -78,7 +78,7 @@ test('real browser: import → cited extract → same-ID edit → restart/reopen
   await page.getByRole('button', { name: title, exact: true }).click();
   await page.locator('.artifact-list').getByRole('button', { name: /water budget/ }).click();
   await expect(page.locator('article.result')).toContainText(revisedText);
-  await expect(page.getByRole('button', { name: `Open artifact ${id} in workbench` })).toBeVisible();
+  await expect(page.getByRole('button', { name: `Open in workbench for artifact ${id}` })).toBeVisible();
   await page.locator('article.result').getByText('Revision history (2)').click();
   await expect(page.locator('.revision-entry')).toHaveCount(2);
   await expect(page.locator('.revision-entry').first()).toContainText('generated');
@@ -286,7 +286,7 @@ test('mobile stacks the same artifact workbench without duplicate state', async 
   const id: string = result.artifact.id;
   await expect(page.locator('.research-stacked')).toBeVisible();
   await expect(page.getByRole('separator', { name: 'Resize conversation and artifact workbench' })).toHaveCount(0);
-  await page.getByRole('button', { name: `Open artifact ${id} in workbench` }).click();
+  await page.getByRole('button', { name: `Open in workbench for artifact ${id}` }).click();
   await expect(page.locator('article.result')).toContainText('42 units');
   const stored = await request.get(`${API}/api/projects/${result.artifact.project_id}/artifacts/${id}`);
   expect((await stored.json()).id).toBe(id);
@@ -375,7 +375,7 @@ test('assistant-ui external runtime sends via existing research API and reopens 
   await expect(composer).toBeVisible();
   const response=page.waitForResponse(x=>x.url().includes('/research')&&x.request().method()==='POST');
   await composer.fill('education allocation');
-  await page.getByRole('button',{name:'Send assistant research question'}).click();
+  await page.getByRole('button',{name:'Ask AI'}).click();
   const reply=await response;
   expect(reply.ok()).toBeTruthy();
   expect(reply.request().postDataJSON().question).toBe('education allocation');
@@ -383,7 +383,7 @@ test('assistant-ui external runtime sends via existing research API and reopens 
   const id:string=data.artifact.id;
   const pid:string=data.artifact.project_id;
   expect(data.artifact.generation_method).toBe('extractive');
-  const open=page.getByRole('button',{name:`Open artifact ${id} in workbench`});
+  const open=page.getByRole('button',{name:`Open in workbench for artifact ${id}`});
   await expect(open).toBeVisible();
   await expect(page.getByLabel('Assistant research conversation')).toContainText('64 units');
   await open.click();
@@ -395,8 +395,8 @@ test('assistant-ui external runtime sends via existing research API and reopens 
   await page.reload();
   await page.getByRole('button',{name:title,exact:true}).click();
   await page.getByRole('button',{name:'Assistant conversation'}).click();
-  await expect(page.getByRole('button',{name:`Open artifact ${id} in workbench`})).toBeVisible();
-  await page.getByRole('button',{name:`Open artifact ${id} in workbench`}).click();
+  await expect(page.getByRole('button',{name:`Open in workbench for artifact ${id}`})).toBeVisible();
+  await page.getByRole('button',{name:`Open in workbench for artifact ${id}`}).click();
   await expect(page.locator('article.result')).toContainText('64 units');
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBeTruthy();
 });
@@ -416,7 +416,7 @@ test('assistant-ui composer requires per-request BYOAI permission and clears it 
   const composer=page.getByRole('textbox',{name:'Assistant research question'});
   await composer.fill('public budget');
   const consent=page.getByRole('checkbox',{name:/Approve sending the retrieved source excerpts/});
-  const send=page.getByRole('button',{name:'Send assistant research question'});
+  const send=page.getByRole('button',{name:'Ask AI'});
   await expect(send).toBeDisabled();
   await consent.check();
   await expect(send).toBeEnabled();
@@ -451,7 +451,7 @@ test('assistant-ui late response cannot contaminate a different project conversa
  });
  await page.getByRole('textbox',{name:'Assistant research question'}).fill('unmatched delayed request');
  const reply=page.waitForResponse(x=>x.url().includes('/research')&&x.request().method()==='POST');
- await page.getByRole('button',{name:'Send assistant research question'}).click();
+ await page.getByRole('button',{name:'Ask AI'}).click();
  await pending;
  await page.getByRole('button',{name:second,exact:true}).click();
  await expect(page.getByRole('heading',{name:second})).toBeVisible();
