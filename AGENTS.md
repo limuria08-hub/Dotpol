@@ -26,7 +26,7 @@ If a requested change conflicts with these documents, do not silently invent a n
 
 ## AI-native product mandate
 
-**Every product domain must integrate AI as a primary user-facing interface, not an optional decorative chatbot.** The ONE shared model gateway and typed tools are owned by platform/ai; domains cannot create competing provider clients or hide calculations inside prompts. Every AI output must be backed by permitted source/evidence records and deterministic computation where applicable. Read [AI Native Capability Contract](docs/AI_NATIVE_CAPABILITY_CONTRACT.md) before adding AI-facing work. Non-model data inspection remains supported in zero-cost/local mode; never label extracts as generated AI.
+**Every product domain must integrate AI as a primary user-facing interface, not an optional decorative chatbot.** Explicit per-request approval is mandatory before sending source excerpts to an external BYOAI endpoint; a configured provider is never standing consent. The local-model probe is opt-in and does not prove inference accuracy. The ONE shared model gateway and typed tools are owned by platform/ai; domains cannot create competing provider clients or hide calculations inside prompts. Every AI output must be backed by permitted source/evidence records and deterministic computation where applicable. Read [AI Native Capability Contract](docs/AI_NATIVE_CAPABILITY_CONTRACT.md) before adding AI-facing work. Non-model data inspection remains supported in zero-cost/local mode; never label extracts as generated AI.
 
 ## Five-phase execution contract
 
