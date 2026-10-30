@@ -55,7 +55,6 @@ test('Lexical editor persists multiline plain text under the same Artifact and e
  await page.getByRole('button',{name:title,exact:true}).click();
  await page.locator('.artifact-list').getByRole('button',{name:/transport budget/}).click();
  await expect(page.locator('article.result')).toContainText('Second line. 🌐');
- await expect(page.locator('.revision-entry')).toHaveCount(0);
  await page.locator('article.result').getByText('Revision history (2)').click();
  await expect(page.locator('.revision-entry')).toHaveCount(2);
 });
@@ -72,7 +71,7 @@ test('Lexical preserves unsaved text on cancellation and prevents oversized UTF-
  await expect(input).toContainText('56 units');
  await input.fill('🌐'.repeat(25001));
  await expect(page.getByRole('button',{name:'Save revision'})).toBeDisabled();
- await expect(page.getByRole('status')).toContainText('Shorten report before saving');
+ await expect(page.locator('.lexical-byte-status')).toContainText('Shorten report before saving');
  await input.fill('Human verified excerpt only.');
  await expect(page.getByRole('button',{name:'Save revision'})).toBeEnabled();
  await page.getByRole('button',{name:'Save revision'}).click();

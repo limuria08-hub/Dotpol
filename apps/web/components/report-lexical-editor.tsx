@@ -42,8 +42,9 @@ export function ReportLexicalEditor({artifactId,initialText,onChange}:Props){
       <PlainTextPlugin
         contentEditable={<ContentEditable className="lexical-report-input"
           aria-label="Edit research artifact"
-          aria-multiline="true" aria-placeholder="Edit the plain-text report…"/>}
-        placeholder={<div className="lexical-report-placeholder" aria-hidden="true">Edit the plain-text report…</div>}
+          aria-multiline="true" aria-placeholder="Edit the plain-text report…"
+          placeholder={<div className="lexical-report-placeholder" aria-hidden="true">Edit the plain-text report…</div>}/>}
+        
         ErrorBoundary={LexicalErrorBoundary}
       />
       <HistoryPlugin/>
