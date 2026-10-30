@@ -12,7 +12,7 @@
 | **OpenClaw** | `openclaw/openclaw` | **Required full local gateway**, P1 contract/P4 channels/P5 release | Maintained channel/messaging gateway, paired device nodes, approved skills and automation | Competing political research engine, duplicate chat/record store, unrestricted plugin execution | **Required, implementation pending**; inspected root MIT, exact pins/plugins/security/tests pending |
 | **ODK Collect/Central** | `getodk/collect`, `getodk/central` | Optional interoperable field service, P2/P4 | Offline surveys, forms, submissions and API | Second Dotpol field-ops CRM/task DB | **Selected interoperability direction**, install/rights/tests pending |
 
-**OpenClaw is mandatory to ship, not optional.** It can be installed/running locally with no paid vendor. Its model calls, communications channels and device network access may involve user-configured costs or service terms; those may never become mandatory paid requirements for the core. OpenCloud is explicitly excluded.
+**OpenClaw is mandatory to ship, not optional.** It can be installed/running locally with no paid vendor. Its model calls, communications channels and device network access may involve user-configured costs or service terms; those may never become mandatory paid requirements for the core. Unrelated file-sharing platforms are excluded.
 
 **Integration verification order:** (1) canonical owner and API contract; (2) exact upstream tag/commit, component/asset/model licences; (3) sandbox/permissions, service isolation, credentials and user consent; (4) API compatibility and outage fallback; (5) real end-to-end user journey and repeatable CI; (6) update donor lock/attribution after adoption.
 
