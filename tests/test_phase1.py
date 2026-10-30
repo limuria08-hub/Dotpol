@@ -142,3 +142,74 @@ def test_ai_provider_config_disallows_remote_ollama_and_missing_byoai_key(monkey
     monkeypatch.delenv('DOTPOL_AI_API_KEY')
     assert config()['status']=='model-not-configured'
     assert 'PRIVATE_SECRET' not in repr(config())
+
+
+def test_remote_model_cannot_receive_source_without_per_request_consent(tmp_path, monkeypatch):
+    from dotpol_platform import ai
+    monkeypatch.setenv('DOTPOL_AI_PROVIDER','openai-compatible')
+    monkeypatch.setenv('DOTPOL_AI_MODEL','research-model')
+    monkeypatch.setenv('DOTPOL_AI_API_BASE','https://model.example/v1')
+    monkeypatch.setenv('DOTPOL_AI_API_KEY','dummy-do-not-log')
+    calls=[]
+    class Agent:
+        async def run(self,prompt):
+            calls.append(prompt)
+            class Result: output='Aggregate turnout is 73 percent [1].'
+            return Result()
+    monkeypatch.setattr(ai,'_make_agent',lambda cfg:Agent())
+    c=client(tmp_path)
+    p=post(c,'/api/projects',{'title':'Policy documents'}).json()['id']
+    post(c,f'/api/projects/{p}/sources',{'name':'report.txt','kind':'txt', 'content':'Aggregate turnout is 73 percent'})
+    denied=post(c,f'/api/projects/{p}/research',{'question':'turnout', 'mode':'auto'})
+    assert denied.status_code==403 and denied.json()['status']=='remote-consent-required'
+    assert not calls and c.get(f'/api/projects/{p}/artifacts').json()==[]
+    approved=post(c,f'/api/projects/{p}/research',{'question':'turnout','mode':'ai', 'allow_remote_evidence':True})
+    assert approved.status_code==200
+    assert approved.json()['ai_generated'] is True
+    assert len(calls)==1
+    assert 'dummy-do-not-log' not in str(approved.json())
+    # Permission must never persist to a subsequent request.
+    assert post(c,f'/api/projects/{p}/research',{'question':'turnout','mode':'auto'}).status_code==403
+    # Evidence-only mode never contacts the remote endpoint regardless of consent.
+    assert post(c,f'/api/projects/{p}/research',{'question':'turnout','mode':'extractive','allow_remote_evidence':True}).status_code==200
+    assert len(calls)==1
+
+
+def test_ollama_probe_opt_in_and_local_only(tmp_path,monkeypatch):
+    import httpx
+    from dotpol_platform import ai
+    monkeypatch.setenv('DOTPOL_AI_PROVIDER','ollama')
+    monkeypatch.setenv('DOTPOL_AI_MODEL','qwen3:1.7b')
+    monkeypatch.setenv('DOTPOL_OLLAMA_URL','http://127.0.0.1:11434')
+    calls=[]
+    class DummyClient:
+        def __init__(self,*args,**kwargs):
+            assert kwargs.get('trust_env') is False
+        async def __aenter__(self):return self
+        async def __aexit__(self,*args):return None
+        async def get(self,url):
+            calls.append(url)
+            return httpx.Response(200,request=httpx.Request('GET',url),json={'models':[{'name':'qwen3:1.7b'}]})
+    monkeypatch.setattr(ai.httpx,'AsyncClient',DummyClient)
+    c=client(tmp_path)
+    assert c.get('/api/ai/status').status_code==200
+    assert not calls
+    assert post(c,'/api/ai/probe-local',{}).json()['status']=='local-model-listed'
+    assert calls==['http://127.0.0.1:11434/api/tags']
+    assert c.post('/api/ai/probe-local',json={}).status_code==403
+    monkeypatch.setenv('DOTPOL_AI_PROVIDER','openai-compatible')
+    monkeypatch.setenv('DOTPOL_AI_API_BASE','https://example.org/v1')
+    monkeypatch.setenv('DOTPOL_AI_API_KEY','key')
+    assert post(c,'/api/ai/probe-local',{}).json()['status']=='not-applicable'
+    assert len(calls)==1
+
+
+def test_model_configuration_prevents_untrusted_ollama_endpoints(monkeypatch):
+    from dotpol_platform.ai import config
+    monkeypatch.setenv('DOTPOL_AI_PROVIDER','ollama')
+    monkeypatch.setenv('DOTPOL_AI_MODEL','qwen3:1.7b')
+    for address in ('http://evil.example:11434','http://localhost.evil.example:11434',
+                    'http://localhost:11434@evil.example','file:///etc/passwd',
+                    'http://127.0.0.1:11434/v1?key=bad'):
+        monkeypatch.setenv('DOTPOL_OLLAMA_URL',address)
+        assert config()['configured'] is False
