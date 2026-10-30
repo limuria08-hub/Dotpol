@@ -8,6 +8,9 @@ async function makeProject(page: Page, name: string) {
   await page.getByRole('textbox', { name: 'New project name' }).fill(name);
   await page.getByRole('button', { name: '+ New project' }).click();
   await expect(page.getByRole('heading', { name })).toBeVisible();
+  // Creating a project loads sources/artifacts asynchronously; a visible heading
+  // does not mean the upload control has finished re-enabling.
+  await expect(page.locator('input[type="file"]')).toBeEnabled();
 }
 
 async function ask(page: Page, question: string) {
