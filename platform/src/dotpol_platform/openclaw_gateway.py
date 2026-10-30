@@ -110,3 +110,53 @@ def audit_openclaw_security() -> dict:
                    if review_required else
                    "No warnings in the basic OpenClaw audit; deep checks, pairing and tool permissions remain unverified."),
     }
+
+def verify_openclaw_rpc() -> dict:
+    """Prove a real authenticated *read-only* OpenClaw WebSocket RPC.
+
+    Delegate credential selection, signed device pairing, scopes, and protocol
+    versions to the maintained OpenClaw CLI. Dotpol invokes one fixed RPC
+    method only, never routes untrusted method names or model instructions.
+    This check does not grant authorization to invoke other RPC methods.
+    """
+    base = {
+        "component": "openclaw", "required_for_release": True,
+        "rpc_verified": False, "status": "not-installed",
+    }
+    executable = shutil.which("openclaw")
+    if not executable:
+        return {**base, "detail": "Install and configure the required OpenClaw Gateway to verify its RPC connection."}
+    try:
+        completed = subprocess.run(
+            [
+                executable, "gateway", "call", "status",
+                "--params", '{"includeChannelSummary":false}',
+                "--json", "--timeout", "4000",
+            ],
+            check=False, capture_output=True, text=True, timeout=15,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return {**base, "status": "rpc-unavailable",
+                "detail": "OpenClaw Gateway authenticated RPC could not be completed."}
+    if completed.returncode != 0 or len(completed.stdout) > 1_000_000:
+        # The CLI owns auth. Do not return its stdout, stderr, target URL,
+        # session identifiers, channel configuration, or gateway token.
+        return {**base, "status": "rpc-unavailable",
+                "detail": "OpenClaw Gateway RPC failed. Check gateway access locally."}
+    try:
+        payload = json.loads(completed.stdout)
+    except (TypeError, ValueError):
+        return {**base, "status": "invalid-response",
+                "detail": "OpenClaw Gateway returned an unreadable RPC response."}
+    # These required status-summary fields are emitted by OpenClaw's upstream
+    # status RPC, as opposed to a local CLI command without a gateway session.
+    if (not isinstance(payload, dict) or
+            not isinstance(payload.get("sessions"), dict) or
+            "heartbeat" not in payload or
+            "queuedSystemEvents" not in payload):
+        return {**base, "status": "invalid-response",
+                "detail": "OpenClaw status response did not match the supported RPC schema."}
+    return {
+        **base, "rpc_verified": True, "status": "rpc-connected",
+        "detail": "OpenClaw authenticated status RPC succeeded. Channel pairing, tool permissions and device actions still require separate tests.",
+    }
