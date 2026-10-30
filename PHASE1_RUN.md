@@ -50,6 +50,21 @@ cd apps/web && npm run build
 
 The browser build requires dependencies to have been installed; not yet verified locally because npm dependencies are unavailable here. CI will attempt the build in GitHub Actions.
 
+## P1 browser acceptance (P1.12)
+
+The CI browser suite exercises the **production Next.js build** against the localhost FastAPI gateway with a temporary SQLite data directory. It uses synthetic inputs, a deliberately unconfigured Ollama model, and literal local search, so no hosted service, model download, or personal data is needed.
+
+From a clean checkout, start the API and web with the commands above, then:
+
+```bash
+cd apps/web
+npm install
+npx playwright install chromium
+npm run test:e2e
+```
+
+GitHub Actions also installs Chromium OS dependencies, builds the app and runs `npm run test:e2e` as the `browser-e2e` job. Current checks cover importing a source, evidence-only research, same-ID human revision and reload, no-evidence abstention, cross-tab stale-revision rejection, and narrow-viewport overflow. Playwright traces and screenshots are collected on failures, not committed. These tests do **not** certify a real AI model, production authentication, or complete accessibility; those remain separate acceptance gates.
+
 ## P1 checklist status
 
 - **Implemented, locally tested:** SQLite persistence, import validation, scoped source records, SHA-256 lineage, exact-evidence citation checks, deterministic retrieval, no-evidence state, source withdrawal, API origin/host/mutation checks.
