@@ -26,12 +26,14 @@ export default function Home(){
  const [loading,setLoading]=useState(false);
  const [ai,setAi]=useState<ModelStatus|null>(null);
  const [evidenceOnly,setEvidenceOnly]=useState(false);
+ const [remoteConsent,setRemoteConsent]=useState(false);
+ const [probeStatus,setProbeStatus]=useState('');
  async function refresh(){try{
   const list=await api<Project[]>('/api/projects');setProjects(list);
   setMessage('Local research engine connected.');
   const state=await api<ModelStatus>('/api/ai/status');setAi(state);
  }catch(e){setMessage((e as Error).message)}}
- async function load(p:Project){setProject(p);setSelected(null);
+ async function load(p:Project){setProject(p);setSelected(null);setRemoteConsent(false);
   try {const [s,a]=await Promise.all([api<Source[]>(`/api/projects/${p.id}/sources`),api<Artifact[]>(`/api/projects/${p.id}/artifacts`)]);
    setSources(s);setArtifacts(a);
   }catch(e){setMessage((e as Error).message)}
@@ -50,10 +52,11 @@ export default function Home(){
   }catch(e){setMessage((e as Error).message)}finally{setLoading(false)}
  }
  async function ask(){if(!project||!question.trim())return;setLoading(true);
-  try{const res=await api<{artifact:Artifact}>(`/api/projects/${project.id}/research`,'POST',{question,mode:evidenceOnly?'extractive':'auto'});
-   setSelected(res.artifact);setArtifacts(old=>[res.artifact,...old]);setQuestion('');setMessage(res.artifact.generation_method==='ai-synthesis'?'AI research saved with verified source references.':res.artifact.generation_method==='no-evidence'?'No matching evidence. No political claims were generated.':'Source evidence saved. Configure a model to enable AI synthesis.');
+  try{const res=await api<{artifact:Artifact}>(`/api/projects/${project.id}/research`,'POST',{question,mode:evidenceOnly?'extractive':'auto',allow_remote_evidence:remoteConsent && ai?.provider==='openai-compatible'});
+   setSelected(res.artifact);setArtifacts(old=>[res.artifact,...old]);setQuestion('');setRemoteConsent(false);setMessage(res.artifact.generation_method==='ai-synthesis'?'AI research saved with verified source references.':res.artifact.generation_method==='no-evidence'?'No matching evidence. No political claims were generated.':'Source evidence saved. Configure a model to enable AI synthesis.');
   }catch(e){setMessage((e as Error).message)}finally{setLoading(false)}
  }
+ async function probe(){try{setProbeStatus('Checking local Ollama…');const result=await api<{status:string,detail:string,ready:boolean}>('/api/ai/probe-local','POST',{});setProbeStatus(`${result.status}: ${result.detail}`)}catch(e){setProbeStatus((e as Error).message)}}
  function exportArtifact(a:Artifact){const blob=new Blob([JSON.stringify(a,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download=`dotpol-research-${a.id.slice(0,8)}.json`;
   link.click();URL.revokeObjectURL(url);
@@ -73,7 +76,9 @@ export default function Home(){
     <ul className="source-list">{sources.map(s=><li key={s.id}><strong>{s.name}</strong><small>{s.kind.toUpperCase()} · {s.status}<br/>SHA-256: {s.sha256.slice(0,16)}…</small></li>)}</ul>
     <h2>Saved research</h2><div className="artifact-list">{artifacts.map(a=><button key={a.id} onClick={()=>setSelected(a)}>{a.question}<small>{new Date(a.created_at).toLocaleString()}</small></button>)}</div>
    </section><section className="workspace"><h2>Ask LiOS.Pol AI</h2><p className="hint">AI uses retrieved project sources and verifiable citations. If no model is configured, evidence-only research remains available.</p><div className="ai-control"><label><input type="checkbox" checked={evidenceOnly} onChange={e=>setEvidenceOnly(e.target.checked)}/> Evidence only (skip AI)</label><span>{ai?.configured?`Provider: ${ai.provider}`:'Connect local Ollama to enable AI synthesis'}</span></div>
-    <div className="ask"><input aria-label="Research question" placeholder="Search local political datasets and documents" value={question} onChange={e=>setQuestion(e.target.value)} onKeyDown={e=>{if(e.key==='Enter')void ask()}} /><button disabled={loading||!question.trim()} onClick={ask}>{loading?'Working…':'Ask AI'}</button></div>
+    {ai?.provider==='ollama'&&ai.configured?<div className="ai-control"><button type="button" disabled={loading} onClick={()=>{void probe()}}>Check local model</button><span role="status">{probeStatus}</span></div>:null}
+    {ai?.provider==='openai-compatible' && ai.configured && !evidenceOnly?<label className="ai-control remote-consent"><input type="checkbox" checked={remoteConsent} onChange={e=>setRemoteConsent(e.target.checked)}/> Approve sending the retrieved source excerpts and question to my configured external model for this one request.</label>:null}
+    <div className="ask"><input aria-label="Research question" placeholder="Search local political datasets and documents" value={question} onChange={e=>setQuestion(e.target.value)} onKeyDown={e=>{if(e.key==='Enter')void ask()}} /><button disabled={loading||!question.trim()||(ai?.configured===true&&ai.provider==='openai-compatible'&&!evidenceOnly&&!remoteConsent)} onClick={ask}>{loading?'Working…':'Ask AI'}</button></div>
     {selected?<article className="result"><div className="result-head"><span>{selected.generation_method==='ai-synthesis'?`AI synthesis · ${selected.model_id||'model unspecified'}`:selected.generation_method==='no-evidence'?'Evidence unavailable':'Evidence-only research'}</span><button onClick={()=>exportArtifact(selected)}>Export JSON</button></div><h3>{selected.question}</h3><pre>{selected.answer}</pre><h4>Source evidence and provenance</h4>
      {selected.evidence.length?selected.evidence.map((e,i)=><details key={`${e.source_id}-${e.line}-${i}`}><summary>[{i+1}] {e.source_name} · line {e.line}</summary><blockquote>{e.excerpt}</blockquote><small>Source ID: {e.source_id} · SHA-256: {e.sha256}</small></details>):<p className="hint">No matching evidence. The system did not invent an answer.</p>}
     </article>:<div className="empty"><h3>Start with a source</h3><p>Upload a text or table file, ask a question, and open a saved evidence-linked artifact here.</p></div>}
