@@ -4,6 +4,10 @@
 
 Its goal is to bring research, elections, psephology, GIS, surveys, forecasting, public policy, legislative intelligence, media/narrative analysis, field operations, and war-room workflows into one local-first intelligence platform.
 
+## Phase 1 implementation (AI-native research foundation)
+
+An initial Next.js + FastAPI + SQLite political research workspace and PydanticAI model gateway are under implementation and **must be independently validated before being called complete**. Local source imports, exact citations and saved artifacts work in non-model mode; configured local Ollama or explicit BYOAI activates cited synthesis. Read [local run guide](PHASE1_RUN.md) and [AI-native capability contract](docs/AI_NATIVE_CAPABILITY_CONTRACT.md). Other domain agents remain phased plans, not implemented endpoints.
+
 ## Start here
 
 **[Dotpol Master Plan](docs/MASTER_PLAN.md)** — the single concise product and delivery plan. It now defines **five execution phases**, preserving former milestones 0–12 as detailed acceptance work packages; it also covers the selected stack, research, political data, pre-election field intelligence, nested teams, election-day operations and release gates. Detailed specifications below are supporting reference, not competing plans.
