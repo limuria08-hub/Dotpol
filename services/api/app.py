@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field
 from fastapi.responses import JSONResponse
 from dotpol_platform.store import Store, InvalidInput, NotFound
 from dotpol_platform.research import search, ai_research
-from dotpol_platform.ai import status as model_status, AIUnavailable, UngroundedAnswer
+from dotpol_platform.ai import (status as model_status, probe_local_model, AIUnavailable, UngroundedAnswer, RemoteEvidenceConsentRequired)
 
 DB_PATH = Path(os.getenv('DOTPOL_DATA_DIR', str(Path.home()/'.dotpol')))/'dotpol.sqlite3'
 ALLOWED_ORIGINS = {'http://localhost:3000','http://127.0.0.1:3000'}
@@ -31,6 +31,7 @@ class SourceIn(BaseModel):
 class QuestionIn(BaseModel):
     question: str = Field(min_length=1,max_length=2000)
     mode: Literal['auto','ai','extractive'] = 'auto'
+    allow_remote_evidence: bool = False
 
 
 def create_app(db_path: str | Path | None = None) -> FastAPI:
@@ -68,6 +69,10 @@ def create_app(db_path: str | Path | None = None) -> FastAPI:
     async def provider_unavailable(request, exc):
         return JSONResponse({'detail':str(exc),'status':'ai-unavailable'},status_code=503)
 
+    @app.exception_handler(RemoteEvidenceConsentRequired)
+    async def remote_consent_required(request, exc):
+        return JSONResponse({'detail':str(exc),'status':'remote-consent-required'},status_code=403)
+
     @app.exception_handler(UngroundedAnswer)
     async def invalid_synthesis(request, exc):
         return JSONResponse({'detail':str(exc),'status':'ungrounded-ai-response'},status_code=422)
@@ -79,6 +84,10 @@ def create_app(db_path: str | Path | None = None) -> FastAPI:
     @app.get('/api/ai/status')
     def ai_status():
         return model_status()
+
+    @app.post('/api/ai/probe-local')
+    async def ai_probe_local():
+        return await probe_local_model()
 
     @app.get('/api/projects')
     def list_projects():
@@ -115,7 +124,7 @@ def create_app(db_path: str | Path | None = None) -> FastAPI:
 
     @app.post('/api/projects/{project_id}/research')
     async def ask(project_id:str,body:QuestionIn):
-        return await ai_research(store,project_id,body.question,body.mode)
+        return await ai_research(store,project_id,body.question,body.mode, allow_remote_evidence=body.allow_remote_evidence)
 
     @app.get('/api/projects/{project_id}/artifacts')
     def artifacts(project_id:str):
