@@ -360,20 +360,19 @@ Do not start at the final scale.
 
 **Source truth and reporting:** historical official results, field observations and publicly published aggregate turnout are independently labelled with authority, timestamp and verification class. No invented official live booth-level feed. No individual inferred vote/preference tracking.
 
-## 18. External full-service contracts (OpenCloud and OpenClaw)
+## 18. Required OpenClaw gateway and interoperable external services
 
 **Do not merge entire donor applications into the Dotpol codebase.** Running a full open-source service with its own lifecycle is different from embedding a component.
 
 | Service | Canonical ownership | Adapters and responsibilities | Security/failure behavior |
 |---|---|---|---|
-| **OpenCloud (P4 optional)** | OpenCloud owns file bytes, folders and sharing state. Dotpol owns political Project, SourceRef, EvidenceRef, Artifact and authorized business actions. | Explicit OIDC identity mapping and consented approved file APIs/WebDAV/Graph where supported; version/share scope/import audit. | Treat remote files as untrusted and verify rights on **each** access; deny stale/revoked grants, separate credentials; offline local research continues without OpenCloud. Its AGPL web UI is not copied. |
 | **ODK Central (P2/P4 optional)** | ODK owns field form submissions; Dotpol owns Task, FieldUpdate, review and Incident semantics. | Map submission IDs/version/review state into existing canonical entities, idempotently. | Never create duplicate authoritative task/incident stores. Mobile retries must not duplicate records. |
-| **OpenClaw (P5 optional)** | OpenClaw owns channel connections, pairing, device/skills sessions; Dotpol owns political model/tools/project permissions and decisions. | Scoped gateway adapter maps authenticated channel sender to Dotpol actor/scope; only approved deterministic/political tools are invoked through PydanticAI-owned policy. | Sandboxed tools and explicit enablement; disable unrestricted host filesystem/shell and untrusted skills. Gateway unavailable must not break local chat/research. Channel messages are untrusted, with disclosure and audit. |
+| **OpenClaw (required: P1 contract, P4 channels, P5 acceptance)** | OpenClaw owns channel connections, pairing, device/skills sessions and its gateway runtime; Dotpol owns political tools, model policy, project permissions and business decisions. | Use maintained authenticated gateway protocol, CLI health checks, scoped actor identity and approved channel/tool calls. Its gateway must be installed and demonstrated in the supported LiOS.Pol release. | One trust boundary per gateway; sandbox actions, restrict device/shell/file access, require pairing and consent, never expose gateway operator credentials to browser clients, separate gateways for mutually untrusted organizations. Transient outages degrade operations visibly; they do not remove the release requirement. |
 | **Ollama (P1 optional)** | Model inference only. | One local provider adapter under `platform/ai`. | No auto model download, no model startup network access, unavailable-model state explicit. |
 
 **Contract fields** for external calls: `actor_scope`, `project_id`, `service_id`, `tool_id`, `requested_action`, `consent`, `source/evidence ids`, `observed_at`, `received_at`, `remote_ref`, `idempotency_key`, `status`, `audit_id`. Only add fields required by the current workflow; no placeholder parallel domain store.
 
-**Runtime rule:** local mode cannot require OpenCloud/OpenClaw/ODK/paid AI, browser login or Kubernetes. Compose is permitted for opt-in service profiles; K3s only if later needed. Validate platform, network/security and exact licence/model/assets before adopting each service. Preserve the local FastAPI/PydanticAI/SQLite/AI architecture.
+**Runtime rule:** a supported local LiOS.Pol installation includes a local OpenClaw gateway capability without mandatory paid AI, browser login, remote hosting, ODK or Kubernetes. Compose is permitted for opt-in service profiles; K3s only if later needed. Validate platform, network/security and exact licence/model/assets before adopting each service. Preserve the local FastAPI/PydanticAI/SQLite/AI architecture. OpenClaw is a **required** gateway for release, with readiness visible from Phase 1; lack of readiness must be reported rather than disguised.
 
 ## 19. Architecture change control
 

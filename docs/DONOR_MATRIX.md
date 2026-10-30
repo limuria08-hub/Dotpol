@@ -3,18 +3,16 @@
 **IMPLEMENTATION SELECTION:** Follow the [one-stack decision](SINGLE_STACK_SELECTION.md) and [selected_stack.yml](../architecture/selected_stack.yml), not the historical candidate alternatives in this matrix. Adopted planning [ADR-0002](DECISIONS/0002-one-stack-per-capability.md) controls any deliberate architectural changes.
 
 
-## Full-stack service decisions — OpenCloud, OpenClaw and ODK (2026-10-30)
+## Full-stack integration decisions — required OpenClaw and field interoperability (2026-10-30)
 
 **Full upstream capability through APIs; do not wholesale import the app into Dotpol.**
 
 | Project | Exact repository | Integration class / phase | What we reuse | What we do NOT copy | Adoption status |
 |---|---|---|---|---|---|
-| **OpenCloud server** | `opencloud-eu/opencloud` | Optional full **external service**, P4 | Self-hosted storage, sharing, collaboration, OIDC and approved file interoperability | Its internal files DB/state or a second Dotpol identity/data backend | **Candidate, not installed**; Apache-2.0 root verified, version/component/auth tests pending |
-| **OpenCloud web** | `opencloud-eu/web` | **Do not embed**; external/reference | Integrate server API instead of the separate Vue UI | AGPL-3.0 frontend copied into our Next.js app | **Reference/excluded from embedded core** |
-| **OpenClaw** | `openclaw/openclaw` | Optional full **isolated gateway**, P5 | Channel/messaging gateway, device nodes, agent skills, explicitly approved tool invocation | Second political/AI orchestration owner, competing chat UI or unrestricted plugin execution | **Candidate, not installed**; MIT root verified, extensions/security/versions pending |
+| **OpenClaw** | `openclaw/openclaw` | **Required full local gateway**, P1 contract/P4 channels/P5 release | Maintained channel/messaging gateway, paired device nodes, approved skills and automation | Competing political research engine, duplicate chat/record store, unrestricted plugin execution | **Required, implementation pending**; inspected root MIT, exact pins/plugins/security/tests pending |
 | **ODK Collect/Central** | `getodk/collect`, `getodk/central` | Optional interoperable field service, P2/P4 | Offline surveys, forms, submissions and API | Second Dotpol field-ops CRM/task DB | **Selected interoperability direction**, install/rights/tests pending |
 
-**Different names, different responsibilities:** OpenCloud = file collaboration; OpenClaw = AI channels/tools/devices. Neither is a mandatory local runtime dependency. Their services may have storage/internet/model costs even where software has no licence fee.
+**OpenClaw is mandatory to ship, not optional.** It can be installed/running locally with no paid vendor. Its model calls, communications channels and device network access may involve user-configured costs or service terms; those may never become mandatory paid requirements for the core. Unrelated file-sharing platforms are excluded.
 
 **Integration verification order:** (1) canonical owner and API contract; (2) exact upstream tag/commit, component/asset/model licences; (3) sandbox/permissions, service isolation, credentials and user consent; (4) API compatibility and outage fallback; (5) real end-to-end user journey and repeatable CI; (6) update donor lock/attribution after adoption.
 
