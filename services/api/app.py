@@ -16,6 +16,7 @@ from dotpol_platform.documents import extract_document, DocumentEngineUnavailabl
 from dotpol_platform.openclaw_gateway import probe_openclaw, audit_openclaw_security, verify_openclaw_rpc
 from dotpol_platform.research import search, ai_research
 from dotpol_platform.cross_source import compare_sources
+from dotpol_platform.election_results import initialize as init_election_results, import_results, list_imports, get_import
 from dotpol_platform.ai import (status as model_status, probe_local_model, AIUnavailable, UngroundedAnswer, RemoteEvidenceConsentRequired)
 
 DB_PATH = Path(os.getenv('DOTPOL_DATA_DIR', str(Path.home()/'.dotpol')))/'dotpol.sqlite3'
@@ -26,6 +27,10 @@ class PoliticalEntityIn(BaseModel):
     kind: Literal['jurisdiction','administrative-area','electoral-area','constituency','boundary-version','polling-station','person','party','alliance','organisation','office','election','contest']
     name: str = Field(min_length=1,max_length=180)
     source_id: str | None = None
+
+
+class ElectionResultImportIn(BaseModel):
+    source_id: str = Field(pattern=r'^[a-f0-9]{32}$')
 
 
 class ProjectIn(BaseModel):
@@ -59,6 +64,7 @@ class QuestionIn(BaseModel):
 def create_app(db_path: str | Path | None = None) -> FastAPI:
     store=Store(db_path or DB_PATH)
     init_entities(store)
+    init_election_results(store)
     app=FastAPI(title='Dotpol Local Gateway',version='0.1.0')
     app.add_middleware(CORSMiddleware,allow_origins=sorted(ALLOWED_ORIGINS),allow_credentials=False,
                        allow_methods=['GET','POST','PATCH'],allow_headers=['X-Dotpol-Local','Content-Type'])
@@ -161,6 +167,18 @@ def create_app(db_path: str | Path | None = None) -> FastAPI:
     @app.get('/api/projects/{project_id}/entities/{entity_id}')
     def entity(project_id:str,entity_id:str):
         return get_entity(store,project_id,entity_id)
+
+    @app.post('/api/projects/{project_id}/election-results/import',status_code=201)
+    def import_election_results(project_id:str,body:ElectionResultImportIn):
+        return import_results(store,project_id,body.source_id)
+
+    @app.get('/api/projects/{project_id}/election-results/imports')
+    def election_imports(project_id:str):
+        return list_imports(store,project_id)
+
+    @app.get('/api/projects/{project_id}/election-results/imports/{import_id}')
+    def election_import(project_id:str,import_id:str):
+        return get_import(store,project_id,import_id)
 
     @app.get('/api/projects/{project_id}/sources')
     def list_sources(project_id:str):
