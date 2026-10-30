@@ -429,3 +429,34 @@ test('assistant-ui composer requires per-request BYOAI permission and clears it 
   await expect(consent).not.toBeChecked();
   expect(sends).toEqual([true]);
 });
+
+
+test('assistant-ui late response cannot contaminate a different project conversation',async({page})=>{
+ const first='P1 project isolation A '+Date.now();
+ const second='P1 project isolation B '+Date.now();
+ await makeProject(page,first);
+ await page.getByRole('textbox',{name:'New project name'}).fill(second);
+ await page.getByRole('button',{name:'+ New project'}).click();
+ await expect(page.getByRole('heading',{name:second})).toBeVisible();
+ await page.getByRole('button',{name:first,exact:true}).click();
+ await page.getByRole('button',{name:'Assistant conversation'}).click();
+
+ let start!:()=>void,release!:()=>void;
+ const pending=new Promise<void>(resolve=>{start=resolve});
+ const permit=new Promise<void>(resolve=>{release=resolve});
+ await page.route(/\/api\/projects\/[^/]+\/research$/,async route=>{
+  start();
+  await permit;
+  await route.continue();
+ });
+ await page.getByRole('textbox',{name:'Assistant research question'}).fill('unmatched delayed request');
+ const reply=page.waitForResponse(x=>x.url().includes('/research')&&x.request().method()==='POST');
+ await page.getByRole('button',{name:'Send assistant research question'}).click();
+ await pending;
+ await page.getByRole('button',{name:second,exact:true}).click();
+ await expect(page.getByRole('heading',{name:second})).toBeVisible();
+ release();
+ expect((await reply).ok()).toBeTruthy();
+ await expect(page.getByLabel('Assistant research conversation')).not.toContainText('unmatched delayed request');
+ await expect(page.locator('article.result')).toHaveCount(0);
+});
