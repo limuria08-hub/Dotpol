@@ -10,7 +10,7 @@ Its goal is to bring research, elections, psephology, GIS, surveys, forecasting,
 
 **To start development:** use the [numbered five-phase agent checklist](docs/ROADMAP.md) and [machine-readable phase gates](architecture/execution-plan.yml), then read [AGENTS.md](AGENTS.md). Old 0–12 technical milestones are preserved in [docs/archive](docs/archive/LEGACY_MILESTONES_0-12.md) for reference, not parallel execution.
 
-**Required OpenClaw integration:** [OpenClaw](https://github.com/openclaw/openclaw) is a first-class LiOS.Pol dependency and a required release capability: local gateway, channel/device bridge, skills and approved automations. It is **not optional**. We integrate the maintained upstream gateway without cloning its UI or replacing Dotpol's PydanticAI political research engine. No OpenCloud or extra file-collaboration application will be adopted. See the [five-phase roadmap](docs/ROADMAP.md), [agent rules](AGENTS.md), and [donor registry](architecture/donor-candidates.yml).
+**Required OpenClaw integration:** [OpenClaw](https://github.com/openclaw/openclaw) is a first-class LiOS.Pol dependency and a required release capability: local gateway, channel/device bridge, skills and approved automations. It is **not optional**. We integrate the maintained upstream gateway without cloning its UI or replacing Dotpol's PydanticAI political research engine. No unrelated file-collaboration donor will be adopted. See the [five-phase roadmap](docs/ROADMAP.md), [agent rules](AGENTS.md), and [donor registry](architecture/donor-candidates.yml).
 
 ## Project status
 
