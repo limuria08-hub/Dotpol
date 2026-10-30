@@ -260,16 +260,30 @@ but it does **not** replace a full transitive licence, SBOM or vulnerability
 audit. See `apps/web/THIRD_PARTY_NOTICES.md` for the installed subset and
 upstream licence references.
 
-**UI-03 boundary:** assistant-ui remains an **uninstalled candidate** until
-its external/local REST runtime is validated against the **existing**
-`POST /api/projects/{id}/research` contract. No Assistant Cloud,
-unreviewed model calls or duplicate thread database will be introduced.
-The current conversation already previews saved artifacts with their exact
-canonical IDs; this is the working fallback, not evidence that assistant-ui
-has been assimilated. Retain no-model, request-scoped remote consent and
-required OpenClaw controls during any future renderer evaluation.
+**UI-03 implemented adapter:** `@assistant-ui/react@0.15.32` uses
+`useExternalStoreRuntime`, the package's Thread, Message and Composer
+primitives, and **only** Dotpol's saved Artifact records as message state.
+Switch from **Classic conversation** to **Assistant conversation** in the same
+research workspace. Submitting from the assistant-ui composer calls the
+existing `POST /api/projects/{id}/research` route; the saved Artifact ID
+links directly to **Open in workbench**, with unchanged evidence and history.
+The runtime is remounted on project switch and old in-flight answers are
+prevented from contaminating another project's UI.
+
+The host's request-specific BYOAI consent remains the only authorization
+path. The assistant composer cannot send externally when consent is missing;
+typing again revokes any prior approval, and a failed remote request consumes
+that approval. Browser tests exercise live localhost FastAPI requests,
+persisted reload, source evidence, project isolation and mocked remote
+consent failures. The default classic renderer remains a reversible fallback
+until full UX/a11y verification, not a second chat store or backend.
+
+No Assistant Cloud, AI SDK gateway, direct browser provider call, model
+service or duplicate thread persistence was added. UI-03's **adapter/browser
+contract** is verified by CI, but real Ollama/BYOAI provider inference is a
+separate unverified release gate.
 
 **Still open:** complete Radix/shadcn navigational coverage, manual WCAG
-screen-reader/keyboard audits, assistant-ui compatibility, real local Ollama
+screen-reader/keyboard audits, real local Ollama
 and installed OpenClaw integration. A passing browser fixture verifies the
 specified journey only.
