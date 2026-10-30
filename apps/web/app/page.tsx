@@ -150,7 +150,7 @@ export default function Home(){
      </div>):<p className="hint">Import a source and ask a question to begin an evidence-linked conversation.</p>}
     </section>
    </section>}
-      workbench={{selected?<article className="result"><div className="result-head"><span>{selected.generation_method==='ai-synthesis'?`AI synthesis · ${selected.model_id||'model unspecified'}`:selected.generation_method==='no-evidence'?'Evidence unavailable':'Evidence-only research'}</span><button onClick={()=>exportArtifact(selected)}>Export JSON</button></div><h3>{selected.question}</h3><div className="artifact-edit-bar"><span>Revision {selected.revision} · {selected.review_status==='user-edited-unverified'?'Edited — citations need review': 'Source-linked original — claims not fact-checked'}</span>
+      workbench={selected?<article className="result"><div className="result-head"><span>{selected.generation_method==='ai-synthesis'?`AI synthesis · ${selected.model_id||'model unspecified'}`:selected.generation_method==='no-evidence'?'Evidence unavailable':'Evidence-only research'}</span><button onClick={()=>exportArtifact(selected)}>Export JSON</button></div><h3>{selected.question}</h3><div className="artifact-edit-bar"><span>Revision {selected.revision} · {selected.review_status==='user-edited-unverified'?'Edited — citations need review': 'Source-linked original — claims not fact-checked'}</span>
      {!editing?<button type="button" onClick={()=>setEditing(true)}>Edit in workbench</button>:<><button type="button" disabled={loading||!draft.trim()} onClick={()=>{void saveRevision()}}>Save revision</button><button type="button" disabled={loading} onClick={()=>{setEditing(false);setDraft(selected.answer)}}>Cancel</button></>}
     </div>
     {editing?<textarea aria-label="Edit research artifact" className="artifact-editor" value={draft} onChange={e=>setDraft(e.target.value)} maxLength={100000} />:<pre>{selected.answer}</pre>}
@@ -158,7 +158,6 @@ export default function Home(){
      {selected.evidence.length?selected.evidence.map((e,i)=><details key={`${e.source_id}-${e.line}-${i}`}><summary>[{i+1}] {e.source_name} · line {e.line}</summary><blockquote>{e.excerpt}</blockquote><small>Source ID: {e.source_id} · SHA-256: {e.sha256}</small></details>):<p className="hint">No matching evidence. The system did not invent an answer.</p>}
      <details><summary>Revision history ({revisions.length})</summary>{revisions.map(rev=><div className="revision-entry" key={rev.revision}><strong>Revision {rev.revision} · {rev.origin}</strong><small>{new Date(rev.saved_at).toLocaleString()}</small><pre>{rev.answer}</pre></div>)}</details>
     </article>:<div className="empty"><h3>Start with a source</h3><p>Upload a text or table file, ask a question, and open a saved evidence-linked artifact here.</p></div>}
-}
     />
    </div>}
    <footer>Phase 1 · AI-native research foundation · Local-first · Evidence verification required</footer>
