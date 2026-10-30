@@ -17,6 +17,9 @@ on:
       - "tests/**"
       - "pyproject.toml"
       - ".github/workflows/p1-ci.yml"
+concurrency:
+  group: p1-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:
