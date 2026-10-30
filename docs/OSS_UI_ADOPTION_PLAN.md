@@ -95,9 +95,14 @@ canonical artifact split view, and a **partial UI-02** Radix/shadcn-style contro
 subset are implemented on the branch, alongside Lucide and a Tailwind v4
 PostCSS theme. UI-05 includes a committed npm lockfile, `npm ci`, provenance
 dialog focus/keyboard browser checks and a direct dependency notice ledger.
-UI-03 assistant-ui is **not** installed or claimed compatible, and full
-component parity, manual accessibility, transitive licence/security review and
-release signoff remain outstanding. The existing FastAPI/PydanticAI data
+UI-03 now has a **real assistant-ui@0.15.32 ExternalStoreRuntime**
+adapter backed solely by saved Dotpol Artifact IDs and the existing FastAPI
+`/research` route. The reversible UI switch keeps the verified classic view
+as fallback. Browser acceptance exercises sending, source-linked artifact
+reopening, reload, remote-consent refusal and cross-project isolation;
+no Assistant Cloud or second thread DB/LLM gateway is installed. Full
+component parity, manual accessibility, transitive licence/security review
+and release signoff remain outstanding. The existing FastAPI/PydanticAI data
 contract and mandatory OpenClaw readiness are unaffected.
 
 **Status:** This is a UI reuse blueprint. Do NOT mark these components integrated by adding them to a candidate list. Actual implementation and tests must be visible in separate PRs.
