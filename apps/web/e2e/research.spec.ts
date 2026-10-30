@@ -46,6 +46,16 @@ test('real browser: import → cited extract → same-ID edit → restart/reopen
   const id: string = result.artifact.id;
   const projectId: string = result.artifact.project_id;
   await expect(page.locator('article.result')).toContainText('120 units');
+  // UI-04: this is the SAME persisted artifact opened from the real conversation.
+  const openInWorkbench = page.getByRole('button', { name: `Open artifact ${id} in workbench` });
+  await expect(openInWorkbench).toBeVisible();
+  await openInWorkbench.click();
+  await expect(page.locator('article.result')).toContainText('Water budget');
+  const resize = page.getByRole('separator', { name: 'Resize conversation and artifact workbench' });
+  await expect(resize).toBeVisible();
+  await resize.focus();
+  await expect(resize).toBeFocused();
+  await page.keyboard.press('ArrowRight');
   await page.getByRole('button', { name: 'Edit in workbench', exact: true }).click();
   const revisedText = 'Human-reviewed summary: synthetic water budget is 120 units.';
   await page.getByLabel('Edit research artifact').fill(revisedText);
@@ -68,6 +78,7 @@ test('real browser: import → cited extract → same-ID edit → restart/reopen
   await page.getByRole('button', { name: title, exact: true }).click();
   await page.locator('.artifact-list').getByRole('button', { name: /water budget/ }).click();
   await expect(page.locator('article.result')).toContainText(revisedText);
+  await expect(page.getByRole('button', { name: `Open artifact ${id} in workbench` })).toBeVisible();
   await page.locator('article.result').getByText('Revision history (2)').click();
   await expect(page.locator('.revision-entry')).toHaveCount(2);
   await expect(page.locator('.revision-entry').first()).toContainText('generated');
