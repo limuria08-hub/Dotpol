@@ -380,3 +380,65 @@ bash scripts/p1-live-acceptance.sh
 
 The script checks installed executables first, then enables the three opt-in **real** Docling, Ollama and OpenClaw tests. It fails instead of silently using a mock, hosted model or skipped test. Do not run it on an untrusted shared operator gateway. Preserve captured pass/fail evidence in the P1 tracking issue before marking the phase accepted.
 
+
+
+## P1.08/UI-05 — Browser accessibility and software supply-chain gates
+
+This workstream extends **the same** Next.js/FastAPI/SQLite/OpenClaw
+integration; it does not create a second product surface or data provider.
+
+### Automated browser/keyboard and local-only checks
+
+`apps/web/e2e/accessibility.spec.ts` runs `@axe-core/playwright@4.14.0`
+with WCAG 2/2.1 A/AA plus best-practice rules against the actual production
+Chromium application. It fails CI on **serious or critical** machine-detected
+violations in landing, empty project, modal source provenance, classic
+workbench, assistant-ui thread and 390px stacked layout. It also asserts that
+the fully local/no-model flow makes **no HTTP requests outside the
+`127.0.0.1:3000` web and `127.0.0.1:8765` API origins**. Existing browser
+tests cover keyboard resize, source dialog focus/Escape, project isolation,
+one-request-only external AI consent, no-evidence abstention, artifact
+revision conflict, OpenClaw readiness/audit/RPC state and mobile overflow.
+
+The audit caught and corrected low-contrast footer text and a
+visible-label/accessible-name mismatch in the chat/workbench action controls.
+No axe rule was suppressed or explicitly disabled. An automated pass is
+**not** a screen-reader certification or guarantee of WCAG conformance:
+manual keyboard-only, VoiceOver/NVDA/TalkBack, zoom, contrast, localization
+and assistive-device audits remain outstanding for UI-09/P5 acceptance.
+
+### npm supply-chain gate
+
+The `supply-chain` CI job now installs **only the locked npm tree** via
+`npm ci`, verifies direct package manifests against `package-lock.json`,
+writes `apps/web/audit-output/license-inventory.json`, generates the
+CycloneDX `sbom.cdx.json` with npm and **fails on high or critical
+production dependency advisories** using `npm audit --omit=dev
+--audit-level=high`. Reports are retained as GitHub Actions artifacts.
+The root `postcss` override, matched to the exact `postcss@8.5.31`
+already declared for the build, closes high-severity nested Next/PostCSS
+advisories without a forced Next.js 16 migration. The patched lockfile and
+production browser build are tested together.
+
+The licence inventory is **evidence, not permission**: LGPL optional
+native Sharp binaries, CC-BY caniuse data, and MPL development/build
+tools still require notice, redistribution and asset review. See
+`apps/web/THIRD_PARTY_NOTICES.md`. A clean npm audit cannot prove absence
+of unknown vulnerabilities, unsafe source dependencies or future
+supply-chain compromises.
+
+### Reproduce
+
+```bash
+cd apps/web
+npm ci --no-audit --no-fund
+node scripts/audit-lockfile.mjs
+npm sbom --sbom-format=cyclonedx > audit-output/sbom.cdx.json
+npm audit --omit=dev --audit-level=high
+# With the localhost API and production web started:
+npm run test:e2e
+```
+
+**Release status:** UI-05 automated controls are integrated. Full manual
+accessibility, exact redistributed licence texts/notices and deployed
+artifact review are still **release gates**, not marked complete.
