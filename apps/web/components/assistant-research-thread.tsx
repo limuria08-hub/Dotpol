@@ -68,7 +68,7 @@ export function AssistantResearchThread({artifacts,onSubmit,onOpen,onDraftChange
           {' · '}{artifact.evidence.length} source excerpts · rev {artifact.revision}
           {artifact.review_status==='user-edited-unverified'?' · Human-edited; claims unverified':''}
          </span>
-         <button type="button" aria-label={`Open artifact ${id} in workbench`}
+         <button type="button" aria-label={`Open in workbench for artifact ${id}`}
           onClick={()=>onOpen(id)}><PanelRightOpen size={15} aria-hidden="true"/> Open in workbench</button>
         </div>:null;
        })():null}
@@ -79,7 +79,7 @@ export function AssistantResearchThread({artifacts,onSubmit,onOpen,onDraftChange
     <ComposerPrimitive.Input aria-label="Assistant research question"
      placeholder="Ask a question about project sources…" onInput={onDraftChange}
      className="assistant-composer-input" rows={2}/>
-    <ComposerPrimitive.Send className="assistant-composer-send" aria-label="Send assistant research question" type="submit">
+    <ComposerPrimitive.Send className="assistant-composer-send" type="submit">
      <ArrowUp size={17} aria-hidden="true"/> Ask AI
     </ComposerPrimitive.Send>
    </ComposerPrimitive.Root>
