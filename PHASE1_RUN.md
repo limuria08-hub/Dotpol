@@ -200,3 +200,29 @@ request permission.
 (only if compatible), Lexical editing, complete screen-reader/manual WCAG audit,
 full npm lockfile, package licence/SBOM review and real Ollama acceptance.
 Nothing about panel rendering certifies those unimplemented integrations.
+
+### Authenticated OpenClaw RPC bridge (P1.11)
+
+The next acceptance level after health/audit is the **actual OpenClaw WebSocket control plane**. LiOS.Pol does **not** implement a second WebSocket handshake or duplicate the OpenClaw identity/pairing store. The backend delegates connection authentication to the installed upstream OpenClaw CLI and calls only a fixed **read-only** `status` RPC:
+
+```bash
+# Run an installed, configured and paired OpenClaw Gateway first.
+openclaw gateway call status --params '{"includeChannelSummary":false}' --json --timeout 4000
+
+# Ask the local Dotpol API to verify the same authenticated RPC:
+curl -X POST -H 'X-Dotpol-Local: 1' http://127.0.0.1:8765/api/openclaw/rpc-check
+```
+
+The Dotpol endpoint runs a bounded subprocess with **no shell, no token/password arguments, no arbitrary method/parameters, and no auto-start**. OpenClaw's maintained CLI chooses the configured Gateway and handles its normal device credentials, scopes and authenticated WebSocket protocol. The original RPC payload (which may contain session, channel, identity or host details) stays server-side and is **never returned**. Only `rpc_verified`, `status`, `required_for_release` and a fixed explanatory string are returned. Invalid replies, missing installation, CLI failures or timeouts fail closed.
+
+```bash
+# Real local integration evidence (opt-in, skipped by default CI):
+DOTPOL_LIVE_OPENCLAW_TEST=1 PYTHONPATH=platform/src:services/api \
+  pytest tests/test_live_openclaw_rpc.py -q
+
+# Default mock-based regression suite:
+PYTHONPATH=platform/src:services/api pytest tests/test_openclaw_rpc.py -q
+```
+
+A passing **real** RPC test demonstrates the installed OpenClaw CLI can complete an authenticated status request with its configured gateway. It does **not** grant per-organization role isolation, approve OpenClaw tools, establish channel pairing, demonstrate device commands, or prove a secure production deployment. Those remain P4/P5 gates. In particular, the CLI's identity may be an **operator credential**; do not forward user-submitted method names or data to the CLI and do not expose its credentials to the browser.
+
