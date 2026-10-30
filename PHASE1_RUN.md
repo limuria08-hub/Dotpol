@@ -287,3 +287,33 @@ separate unverified release gate.
 screen-reader/keyboard audits, real local Ollama
 and installed OpenClaw integration. A passing browser fixture verifies the
 specified journey only.
+
+
+## P1.02/P1.10 — Local disaster recovery and stable political identity IDs
+
+Phase 1 now uses **the same SQLite database** for projects, sources, artifacts, revision history and a small project-scoped canonical political identity registry (not a second ORM or political data backend). User-created identifiers are UUIDs (32 hex), unique by project/kind/normalized name, and always tagged `user-declared-unverified`. A cited source must be **active in the same project**; its SHA-256 is saved on creation so subsequent source withdrawal does not erase provenance. P2 will own official external IDs, aliases, boundary time validity, and electoral results; neither automatic personal preference inference nor duplicate political ontology is added here.
+
+```bash
+# POST needs X-Dotpol-Local as all existing local write routes do.
+curl -X POST -H 'X-Dotpol-Local: 1' -H 'Content-Type: application/json' \
+  -d '{"kind":"constituency","name":"Synthetic constituency"}' \
+  http://127.0.0.1:8765/api/projects/PROJECT_ID/entities
+
+# List registered entities in that project:
+curl http://127.0.0.1:8765/api/projects/PROJECT_ID/entities
+```
+
+Backups use the SQLite backup API, **not** a raw copy of the live .sqlite3/WAL file. From the repo root, with an existing `DOTPOL_DATA_DIR` (or the default `~/.dotpol`):
+
+```bash
+PYTHONPATH=platform/src python -m dotpol_platform.backup --output "$HOME/dotpol-backup-$(date +%Y%m%d-%H%M%S).sqlite3"
+```
+
+The destination must **not exist**, and its parent directory must exist. The operator invokes the command locally; there is **no HTTP backup endpoint** or cloud upload. It snapshots live data with `sqlite3.Connection.backup`, verifies `PRAGMA integrity_check`, restricts the file to owner permissions (where supported) and returns a SHA-256 digest. To restore, **stop the local API first**, retain a safety copy of the existing database, and put the verified snapshot at the configured local database path. Restart the API; its idempotent schema initialization will run. Do not replace a live database while it is open.
+
+```bash
+PYTHONPATH=platform/src:services/api python -m pytest tests/test_political_identity.py tests/test_local_backup.py -q
+```
+
+**Limitations:** first release creates user-declared identities only, not verified external political identifiers, matching/aliases, election results, dated boundaries or identity resolution. A successful backup test is not a substitute for a complete OS-specific restore drill and key/secret backup; OpenClaw retains its *separate* own settings/credentials and should be backed up through its supported mechanism.
+
