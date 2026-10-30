@@ -337,3 +337,17 @@ PYTHONPATH=platform/src:services/api python -m pytest tests/test_cross_source.py
 
 Remaining P1.07 quality gate: evaluate source independence and original provenance of with real user-supplied documents, run configured local AI synthesis against the verified matrix, and review conclusions/limitations before accepting an evidence-grounded research brief.
 
+
+
+## P1.06 — Typed, deny-by-default tool boundary
+
+`platform/src/dotpol_platform/approved_tools.py` defines a **single** deterministic tool contract for `source.search`, `source.inspect`, `artifact.read`, and `entity.list`. These tools call the **existing** project/search/artifact/identity code; they do not create another DB, agent server, web endpoint or OpenClaw runtime.
+
+Every invocation requires a **trusted `ToolGrant(actor_id,project_id,allowed_tools)` created by application policy**. Unrecognized tool names and schema extras fail closed; source inspections refuse withdrawn records; source and artifact lookups remain scoped to the granted project. This is a P1 contract ready for the PydanticAI owner to consume and for the future OpenClaw gateway bridge to call **only after** authenticating and mapping a channel sender to a Dotpol actor and project. No public HTTP endpoint accepts arbitrary tool names or credentials.
+
+```bash
+PYTHONPATH=platform/src:services/api python -m pytest tests/test_approved_tools.py -q
+```
+
+**Important:** This module does **not** authenticate users or issue real organization grants. Do not build an OpenClaw operator-CLI tool proxy from it. P4 owns actor membership and recursive team access; P5 owns paired OpenClaw channel/device transport. Live privileged tool execution stays disabled until those identities and policy checks work end to end.
+
