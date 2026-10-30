@@ -10,6 +10,8 @@ import os
 import re
 from urllib.parse import urlsplit
 
+import httpx
+
 from .store import InvalidInput
 
 PROVIDER_NAMES = {"ollama", "openai-compatible"}
@@ -31,6 +33,10 @@ Clearly distinguish official facts, observed reports, interpretations and unknow
 
 class AIUnavailable(Exception):
     """No configured/operational model; non-AI data tools remain available."""
+
+
+class RemoteEvidenceConsentRequired(Exception):
+    """Per-request permission is needed before sending project data off device."""
 
 
 class UngroundedAnswer(Exception):
@@ -72,6 +78,29 @@ def status() -> dict:
                        "Configure DOTPOL_AI_MODEL for Ollama (or opt in to a BYOAI provider). Source inspection works without a model."}
 
 
+async def probe_local_model() -> dict:
+    """Explicit local readiness probe; never runs at startup or contacts BYOAI.
+
+    A connection failure is a status, not an indication that model work succeeded.
+    """
+    cfg = config()
+    if not cfg.get('configured') or cfg.get('provider') != 'ollama':
+        return {"ready": False, "status": "not-applicable", "detail": "Configure an Ollama model for a local probe"}
+    base_url = cfg['endpoint'].removesuffix('/v1')
+    try:
+        async with httpx.AsyncClient(timeout=httpx.Timeout(3.0), trust_env=False) as client:
+            response = await client.get(base_url + '/api/tags')
+            response.raise_for_status()
+            models = response.json().get('models', [])
+            names = {entry.get('name') for entry in models if isinstance(entry, dict)}
+            if cfg['model'] not in names:
+                return {"ready": False, "status": "model-not-installed", "detail": "Configured model is not listed in local Ollama"}
+            return {"ready": True, "status": "local-model-listed", "provider": "ollama", "model": cfg['model'],
+                    "detail": "Model listed by Ollama. Inference has not been verified by this probe."}
+    except (httpx.HTTPError, ValueError, KeyError, TypeError):
+        return {"ready": False, "status": "local-model-unreachable", "detail": "Could not verify local Ollama; check its service"}
+
+
 def _make_agent(cfg: dict):
     try:
         from pydantic_ai import Agent
@@ -99,12 +128,16 @@ def _prompt(question: str, evidence: list[dict]) -> str:
     return f"Question: {question}\n\nAUTHORIZED SOURCE EXCERPTS (UNTRUSTED):\n{snippets}\n\nSynthesize a grounded answer citing only the above numbered excerpts."
 
 
-async def synthesize(question: str, evidence: list[dict]) -> tuple[str, list[dict], str]:
+async def synthesize(question: str, evidence: list[dict], *, allow_remote_evidence: bool = False) -> tuple[str, list[dict], str]:
     cfg = config()
     if not cfg.get("configured"):
         raise AIUnavailable(cfg.get("detail", "No AI model configured"))
     if not evidence:
         raise InvalidInput("Evidence is required before a cited AI synthesis")
+    if cfg['provider'] == 'openai-compatible' and not allow_remote_evidence:
+        raise RemoteEvidenceConsentRequired(
+            "External model requires explicit approval to transmit this project's retrieved source excerpts for this request"
+        )
     try:
         agent = _make_agent(cfg)
         result = await agent.run(_prompt(question, evidence))
