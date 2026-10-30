@@ -11,11 +11,11 @@
 | Adoption mode | What to do | Examples | Rule |
 |---|---|---|---|
 | **Use upstream package** | Install and pin library; expose one owned adapter | Next.js, FastAPI, PydanticAI, LanceDB, Docling, DuckDB, Perspective, Kepler, GeoPandas, Statsmodels, SurveyJS, shadcn/Radix, assistant-ui | No source fork for normal use |
-| **Use full external service** | Deploy separately and integrate API/auth/event contracts | OpenCloud file service, ODK Central, optional OpenClaw gateway, user-managed Ollama, optional notification/civic services | No duplicate frontend/backend or databases inside Dotpol |
+| **Use full external service** | Deploy separately and integrate API/auth/event contracts | **required OpenClaw gateway**, ODK Central where needed, user-managed Ollama and optional notification/civic services | No duplicate frontend/backend or databases inside Dotpol |
 | **Selective assimilation** | Copy only reviewed modules with copyright notices, test and upstream pin | Existing Vane fork, India-election parsers, selected OPOL routines | Do not bulk-merge the whole donor app |
 | **Reference only** | Learn design/contracts, import **no** source code without separate approval | Open Politics HQ, full civic apps and unrelated backend frameworks | Don't introduce competing stacks |
 
-**OpenCloud ≠ OpenClaw.** OpenCloud (`opencloud-eu/opencloud`) is the optional self-hosted file-sharing/collaboration **backend**; its separate `opencloud-eu/web` frontend is AGPL and is not our web UI. OpenClaw (`openclaw/openclaw`) is the optional AI **channel/device/agent gateway** for authorized WhatsApp, Telegram and other supported integrations. It does not replace PydanticAI or own political records. Both are **candidate integrations, uninstalled and unverified** until tests and licensing review. OpenCloud's backend is Apache-2.0 and OpenClaw's repository is MIT at the inspected root; review exact release, bundled assets, connectors and security separately.
+**OpenClaw is REQUIRED for the completed LiOS.Pol product**, not an optional gateway. Reuse the full maintained `openclaw/openclaw` local agent/channel/device/skills system through supported interfaces. Adopt its authenticated WebSocket gateway and CLI rather than copying the complete application. P1 proves gateway lifecycle/readiness and safe contracts; P4 brings authorized team/channel workflows; P5 verifies full integration. OpenClaw does not displace PydanticAI's evidence-grounded political research or Dotpol's canonical records. **OpenCloud is excluded from scope entirely** and must not be added as a donor, adapter or runtime.
 
 ### Permanent agent lanes and ownership
 
@@ -44,7 +44,7 @@ Agents may work concurrently only after shared contracts have an owning reviewer
 - [ ] **P1.08 · E — OSS UI:** shadcn/Radix-style components, assistant-ui custom adapter *only if compatible*, Lucide, responsive single shell and accessible keyboard controls. Vane UI is a nonduplicate, reviewed donor only.
 - [ ] **P1.09 · E/A — Artifact continuum:** ask in chat → preview tool output → open same saved Artifact ID in resizable Workbench → revise/export/reopen; no JSON-only user experience.
 - [ ] **P1.10 · A/D — Political ID groundwork:** canonical project/source/election/party/constituency/person/jurisdiction IDs and source/version contracts; no premature national dataset import.
-- [ ] **P1.11 · A/B — Future service interfaces:** establish **file-service adapter** and **channel-agent adapter** as typed contracts without starting OpenCloud or OpenClaw in local personal mode.
+- [ ] **P1.11 · A/B/F — Required OpenClaw foundation:** establish the native OpenClaw gateway lifecycle/health contract, local executable/daemon discovery, secure channel-agent adapter, permission requirements and a real local readiness test. Do not add a competing AI gateway or store; P5 completes channels, skills, devices and automation.
 - [ ] **P1.12 · F — Exit gate:** clean install and browser E2E, exact citations, provider refusal/consent, no-key/no-network mode, accessibility, source/license notices and verified CI.
 
 **Done when:** fresh checkout on a declared OS imports actual permitted source data, invokes configured local AI, produces verifiable cited output, opens/edits/reopens an artifact, and works in explicit evidence-only mode without a model. Do not call a mocked model test "live inference".
@@ -82,19 +82,19 @@ Agents may work concurrently only after shared contracts have an owning reviewer
 
 **Done when:** questions about legislation, governance, public issues or policy impacts produce sourced, dated, calibrated and reproducible analyses, not unsupported forecasts.
 
-## Phase 4 — OpenCloud, nested teams, mobile fieldwork and command centre
+## Phase 4 — Nested teams, OpenClaw communications, mobile fieldwork and command centre
 **Epic:** [#9](https://github.com/limuria08-hub/Dotpol/issues/9) · **Former milestone:** 10 + approved field continuity from 6 · **Owners:** A, E, B, F.
 
 - [ ] **P4.01 · A — Org/team core:** Organization, Team, Membership, RoleGrant, Delegation, ProjectAccess; recursive subteams with depth/cycle limits and audit logs.
 - [ ] **P4.02 · A/F — Secure scoped access:** parent/team/resource rules, invitations, least privilege, revocation, denial tests and data export isolation.
-- [ ] **P4.03 · A/F — OpenCloud service proof:** run **full OpenCloud server** separately; evaluate OIDC auth, supported files/WebDAV/Graph APIs, file linking, permission mapping and audit. Never import its separate AGPL web UI.
-- [ ] **P4.04 · A/E — Unified document user journey:** user opens approved OpenCloud file through LiOS.Pol, researches it with explicit access/consent, saves source reference/revision; OpenCloud stays file owner, Dotpol stays political data owner.
+- [ ] **P4.03 · A/B/F — OpenClaw channel authorization:** map paired Telegram/WhatsApp/supported channel accounts to explicitly authorized Dotpol actors; enforce project/team scope on every inbound action and restrict outbound notifications. A shared gateway must not cross untrusted organization boundaries.
+- [ ] **P4.04 · A/E — Unified team messaging workflow:** supervisor assigns and verifies operational tasks in Dotpol; approved field notifications and responses traverse OpenClaw and return to the same canonical Task/Incident records with idempotent delivery and audit receipts.
 - [ ] **P4.05 · E/A — Mobile teams:** team leader → member assignments, approved check-in, site forms, incidents, task handover, multilingual workflows.
 - [ ] **P4.06 · A/E — Offline sync:** ODK Collect/Central interoperability, idempotent receipts, retries, conflict resolution, lost-device/revocation cases.
 - [ ] **P4.07 · A/E — Command centre:** site preparedness, timestamped aggregate turnout observations, incident severity/escalation, verified reports; reuse fieldops records and F6–F8.
 - [ ] **P4.08 · B/E — AI supervisor copilot:** permission-safe briefings, assignment summaries, duplicate issue flags, shift handovers; no unauthorized actions.
 - [ ] **P4.09 · A/F — Optional realtime:** Centrifugo or ntfy *only if required* as delivery transport, never authoritative Task/Incident DB.
-- [ ] **P4.10 · F — Exit gate:** 1 admin → 3 supervisors → 10+ workers → nested child team; offline recovery; denied cross-team reads; OpenCloud shared-file user journey; station F6–F8.
+- [ ] **P4.10 · F — Exit gate:** 1 admin → 3 supervisors → 10+ workers → nested child team; offline recovery; denied cross-team reads; OpenClaw authorized messaging/field-update journey; station F6–F8.
 
 **Done when:** one organization can securely coordinate delegated mobile teams, share authorized files, reconcile offline observations, and see traceable command-centre summaries.
 
@@ -102,11 +102,11 @@ Agents may work concurrently only after shared contracts have an owning reviewer
 **Epic:** [#10](https://github.com/limuria08-hub/Dotpol/issues/10) · **Former milestones:** 11–12 · **Owners:** B, A, E, F.
 
 - [ ] **P5.01 · A/B — Agent/plugin manifests:** one versioned registry for DataConnector, AnalysisTool, AIProvider, FieldService, ArtifactProvider and AutomationProvider; permissions/expiry/audits.
-- [ ] **P5.02 · B/F — OpenClaw sandboxed proof:** evaluate full OpenClaw gateway as **optional isolated service**, pin exact version; disallow host execution and untrusted skills by default, test gateway authentication/pairing.
-- [ ] **P5.03 · B/A — Channels and devices:** authorized Telegram/WhatsApp/supported device integration through OpenClaw; inbound identity mapped to Dotpol role scope; no channel credentials copied into Dotpol client.
+- [ ] **P5.02 · B/F — Required OpenClaw runtime:** install/pin and launch maintained OpenClaw gateway as a supported first-class LiOS.Pol component; authenticate, pair nodes, sandbox tools, enforce approval and verify local restart/reconnect. No arbitrary host shell or unreviewed skills enabled.
+- [ ] **P5.03 · B/A — Channels and devices:** required authorized Telegram/WhatsApp/supported device integration through OpenClaw; inbound identity mapped to Dotpol role scope; no channel credentials copied into Dotpol client.
 - [ ] **P5.04 · B/A — Do not duplicate AI:** OpenClaw transports channel messages and invokes approved Dotpol tools; PydanticAI owns political research orchestration; no second authority for projects, tools, model policy or data.
 - [ ] **P5.05 · B/A — Automations:** Prefect for durable approved tasks where needed, scheduled research/monitoring, confirmation gates, retries, cost/resource caps and audit trail.
-- [ ] **P5.06 · A/F — Deployment profiles:** no-paid-key local install remains standalone; optional OpenCloud/ODK/OpenClaw/notification service profiles; Compose first, no mandatory K3s.
+- [ ] **P5.06 · A/F — Zero-paid deployment profiles:** provide a supported local OpenClaw gateway install/launch and upgrade path as part of LiOS.Pol, plus ODK/notification service profiles where used. Compose is allowed for supported service management, not mandatory paid hosting or K3s.
 - [ ] **P5.07 · F — Supply-chain compliance:** exact donor refs/versions, component/model/data licence checks, third-party notices, SBOM, update policy, permissions and security review.
 - [ ] **P5.08 · E/F — Cross-device UX:** responsive desktop/tablet/mobile, keyboard, accessibility, export/import, data recovery and documented supported targets.
 - [ ] **P5.09 · F — Resilience/security:** AI prompt-injection, remote-consent, unauthorized tool/cross-team access, API exposure, secrets, offline/reconnect, throughput and restore tests.
@@ -121,7 +121,7 @@ Agents may work concurrently only after shared contracts have an owning reviewer
 3. **Separate planning from implementation:** candidate ≠ installed ≠ adapter integrated ≠ end-to-end tested ≠ released. Never mark tasks done automatically.
 4. **Integrate in order of prerequisite contracts:** P1 shared schema/tool/artifact → P2 verified data/analytics → P3 policy/media/models. P4 identity/field contracts may proceed against P1 when stable; P5 service/security investigation may run independently, but release depends on all gates.
 5. **One source of truth:** `docs/MASTER_PLAN.md` for product, this file for step checklists, `architecture/execution-plan.yml` for machine gates, five existing phase issues #6–10 for assignments. Historical documents are reference only, never alternate roadmaps.
-6. **Protect the local-first core:** no compulsory OpenCloud, OpenClaw, ODK Central, hosted AI, paid tiles or cloud; explicit consent before transmitting user evidence or connecting external accounts.
+6. **Protect the local-first core:** OpenClaw provided in the supported local install; no compulsory ODK Central, hosted AI, paid tiles or cloud; explicit consent before transmitting user evidence or connecting external accounts.
 7. **Political product boundary:** use authorized aggregate research/operations, documented survey data and lawful source access; do not build inferred individual political preferences, persuasion targeting, electoral-roll enrichment or fictional official live booth feeds.
 8. **Phase exit evidence:** demonstrate a complete user journey, reproducible tests, accurate source/model metadata, security/permission checks, exact dependency licences, and independent install results.
 
@@ -129,5 +129,5 @@ Agents may work concurrently only after shared contracts have an owning reviewer
 
 1. **Finish/review existing [P1 PR #11](https://github.com/limuria08-hub/Dotpol/pull/11),** confirm CI and real model/browser/search integration. No competing P1 branch.
 2. **Agent E:** work from [UI issue #12](https://github.com/limuria08-hub/Dotpol/issues/12) against P1 application contracts. No full frontend reset.
-3. **A/D:** finalize service contract stubs and political IDs; **do not** install OpenCloud or OpenClaw in local default.
+3. **A/D:** finalize service contract stubs and political IDs; integrate OpenClaw locally with security gates; **do not** create any file-service integration.
 4. **F:** review licences, CI, source evidence, runtime constraints, and conflicts before any merge.
