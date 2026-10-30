@@ -196,3 +196,37 @@ test('required OpenClaw gateway status is explicit, opt-in and credential-free',
   await expect(panel).toContainText('Could not verify the local OpenClaw gateway');
   await expect(panel.getByRole('button', { name: 'Check gateway' })).toBeEnabled();
 });
+
+test('OpenClaw security audit requires explicit click and keeps findings private', async ({ page }) => {
+  let audits = 0;
+  let response = {
+    component: 'openclaw', required_for_release: true,
+    audit_performed: true, review_required: true, status: 'findings-require-review',
+    critical_count: 1, warning_count: 0, detail: "Review OpenClaw's full local security audit before enabling tools or channels.",
+  };
+  await page.route(`${API}/api/openclaw/audit`, async route => {
+    expect(route.request().method()).toBe('POST');
+    expect(route.request().headers()['x-dotpol-local']).toBe('1');
+    audits += 1;
+    await route.fulfill({status: 200, contentType: 'application/json',
+      body: JSON.stringify({...response, findings: [{detail: 'HIDDEN-OPERATOR-TOKEN'}]})});
+  });
+  await page.goto('/');
+  const panel = page.getByRole('region', {name: 'Required OpenClaw gateway'});
+  await expect(panel).toContainText('Security audit not run');
+  expect(audits).toBe(0);
+  await panel.getByRole('button', {name: 'Security audit'}).click();
+  await expect(panel).toContainText('Review OpenClaw');
+  await expect(panel).not.toContainText('HIDDEN-OPERATOR-TOKEN');
+  expect(audits).toBe(1);
+  response = {
+    component: 'openclaw', required_for_release: true,
+    audit_performed: true, review_required: false, status: 'baseline-no-findings',
+    critical_count: 0, warning_count: 0,
+    detail: 'No warnings in the basic OpenClaw audit; deep checks, pairing and tool permissions remain unverified.',
+  };
+  await panel.getByRole('button', {name: 'Security audit'}).click();
+  await expect(panel).toContainText('No warnings in the basic OpenClaw audit');
+  await expect(panel).not.toContainText('HIDDEN-OPERATOR-TOKEN');
+  expect(audits).toBe(2);
+});
