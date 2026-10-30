@@ -1,0 +1,478 @@
+# Dotpol Phase 1 — runnable local research foundation
+
+**Implementation scope:** local projects, TXT/CSV/JSON imports and optional local Docling PDF/DOCX conversion, SHA-256 source lineage, exact line-level retrieval, AI-native cited research with a configured model, artifact persistence, no-key mode, a Next.js workspace and safety tests. The shared model gateway uses PydanticAI and supports local Ollama or explicitly configured HTTPS BYOAI. A real model has not been exercised in this environment. This is **not** full political ETL, LanceDB hybrid indexing, advanced GIS or organization login. See the [five-phase roadmap](docs/ROADMAP.md).
+
+## Requirements
+
+Python 3.11+, Node 22+, no paid keys, no Docker required.
+
+## Start API
+
+From the repository root:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -e '.[test]'
+PYTHONPATH=platform/src:services/api uvicorn app:app --host 127.0.0.1 --port 8765
+```
+
+Local state is stored in `~/.dotpol/dotpol.sqlite3`; set `DOTPOL_DATA_DIR` to choose a different folder. No automatic network requests occur to AI providers on startup. Model availability is checked only when you explicitly click **Check local model** (which contacts the localhost Ollama `/api/tags` endpoint and does not run inference). To activate AI synthesis, install/run [Ollama](https://github.com/ollama/ollama) locally, pull a compatible model and configure it explicitly:
+
+```bash
+export DOTPOL_AI_PROVIDER=ollama
+export DOTPOL_AI_MODEL=<your-installed-model-name>
+export DOTPOL_OLLAMA_URL=http://127.0.0.1:11434
+```
+
+PydanticAI uses Ollama's local OpenAI-compatible API at `/v1`. The configured model is invoked only when you submit a research question whose source evidence exists. `GET /api/ai/status` reports **configuration**, not actual runtime readiness. No model download is performed automatically.
+
+Optional BYOAI (explicitly user-supplied, not required) uses `DOTPOL_AI_PROVIDER=openai-compatible`, `DOTPOL_AI_API_BASE=https://provider.example/v1`, `DOTPOL_AI_MODEL`, and `DOTPOL_AI_API_KEY`. Only a user-configured HTTPS endpoint is accepted. **Configuring BYOAI is not authorization to send project data**: each remote research request requires checking the one-request consent box in the UI, or supplying `allow_remote_evidence: true` to the API explicitly. A denied request returns `remote-consent-required` without contacting the external provider. The consent is not saved for future requests. Do not configure BYOAI for sensitive projects without a valid data-sharing basis. Keys are never returned to the browser. A model with no retrieved project evidence is not invoked.
+
+No model? The workspace continues to import, inspect and return source excerpts without labeling them as AI generation.
+
+## Start web
+
+```bash
+cd apps/web
+npm install
+npm run dev
+```
+
+Open `http://127.0.0.1:3000` or `http://localhost:3000`. Create a project, import a source and ask about a phrase inside it. Open a saved artifact, inspect its evidence, edit under the same artifact ID, inspect revision history and export JSON. Human edits remain explicitly unverified until their claims are independently reviewed. Files are sent only to the local FastAPI process. Maximum input size is 1 MiB per file for this preview. Do not expose the service beyond localhost; no organization authentication is implemented.
+
+## Test
+
+```bash
+python -m pytest -q
+cd apps/web && npm run build
+```
+
+The browser build requires installed npm dependencies; GitHub Actions independently builds the production app. For a local browser acceptance run, start both the API and web as described above, then:
+
+```bash
+cd apps/web
+npm install
+npx playwright install chromium
+npm run test:e2e
+```
+
+The CI `browser-e2e` job installs Chromium's OS dependencies, starts the local API and production Next.js application, then tests browser import, evidence-only research, saved revisions/reopen, cross-tab conflicts, no-evidence abstention and keyboard-accessible upload. It does not substitute for testing a real model or public deployment.
+
+## P1 checklist status
+
+- **Implemented, locally tested:** SQLite persistence, import validation, scoped source records, SHA-256 lineage, exact-evidence citation checks, deterministic retrieval, no-evidence state, source withdrawal, API origin/host/mutation checks.
+- **Implemented and subject to Chromium acceptance:** Next.js research workspace, source import, saved artifacts with PATCH-based human edits and revision history, JSON export and keyboard-accessible file-picker button.
+- **Implemented with mocked AI service tests (live model not verified):** PydanticAI local Ollama and opt-in HTTPS BYOAI adapter, source-grounded AI synthesis path, citation validation, model metadata and persistence, no-model fallback.
+- **Not verified/complete:** LanceDB hybrid retrieval, live Docling engine conversion (optional adapter only), organization login, real-model inference, independent OS release and comprehensive security review. Do not mark P1 verified or released.
+
+## Trust boundaries
+
+Data and citations are linked to original text but source correctness is not guaranteed. Source excerpts are **not** AI analyses. Projects are only isolated logically in personal local mode; they are not access-controlled user accounts. Never expose this preview as an internet-facing or multiuser service. Do not upload private elector information or infer individual political preferences.
+
+## P1 current verification ledger (2026-10-30)
+
+- Backend verification: `python -m pytest -q` is executed on every implementation PR by GitHub CI, including request-consent, migration, revision-conflict, document-adapter and source-evidence tests. Use the latest linked PR check for the current result.
+- Browser: GitHub CI builds the production Next.js application and runs Playwright/Chromium against the real localhost API. Synthetic-only/no-model browser journeys are distinct from real Ollama inference.
+- Real Ollama inference: **not verified**; explicit probe verifies only that the configured model is listed, not that it produces a correct answer.
+- Trust: PydanticAI prompt citations are validated for existing IDs, lines and hashes, **not** semantically fact-checked claim by claim; review is required for high-stakes claims.
+- Auth, real local AI inference, hybrid retrieval, live Docling extraction/OCR, accessibility audit, dependency locks and full Phase 1 security remain open acceptance gates.
+
+## Optional LanceDB keyword index (next P1 retrieval integration)
+
+The normal local-only retrieval path uses verified project source lines. To enable the selected LanceDB full-text engine, install `python -m pip install -e '.[test,search]'` and set `DOTPOL_SEARCH_ENGINE=auto` (default) or `lancedb`. Index data is derived under `DOTPOL_DATA_DIR/search-index/<project>`; SQLite remains canonical. A missing or failed index is reported as a degraded literal scan, never falsely as indexed retrieval. Every index hit is checked against current source bytes, project ID, line number, SHA-256 and active/withdrawn state. This provides **keyword FTS**, not semantic embeddings or hybrid vector retrieval yet. Run `pytest tests/test_search_index.py -q` with the optional package installed to verify real index rebuild and withdrawal.
+
+## P1.09 Canonical artifact revision contract
+
+- `PATCH /api/projects/{project_id}/artifacts/{artifact_id}` accepts `{"answer":"...","expected_revision":1}` with the required local mutation header.
+- `GET /api/projects/{project_id}/artifacts/{artifact_id}/revisions` returns immutable generation/human-edit snapshots. The UI displays history, allows editing and reopening, and retains **the same artifact ID** across revisions.
+- Concurrent stale edits receive HTTP 409; a human edit is flagged `user-edited-unverified`. Original source evidence and AI generation metadata are preserved but **do not automatically validate edited claims**. No extra document database or model gateway is created.
+
+## P1.03 Optional Docling document import (2026-10-30)
+
+The existing **one local gateway** additionally accepts PDF/DOCX through
+`POST /api/projects/{project_id}/documents` when the optional dependency is installed:
+
+```bash
+python -m pip install -e '.[documents]'
+```
+
+The existing UI sends an in-memory base64 payload (maximum **1 MiB** original
+binary). The gateway uses Docling's `DocumentStream` converter; PDFs use
+`NativePdfFormatOption` for **model-free, non-OCR extraction**, avoiding implicit
+model downloads. Scanned/image-only PDFs are not supported in this preview.
+
+Document sources preserve **two different hashes**: `file_sha256` for the exact
+original uploaded binary and `sha256` for the extracted UTF-8 markdown that
+search/citations actually reference. `extraction_method` records the parser.
+The DB migration adds nullable metadata columns; older TXT/CSV/JSON sources
+retain the same behavior. Import rejects invalid base64, mismatched signatures,
+path-like names, empty extracted content and oversized output without saving a
+source. Missing Docling returns a truthful 503 rather than an unsupported claim.
+
+**Verification boundary:** automated tests exercise the importer contract through
+an in-process Docling stand-in, NOT a live Docling PDF/DOCX conversion. The real
+Docling dependency, production Next.js build, real Ollama inference, OCR, hybrid
+semantic retrieval and independent clean-install still need verification.
+Run `python -m pytest -q` to exercise the P1 core tests. This opt-in parser is
+**not** a mandatory service for local AI research.
+
+
+### Explicit OpenClaw baseline security audit (P1.11)
+
+The Phase 1 research shell has a **Security audit** control beneath the OpenClaw gateway check. Only a user click triggers the local FastAPI endpoint:
+
+```bash
+curl -X POST -H 'X-Dotpol-Local: 1' http://127.0.0.1:8765/api/openclaw/audit
+```
+
+The backend executes **`openclaw security audit --json`** (ordinary read-only mode, **never** `--fix`, `--deep`, or `--token`). It requires the installed local OpenClaw binary, never starts OpenClaw, and never saves or returns raw findings, channel identities, credentials, local file paths or stderr. The response contains only nonnegative `critical_count`, `warning_count`, `info_count`, `suppressed_count`, `audit_performed`, `review_required`, and a fixed status/detail. Invalid outputs, timeouts, nonzero exit codes, or missing install fail closed. A suppressed finding always requires review even when active warning counts are zero.
+
+**A clean basic audit does not certify secure operation.** OpenClaw's trust model is one trusted operator/group per gateway. A production OpenClaw integration still requires authenticated/personalized channel access, paired devices, effective tool sandboxing, exact plugin permissions, deep/live audit, and real end-to-end channel tests. This feature is not a finished P4/P5 gateway integration.
+
+Backend tests: `pytest tests/test_openclaw_audit.py -q`. Browser tests: `cd apps/web && npm run test:e2e` (requires the local API/web and Playwright). CI remains the authoritative production build verification after this change.
+
+## P1.11 — Required OpenClaw Gateway foundation (2026-10-30)
+
+**Product decision:** OpenClaw is a **required component of a complete LiOS.Pol release**, not an optional service. OpenCloud is not part of this product. The five-phase canonical plan assigns readiness/contracts to P1, authorized team/channel integration to P4, and full gateway, skills, devices, automations, lifecycle and security acceptance to P5.
+
+The existing FastAPI local gateway exposes a **read-only** status endpoint:
+
+```bash
+curl --fail http://127.0.0.1:8765/api/openclaw/status
+```
+
+It discovers the installed OpenClaw CLI and executes the documented `openclaw health --json --timeout 2500` command with no shell, bounded timeout, and no auto-install, model download, gateway startup, or access to channel content. The response is a sanitized `required_for_release` / `ready` / `status` / `detail` summary; the raw CLI payload, stderr, credentials and channel identities are never returned.
+
+- `not-installed` means a **required release dependency has not been installed** (not that the feature is optional).
+- `unreachable`, `starting`, `unhealthy` or `invalid-response` mean the gateway is not verified ready.
+- `gateway-healthy` confirms a successful health RPC **only**. It does not certify secure channel pairing, device policy, tool permissions, skills, runtime supervision or production readiness.
+- The read-only probe does not replace PydanticAI's evidence-grounded political research tool chain. OpenClaw retains ownership of its own gateway, channel/device pairing and skills.
+- OpenClaw's upstream security guide recommends **one trust boundary per gateway**; use distinct gateway instances/credentials for mutually untrusted organizations. Do not expose full operator tokens to browser clients.
+
+The Next.js shell now includes a compact **OpenClaw · Required** status control. The user explicitly clicks **Check gateway** to query this local API; the browser never contacts the OpenClaw gateway directly and does not receive operator credentials. Playwright covers the initial not-checked state, not-installed and healthy results, failed calls, and response-secret omission. A green UI test does not certify actual installed channel/device readiness.
+
+Automated tests mock the OpenClaw CLI and cover missing installation, startup, errors, timeouts, sanitized health, and rejected remote origins. **Real installed gateway integration remains pending** until live local test and P4/P5 acceptance. Avoid claiming complete OpenClaw integration based solely on this status endpoint.
+
+
+
+## P1.05/P1.07 — Explicit real-model verification and grounded synthesis screening
+
+The **existing** PydanticAI gateway now screens every nonempty model-answer sentence for a valid project-retrieved bracketed citation. Each numeric token and directly quoted string in that sentence must occur in the **cited** source excerpts; wrong-source references, missing citations, fabricated numbers/years or fabricated exact quotations return HTTP 422 and **no AI artifact is saved**. The canonical SQLite store continues to independently verify project-scoped source IDs, line numbers, exact excerpts, active status and hashes. New synthetic regression tests cover plausible-looking fabricated statistics and adversarial source instructions; these are **mocked model tests**, not real inference.
+
+**Important limitation:** this rule is a deterministic safety screen, **not semantic entailment or independent fact-checking**. It cannot establish that interpretations, inferred causation, named-entity claims or paraphrases are correct merely because citation IDs and numeric tokens match. The strict sentence-level citation requirement may reject otherwise acceptable model prose; this is deliberate fail-closed preview behavior. Human reviewers must verify material political claims against primary sources.
+
+### Opt-in real local Ollama smoke test (not yet verified)
+
+This test is **skipped in ordinary CI** and does not install a model or contact a hosted provider. Explicitly install/start Ollama and pull a compatible local model first, then run from the repository root:
+
+```bash
+DOTPOL_LIVE_OLLAMA_TEST=1 DOTPOL_AI_PROVIDER=ollama DOTPOL_AI_MODEL='<your-installed-model>' python -m pytest tests/test_live_ollama_inference.py -q -rs
+```
+
+A successful run must list the configured model, actually invoke PydanticAI against the loopback Ollama API, and return a generated answer with valid saved-evidence references. Because the model response is nondeterministic, a rejected uncited/unfounded answer makes this acceptance test fail rather than silently switching to extractive mode. A real local-model pass has **not** been observed in the GitHub-hosted checks; do not mark the P1.05 live inference gate complete.
+
+
+## P1.08/UI-04 — Resizable conversation and canonical workbench
+
+The current **single Next.js application** uses the exact direct dependencies
+`react-resizable-panels@2.1.9` (MIT) and `lucide-react@0.469.0` (ISC, Feather
+attribution for applicable icon designs). See `apps/web/THIRD_PARTY_NOTICES.md`
+for the dependency ledger, source links and unclosed licence checks.
+
+A question submitted to the **existing** FastAPI `/api/projects/{id}/research`
+route creates one canonical SQLite Artifact. The conversation renders the persisted
+question/answer preview and **Open in workbench** opens that same ID. On desktop
+the conversation and artifact are resizable using a keyboard-operable handle;
+panel sizing is saved locally by `react-resizable-panels`. On narrow screens
+the same content stacks without creating a second editor or research store.
+Edits continue to use the original `PATCH` revision endpoint, source provenance,
+conflict protection and JSON export. The existing OpenClaw status remains separate
+and read-only; the UI does not copy gateway tokens or channel data.
+
+External BYOAI evidence consent is **consumed at submission time**, even if the
+provider request fails, and is cleared when editing the question or switching
+research modes/projects. Browser acceptance covers these privacy cases without
+contacting a real external model. A failed request never silently grants the next
+request permission.
+
+**Unfinished:** shadcn/Radix token adoption, assistant-ui custom REST adapter
+(only if compatible), Lexical editing, complete screen-reader/manual WCAG audit,
+full npm lockfile, package licence/SBOM review and real Ollama acceptance.
+Nothing about panel rendering certifies those unimplemented integrations.
+
+### Authenticated OpenClaw RPC bridge (P1.11)
+
+The next acceptance level after health/audit is the **actual OpenClaw WebSocket control plane**. LiOS.Pol does **not** implement a second WebSocket handshake or duplicate the OpenClaw identity/pairing store. The backend delegates connection authentication to the installed upstream OpenClaw CLI and calls only a fixed **read-only** `status` RPC:
+
+```bash
+# Run an installed, configured and paired OpenClaw Gateway first.
+openclaw gateway call status --params '{"includeChannelSummary":false}' --json --timeout 4000
+
+# Ask the local Dotpol API to verify the same authenticated RPC:
+curl -X POST -H 'X-Dotpol-Local: 1' http://127.0.0.1:8765/api/openclaw/rpc-check
+```
+
+The Dotpol endpoint runs a bounded subprocess with **no shell, no token/password arguments, no arbitrary method/parameters, and no auto-start**. OpenClaw's maintained CLI chooses the configured Gateway and handles its normal device credentials, scopes and authenticated WebSocket protocol. The original RPC payload (which may contain session, channel, identity or host details) stays server-side and is **never returned**. Only `rpc_verified`, `status`, `required_for_release` and a fixed explanatory string are returned. Invalid replies, missing installation, CLI failures or timeouts fail closed.
+
+```bash
+# Real local integration evidence (opt-in, skipped by default CI):
+DOTPOL_LIVE_OPENCLAW_TEST=1 PYTHONPATH=platform/src:services/api \
+  pytest tests/test_live_openclaw_rpc.py -q
+
+# Default mock-based regression suite:
+PYTHONPATH=platform/src:services/api pytest tests/test_openclaw_rpc.py -q
+```
+
+The LiOS.Pol sidebar has a user-triggered **Verify connection** control alongside **Check gateway** and **Security audit**. It requests only `POST /api/openclaw/rpc-check` and displays the sanitized success/failure summary. No authenticated RPC is attempted automatically when the UI loads. The browser never receives the raw Gateway status document, operator token, session identities, channel metadata or CLI stderr. Browser regression checks cover the opt-in action, absent gateway, successful RPC, transport errors and dropped credential fields. `rpc-connected` confirms only the CLI-authenticated read-only status operation, **not** authorization for OpenClaw agent tool calls.
+
+A passing **real** RPC test demonstrates the installed OpenClaw CLI can complete an authenticated status request with its configured gateway. It does **not** grant per-organization role isolation, approve OpenClaw tools, establish channel pairing, demonstrate device commands, or prove a secure production deployment. Those remain P4/P5 gates. In particular, the CLI's identity may be an **operator credential**; do not forward user-submitted method names or data to the CLI and do not expose its credentials to the browser.
+
+
+
+## P1.08/UI-02 — Shared Radix/Tailwind controls with reproducible install
+
+The existing Next.js shell now uses a **small project-owned shadcn-style
+component layer** rather than adding a second UI application. Tailwind CSS v4
+runs through a local PostCSS plugin. Radix `react-slot`, `react-label`,
+and `react-dialog` back accessible Button, Label and source-provenance
+controls; Input is a local shared React component. The project, file-import,
+research and workbench flows still use the **same FastAPI/SQLite artifact and
+source IDs**. The source-provenance dialog displays the original canonical
+source ID, complete SHA-256, origin and status and closes via Escape with
+keyboard focus restored. No cloud assets, UI data store, new model service or
+hosted component provider are introduced.
+
+**Reproducible web dependency workflow:**
+
+```bash
+cd apps/web
+npm ci --no-audit --no-fund
+npm run build
+# With local API + web running, Chromium installed:
+npm run test:e2e
+```
+
+The checked-in `apps/web/package-lock.json` is generated from the successful
+Node 22 GitHub Actions install; both web and Chromium CI jobs use `npm ci`
+rather than floating npm installs. This pins the resolved dependency graph,
+but it does **not** replace a full transitive licence, SBOM or vulnerability
+audit. See `apps/web/THIRD_PARTY_NOTICES.md` for the installed subset and
+upstream licence references.
+
+**UI-03 implemented adapter:** `@assistant-ui/react@0.15.32` uses
+`useExternalStoreRuntime`, the package's Thread, Message and Composer
+primitives, and **only** Dotpol's saved Artifact records as message state.
+Switch from **Classic conversation** to **Assistant conversation** in the same
+research workspace. Submitting from the assistant-ui composer calls the
+existing `POST /api/projects/{id}/research` route; the saved Artifact ID
+links directly to **Open in workbench**, with unchanged evidence and history.
+The runtime is remounted on project switch and old in-flight answers are
+prevented from contaminating another project's UI.
+
+The host's request-specific BYOAI consent remains the only authorization
+path. The assistant composer cannot send externally when consent is missing;
+typing again revokes any prior approval, and a failed remote request consumes
+that approval. Browser tests exercise live localhost FastAPI requests,
+persisted reload, source evidence, project isolation and mocked remote
+consent failures. The default classic renderer remains a reversible fallback
+until full UX/a11y verification, not a second chat store or backend.
+
+No Assistant Cloud, AI SDK gateway, direct browser provider call, model
+service or duplicate thread persistence was added. UI-03's **adapter/browser
+contract** is verified by CI, but real Ollama/BYOAI provider inference is a
+separate unverified release gate.
+
+**Still open:** complete Radix/shadcn navigational coverage, manual WCAG
+screen-reader/keyboard audits, real local Ollama
+and installed OpenClaw integration. A passing browser fixture verifies the
+specified journey only.
+
+
+## P1.02/P1.10 — Local disaster recovery and stable political identity IDs
+
+Phase 1 now uses **the same SQLite database** for projects, sources, artifacts, revision history and a small project-scoped canonical political identity registry (not a second ORM or political data backend). User-created identifiers are UUIDs (32 hex), unique by project/kind/normalized name, and always tagged `user-declared-unverified`. A cited source must be **active in the same project**; its SHA-256 is saved on creation so subsequent source withdrawal does not erase provenance. P2 will own official external IDs, aliases, boundary time validity, and electoral results; neither automatic personal preference inference nor duplicate political ontology is added here.
+
+```bash
+# POST needs X-Dotpol-Local as all existing local write routes do.
+curl -X POST -H 'X-Dotpol-Local: 1' -H 'Content-Type: application/json' \
+  -d '{"kind":"constituency","name":"Synthetic constituency"}' \
+  http://127.0.0.1:8765/api/projects/PROJECT_ID/entities
+
+# List registered entities in that project:
+curl http://127.0.0.1:8765/api/projects/PROJECT_ID/entities
+```
+
+Backups use the SQLite backup API, **not** a raw copy of the live .sqlite3/WAL file. From the repo root, with an existing `DOTPOL_DATA_DIR` (or the default `~/.dotpol`):
+
+```bash
+PYTHONPATH=platform/src python -m dotpol_platform.backup --output "$HOME/dotpol-backup-$(date +%Y%m%d-%H%M%S).sqlite3"
+```
+
+The destination must **not exist**, and its parent directory must exist. The operator invokes the command locally; there is **no HTTP backup endpoint** or cloud upload. It snapshots live data with `sqlite3.Connection.backup`, verifies `PRAGMA integrity_check`, restricts the file to owner permissions (where supported) and returns a SHA-256 digest. To restore, **stop the local API first**, retain a safety copy of the existing database, and put the verified snapshot at the configured local database path. Restart the API; its idempotent schema initialization will run. Do not replace a live database while it is open.
+
+```bash
+PYTHONPATH=platform/src:services/api python -m pytest tests/test_political_identity.py tests/test_local_backup.py -q
+```
+
+**Limitations:** first release creates user-declared identities only, not verified external political identifiers, matching/aliases, election results, dated boundaries or identity resolution. A successful backup test is not a substitute for a complete OS-specific restore drill and key/secret backup; OpenClaw retains its *separate* own settings/credentials and should be backed up through its supported mechanism.
+
+
+
+## P1.07 — Cross-source research comparison (same research engine)
+
+The existing project search produces verified source line references and persists one artifact. The additional `POST /api/projects/{id}/compare` route uses **that same search adapter**, groups up to two matching lines per source (at most six sources), and saves one canonical comparison artifact for opening, revisioning and exporting in the existing workbench. It does **not** introduce another index, model gateway or backend. The API includes `source_count`, `comparison_ready`, `retrieval_mode`, `retrieval_degraded`, and the saved `artifact`.
+
+```bash
+curl -X POST -H 'X-Dotpol-Local: 1' -H 'Content-Type: application/json' \
+  -d '{"question":"public budget","mode":"extractive"}' \
+  http://127.0.0.1:8765/api/projects/PROJECT_ID/compare
+```
+
+If fewer than two distinct project source records appear among retrieved matches, the report states that comparison is **not supported**. If at least two records match, it produces a **source excerpt matrix**, not a fabricated agreement/disagreement judgment. Original hashes, source IDs, lines and excerpts must pass the existing SQLite artifact verification. Withdrawn/cross-project sources cannot appear in newly saved comparisons. The current API is deliberately deterministic and does **not** claim to be a completed autonomous multi-step research agent.
+
+```bash
+PYTHONPATH=platform/src:services/api python -m pytest tests/test_cross_source.py -q
+```
+
+Remaining P1.07 quality gate: evaluate source independence and original provenance of with real user-supplied documents, run configured local AI synthesis against the verified matrix, and review conclusions/limitations before accepting an evidence-grounded research brief.
+
+
+
+## P1.06 — Typed, deny-by-default tool boundary
+
+`platform/src/dotpol_platform/approved_tools.py` defines a **single** deterministic tool contract for `source.search`, `source.inspect`, `artifact.read`, and `entity.list`. These tools call the **existing** project/search/artifact/identity code; they do not create another DB, agent server, web endpoint or OpenClaw runtime.
+
+Every invocation requires a **trusted `ToolGrant(actor_id,project_id,allowed_tools)` created by application policy**. Unrecognized tool names and schema extras fail closed; source inspections refuse withdrawn records; source and artifact lookups remain scoped to the granted project. This is a P1 contract ready for the PydanticAI owner to consume and for the future OpenClaw gateway bridge to call **only after** authenticating and mapping a channel sender to a Dotpol actor and project. No public HTTP endpoint accepts arbitrary tool names or credentials.
+
+```bash
+PYTHONPATH=platform/src:services/api python -m pytest tests/test_approved_tools.py -q
+```
+
+**Important:** This module does **not** authenticate users or issue real organization grants. Do not build an OpenClaw operator-CLI tool proxy from it. P4 owns actor membership and recursive team access; P5 owns paired OpenClaw channel/device transport. Live privileged tool execution stays disabled until those identities and policy checks work end to end.
+
+
+
+## P1 release decision gate — do not infer real-service success from CI mocks
+
+**Canonical workstream:** issue #6 and this PR #11. The numbered Phase 1 packages remain the only accepted roadmap; do not create a replacement P1 plan.
+
+| Gate | Evidence | Current verdict |
+|---|---|---|
+| P1.02/P1.10 SQLite, source/artifact persistence, canonical IDs | `tests/test_phase1.py`, `tests/test_artifact_revisions.py`, `tests/test_political_identity.py` | Repeatable automated coverage; backup restore drill included |
+| P1.03 document ingestion | Mocked tests plus `tests/test_live_docling_conversion.py` | Real native Docling remains **unverified** until opt-in gate runs |
+| P1.04 search | `tests/test_search_index.py` on GitHub with LanceDB dependency | FTS verified when CI succeeds; **vector/hybrid not claimed** |
+| P1.05 AI model | Source-grounding and consent tests, opt-in `test_live_ollama_inference.py` | Real configured Ollama synthesis remains **unverified** until opt-in gate runs |
+| P1.06 tool policy | `tests/test_approved_tools.py` | Deterministic typed tools reject ungranted commands; no external OpenClaw tool grant yet |
+| P1.07 research | `tests/test_ai_grounding.py`, `tests/test_cross_source.py` | Source comparison and grounding covered; no autonomous full web research claimed |
+| P1.08/P1.09 web/workbench | GitHub production build, Playwright, exact artifact ID tests | Manual accessibility and complete component audit pending |
+| P1.11 OpenClaw required | Health, audit, authenticated RPC contract tests, `test_live_openclaw_rpc.py` | **Real installed gateway/paired session remains unverified**; P4/P5 own channels/skills |
+| P1.12 exit | Clean CI, no-model/no-network, installed model/Docling/Gateway, manual quality | **Not accepted until all real gates and review evidence pass** |
+
+**One-shot local runtime acceptance (no auto-install/download):**
+
+```bash
+# Install Python dependencies, Docling and a preselected local Ollama model explicitly.
+# Install/configure/start the required OpenClaw Gateway locally and pair as needed.
+export DOTPOL_AI_MODEL='<installed-local-ollama-model>'
+bash scripts/p1-live-acceptance.sh
+```
+
+The script checks installed executables first, then enables the three opt-in **real** Docling, Ollama and OpenClaw tests. It fails instead of silently using a mock, hosted model or skipped test. Do not run it on an untrusted shared operator gateway. Preserve captured pass/fail evidence in the P1 tracking issue before marking the phase accepted.
+
+
+
+## P1.08/UI-05 — Browser accessibility and software supply-chain gates
+
+This workstream extends **the same** Next.js/FastAPI/SQLite/OpenClaw
+integration; it does not create a second product surface or data provider.
+
+### Automated browser/keyboard and local-only checks
+
+`apps/web/e2e/accessibility.spec.ts` runs `@axe-core/playwright@4.14.0`
+with WCAG 2/2.1 A/AA plus best-practice rules against the actual production
+Chromium application. It fails CI on **serious or critical** machine-detected
+violations in landing, empty project, modal source provenance, classic
+workbench, assistant-ui thread and 390px stacked layout. It also asserts that
+the fully local/no-model flow makes **no HTTP requests outside the
+`127.0.0.1:3000` web and `127.0.0.1:8765` API origins**. Existing browser
+tests cover keyboard resize, source dialog focus/Escape, project isolation,
+one-request-only external AI consent, no-evidence abstention, artifact
+revision conflict, OpenClaw readiness/audit/RPC state and mobile overflow.
+
+The audit caught and corrected low-contrast footer text and a
+visible-label/accessible-name mismatch in the chat/workbench action controls.
+No axe rule was suppressed or explicitly disabled. An automated pass is
+**not** a screen-reader certification or guarantee of WCAG conformance:
+manual keyboard-only, VoiceOver/NVDA/TalkBack, zoom, contrast, localization
+and assistive-device audits remain outstanding for UI-09/P5 acceptance.
+
+### npm supply-chain gate
+
+The `supply-chain` CI job now installs **only the locked npm tree** via
+`npm ci`, verifies direct package manifests against `package-lock.json`,
+writes `apps/web/audit-output/license-inventory.json`, generates the
+CycloneDX `sbom.cdx.json` with npm and **fails on high or critical
+production dependency advisories** using `npm audit --omit=dev
+--audit-level=high`. Reports are retained as GitHub Actions artifacts.
+The root `postcss` override, matched to the exact `postcss@8.5.31`
+already declared for the build, closes high-severity nested Next/PostCSS
+advisories without a forced Next.js 16 migration. The patched lockfile and
+production browser build are tested together.
+
+The licence inventory is **evidence, not permission**: LGPL optional
+native Sharp binaries, CC-BY caniuse data, and MPL development/build
+tools still require notice, redistribution and asset review. See
+`apps/web/THIRD_PARTY_NOTICES.md`. A clean npm audit cannot prove absence
+of unknown vulnerabilities, unsafe source dependencies or future
+supply-chain compromises.
+
+### Reproduce
+
+```bash
+cd apps/web
+npm ci --no-audit --no-fund
+node scripts/audit-lockfile.mjs
+npm sbom --sbom-format=cyclonedx > audit-output/sbom.cdx.json
+npm audit --omit=dev --audit-level=high
+# With the localhost API and production web started:
+npm run test:e2e
+```
+
+**Release status:** UI-05 automated controls are integrated. Full manual
+accessibility, exact redistributed licence texts/notices and deployed
+artifact review are still **release gates**, not marked complete.
+
+
+## P1.08/UI-06 — Lexical plain-text report editor with canonical revisions
+
+`apps/web/components/report-lexical-editor.tsx` embeds pinned
+`lexical@0.52.0` and `@lexical/react@0.52.0` (MIT) into the **existing**
+artifact workbench. Lexical owns only the active, unsaved editing session.
+It starts with the selected canonical Artifact's persisted `answer`, uses
+`PlainTextPlugin` + `HistoryPlugin` for keyboard editing and undo/redo,
+and emits plain text via `OnChangePlugin`. No Lexical JSON, HTML, external
+editor service or second document DB is persisted.
+
+**Persistence:** Save still calls
+`PATCH /api/projects/{project_id}/artifacts/{artifact_id}` with exactly
+`{answer, expected_revision}`. The server enforces project scope, UTF-8
+100,000-byte maximum, optimistic 409 conflict handling and immutable
+revision snapshots. The UI disables saving blank or oversized drafts.
+Source evidence, source hashes, original generation metadata, JSON export
+and history remain attached to the **same Artifact ID**; human edits retain
+`user-edited-unverified` rather than falsely certifying new claims.
+Cancel discards the unsaved Lexical session; a server rejection preserves
+the unsaved draft for correction.
+
+Browser tests in `apps/web/e2e/lexical.spec.ts` cover
+source-backed multiline editing, UTF-8 and literal markup handling, JSON
+export of the saved canonical artifact, cancel/reset, reload/reopen and
+oversized UTF-8 blocking. Existing multi-tab conflict and automated axe
+checks remain enabled. No remote provider or model download is required.
+
+**Limitation:** this is a **plain-text report editor**, intentionally
+matching the backend's existing answer contract. Rich formatting/embedded
+links/tables would require a reviewed and migrated canonical artifact format
+and MUST NOT be stored as an unversioned Lexical-specific sidecar.
+A successful browser test is not full accessibility certification.

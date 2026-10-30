@@ -1,0 +1,88 @@
+@import "tailwindcss";
+@theme {
+ --color-lios-base: #0c1118;
+ --color-lios-panel: #121c29;
+ --color-lios-border: #354253;
+ --color-lios-accent: #f3cc6b;
+ --color-lios-muted: #9fb2c7;
+}
+/* Shared source colours remain below during incremental migration; this
+   avoids a wholesale shell rewrite or changing evidence/consent behavior. */
+:root{color-scheme:dark;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#0c1118;color:#e8edf4}*{box-sizing:border-box}body{margin:0}button,input{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.45}.shell{display:flex;min-height:100vh}.sidebar{width:275px;flex-shrink:0;padding:30px 20px;background:#111a25;border-right:1px solid #293443;display:flex;flex-direction:column}.brand{font-size:30px;font-weight:800;letter-spacing:-1.5px}.brand span{color:#f3cc6b}.eyebrow{font-size:10px;letter-spacing:2px;color:#8394aa;font-weight:700}.side-section{margin-top:36px}.side-section h3,.pane h2{font-size:14px}.sidebar input,.ask input{width:100%;padding:12px;border:1px solid #354253;border-radius:9px;background:#152130;color:#fff;outline-color:#f3cc6b}.side-section button,.ask button{padding:12px 16px;background:#f3cc6b;color:#171a21;border:0;border-radius:9px;font-weight:700}.side-section button{width:100%;margin-top:9px}.project-list{display:flex;flex-direction:column;gap:5px;margin-top:24px}.project-list button,.artifact-list button{border:0;background:transparent;text-align:left;color:#b6c2d0;border-radius:8px;padding:11px}.project-list button:hover,.project-list button.active,.artifact-list button:hover{background:#253347;color:#fff}.side-footer{margin-top:auto;font-size:12px;color:#8e9daf}.dot{display:inline-block;background:#85cfaa;width:8px;height:8px;border-radius:50%;margin-right:5px}.main{min-width:0;width:100%;padding:34px 42px;display:flex;flex-direction:column}header{display:flex;justify-content:space-between;align-items:center;gap:15px}h1{margin:8px 0 0;font-size:28px;letter-spacing:-.8px}.label{border:1px solid #36485b;border-radius:30px;padding:7px 12px;font-size:11px;color:#b4c4d8}.status{color:#a6bacf;font-size:12px;min-height:20px}.columns{display:grid;grid-template-columns:minmax(230px,300px) minmax(0,1fr);gap:22px;flex:1}.pane,.workspace{border:1px solid #2a394b;background:#121c29;border-radius:13px;padding:22px;min-height:520px}.hint{color:#8f9eb0;font-size:13px;line-height:1.5}.upload{display:inline-block;padding:10px 14px;background:#27384c;border-radius:8px;font-size:13px;cursor:pointer;margin-top:10px}.upload{border:0;color:#e8edf4}.upload:focus-visible{outline:2px solid #f3cc6b;outline-offset:2px}.file-input-hidden{display:none}.source-list{list-style:none;padding:0}.source-list li{padding:12px 0;border-bottom:1px solid #2b3746;font-size:13px;overflow-wrap:anywhere}.source-list small,.artifact-list small{display:block;color:#91a1b2;font-size:11px;margin-top:7px}.artifact-list{display:flex;flex-direction:column}.workspace h2{font-size:18px}.ask{display:flex;gap:8px;margin-top:20px}.ask input{flex:1;min-width:0}.empty{padding:60px 30px;text-align:center;color:#8fa0b4;background:#152130;border:1px dashed #344357;border-radius:13px;margin-top:27px}.empty h2,.empty h3{color:#f1f4f8}.result{margin-top:26px;border-radius:12px;background:#182638;padding:22px}.result-head{display:flex;justify-content:space-between;color:#a0acc0;font-size:12px}.result-head button{border:1px solid #42536b;border-radius:6px;background:transparent;color:#f2d181;padding:8px}.result pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;line-height:1.7;font-size:14px}.result details{border-top:1px solid #34465c;padding:12px 0}.result details summary{cursor:pointer;color:#f2d181;font-size:13px}.result blockquote{margin-left:14px;line-height:1.6}.result small{overflow-wrap:anywhere;color:#8fa0b4}footer{margin-top:26px;color:#9caec2;font-size:11px}@media(max-width:800px){.shell{flex-direction:column}.sidebar{width:100%;padding:18px}.side-section{margin-top:12px}.project-list{max-height:100px;overflow:auto}.side-footer{display:none}.main{padding:20px}.columns{grid-template-columns:1fr}header{align-items:flex-start;flex-direction:column}.pane,.workspace{min-height:0}}
+
+.ai-control{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;color:#adbed1;font-size:12px;flex-wrap:wrap}.ai-control label{display:flex;align-items:center;gap:7px}.ai-control input{accent-color:#f3cc6b}.ai-control span{color:#8ca4bd}
+
+.ai-control button{border:1px solid #43546b;border-radius:8px;padding:7px 10px;color:#edf1f7;background:#182434}.remote-consent{border:1px solid #d6ae60;padding:12px;border-radius:8px;color:#f7e3b4}.remote-consent input{margin-right:8px}
+
+
+.artifact-actions{display:flex;gap:8px;flex-wrap:wrap}.artifact-edit-label{display:block;margin-top:18px;color:#c5d4e4;font-size:13px}.artifact-editor{display:block;width:100%;margin-top:10px;padding:14px;min-height:220px;border:1px solid #52647b;border-radius:9px;background:#0f1b2a;color:#f1f4f8;resize:vertical;font:inherit;line-height:1.6}.artifact-editor:focus-visible{outline:2px solid #f3cc6b;outline-offset:2px}.revision-entry{margin:12px 0;padding:12px;background:#101b29;border-radius:8px;border:1px solid #33445b}.revision-entry strong{font-size:12px;color:#e6eff7}.revision-entry pre{max-height:220px;overflow:auto}.result-head{gap:14px;align-items:center;flex-wrap:wrap}
+
+/* P1.11: required OpenClaw status; no raw gateway diagnostics in the browser. */
+.gateway-status{border:1px solid #35475b;border-radius:10px;padding:12px;margin-top:auto}
+.gateway-title{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px}
+.gateway-title span{font-size:10px;color:#f2d181;letter-spacing:.03em}
+.gateway-status p{font-size:11px;line-height:1.5;min-height:30px;margin:10px 0;color:#aebfd0;overflow-wrap:anywhere}
+.gateway-status .gateway-ready{color:#9cdebd}
+.gateway-status button{border:1px solid #52647b;color:#eef2f6;background:#1b2b3f;padding:8px 11px;border-radius:8px;cursor:pointer;font-size:12px}
+.gateway-status button:focus-visible{outline:2px solid #f3cc6b;outline-offset:2px}
+.gateway-status button:disabled{cursor:wait;opacity:.65}
+.side-footer{margin-top:12px}
+@media(max-width:800px){.gateway-status{margin-top:12px}.gateway-status p{min-height:0}}
+
+/* P1.08/UI-04: one responsive source / conversation / canonical artifact surface. */
+.research-single,.research-stacked{min-width:0}
+.research-stacked{display:flex;flex-direction:column;gap:14px}
+.research-split{height:min(78vh,900px)!important;min-height:540px}
+.research-panel{min-width:0;min-height:0;overflow:auto}
+.research-panel>.workspace{height:100%;min-height:0;overflow:auto}
+.research-panel>.result{margin:0;height:100%;overflow:auto}
+.research-resize-handle{display:flex;flex:0 0 12px;align-items:center;justify-content:center;color:#a4b5c8;border-radius:8px;background:#1d2b3e;cursor:col-resize}
+.research-resize-handle:hover,.research-resize-handle:focus-visible{background:#364a63;color:#ffe5a2}
+.research-resize-handle:focus-visible{outline:2px solid #f3cc6b;outline-offset:2px}
+.research-stacked .result{margin:0}
+.thread-list{border-top:1px solid #304054;margin-top:24px;padding-top:16px;min-width:0}
+.thread-list h3{font-size:14px;color:#e2eaf3;margin:0 0 12px}
+.thread-item{padding:14px;margin:12px 0;background:#1b2a3d;border:1px solid #30445b;border-radius:10px;overflow-wrap:anywhere}
+.thread-question{font-size:13px;font-weight:700;color:#f5e2b2}
+.thread-preview{font-size:13px;line-height:1.6;color:#c4d1df;white-space:pre-wrap;overflow-wrap:anywhere;max-height:112px;overflow:hidden}
+.thread-item-footer{display:flex;gap:8px;justify-content:space-between;align-items:center;flex-wrap:wrap}
+.thread-item-footer small{color:#9aadc0;font-size:11px}
+.thread-item-footer button{display:inline-flex;align-items:center;gap:6px;padding:8px 10px;background:#283b53;border:1px solid #405d78;border-radius:8px;color:#f2d181;cursor:pointer;font-size:12px}
+.thread-item-footer button:hover,.thread-item-footer button[aria-current="true"]{background:#3b506c}
+.thread-item-footer button:focus-visible{outline:2px solid #f3cc6b;outline-offset:2px}
+@media(max-width:1050px){.columns{grid-template-columns:1fr;gap:14px}.research-split{height:auto!important;min-height:0}.research-stacked .pane,.research-stacked .workspace{min-height:0}}
+@media(prefers-reduced-motion:reduce){.research-resize-handle,.thread-item-footer button{transition:none}}
+
+
+/* UI-03 assistant-ui ExternalStoreRuntime, project-owned Tailwind/Radix visual system.
+ * No remote message store; all artifacts come from the existing local API. */
+.conversation-mode{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.assistant-research-thread{display:flex;flex-direction:column;gap:12px;min-width:0;min-height:280px;margin-top:14px;border-top:1px solid #304054;padding-top:14px}
+.assistant-thread-viewport{display:flex;flex-direction:column;gap:14px;overflow-y:auto;max-height:460px;min-height:150px;padding:4px 6px}
+.assistant-message{display:flex;flex-direction:column;gap:8px;max-width:100%;overflow-wrap:anywhere}
+.assistant-message-user{align-items:flex-end}
+.assistant-message-answer{align-items:flex-start}
+.assistant-message-content{max-width:100%;white-space:pre-wrap;line-height:1.65;background:#213146;border:1px solid #35485d;border-radius:12px;padding:10px 13px;color:#e4ecf5;font-size:13px}
+.assistant-message-user .assistant-message-content{background:#304053;color:#f6ead1}
+.assistant-message-content p{margin:0}
+.assistant-artifact-actions{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;width:100%}
+.assistant-evidence-label{color:#a7bad0;font-size:11px}
+.assistant-artifact-actions button{display:inline-flex;align-items:center;gap:6px;border:1px solid #405d78;border-radius:8px;background:#283b53;color:#f2d181;padding:7px 10px;cursor:pointer;font-size:12px}
+.assistant-artifact-actions button:focus-visible{outline:2px solid #f3cc6b;outline-offset:2px}
+.assistant-composer{display:flex;align-items:flex-end;gap:10px;margin-top:4px;padding:8px;background:#111e2c;border:1px solid #394b61;border-radius:12px}
+.assistant-composer-input{flex:1;min-width:0;min-height:66px;max-height:200px;resize:vertical;background:transparent;border:0;color:#ecf2f8;font:inherit;font-size:13px;padding:9px;outline:none}
+.assistant-composer-input:focus-visible{outline:2px solid #f3cc6b;outline-offset:2px;border-radius:6px}
+.assistant-composer-send{display:inline-flex;align-items:center;gap:6px;flex-shrink:0;background:#f3cc6b;color:#171a21;padding:10px;border:0;border-radius:9px;font-weight:700;cursor:pointer}
+.assistant-composer-send:disabled{opacity:.45;cursor:not-allowed}
+.assistant-composer-send:focus-visible{outline:2px solid #fff;outline-offset:2px}
+@media(max-width:600px){.assistant-composer{align-items:stretch;flex-direction:column}.assistant-composer-send{justify-content:center}}
+
+/* UI-06: Lexical is a transient plain-text editor, not a second Artifact store. */
+.lexical-report-container{position:relative;min-width:0;margin:16px 0 8px}
+.lexical-report-input{min-height:210px;max-height:55vh;overflow-y:auto;white-space:pre-wrap;overflow-wrap:anywhere;padding:15px 16px;background:#0e1b2c;color:#eaf1f9;border:1px solid #506079;border-radius:9px;font:inherit;font-size:14px;line-height:1.7;outline:none}
+.lexical-report-input:focus-visible{outline:2px solid #f3cc6b;outline-offset:2px}
+.lexical-report-placeholder{pointer-events:none;position:absolute;top:15px;left:16px;font-size:14px;color:#9dadc2}
+.lexical-report-input:not(:empty)~.lexical-report-placeholder{display:none}
+.lexical-report-note,.lexical-byte-status{font-size:12px;line-height:1.6;color:#b3c4d7}
+.lexical-byte-status{margin:5px 0 16px}
+@media(max-width:600px){.lexical-report-input{min-height:170px;max-height:40vh}}

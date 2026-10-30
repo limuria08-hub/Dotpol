@@ -1,0 +1,137 @@
+name: P1 local research
+on:
+  pull_request:
+    paths:
+      - "platform/**"
+      - "services/api/**"
+      - "apps/web/**"
+      - "tests/**"
+      - "pyproject.toml"
+      - ".github/workflows/p1-ci.yml"
+  push:
+    branches: [main]
+    paths:
+      - "platform/**"
+      - "services/api/**"
+      - "apps/web/**"
+      - "tests/**"
+      - "pyproject.toml"
+      - ".github/workflows/p1-ci.yml"
+concurrency:
+  group: p1-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -e '.[test]'
+      - run: python -m pytest -q
+  web:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build
+
+  supply-chain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install exactly locked dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Validate lock and inventory licence/asset terms
+        run: node scripts/audit-lockfile.mjs
+      - name: Generate CycloneDX software bill of materials
+        run: npm sbom --sbom-format=cyclonedx > audit-output/sbom.cdx.json
+      - name: Reject high/critical runtime advisories
+        run: npm audit --omit=dev --audit-level=high
+      - name: Retain SBOM and licence review evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p1-npm-sbom-license-review
+          path: |
+            apps/web/audit-output/
+          if-no-files-found: ignore
+
+  search-index:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -e '.[test,search]'
+      - run: python -m pytest tests/test_search_index.py -q -rs
+      - name: Verify LanceDB was exercised
+        run: python -c 'import lancedb; print("LanceDB available:", lancedb.__version__)'
+
+  browser-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: apps/web
+    env:
+      DOTPOL_AI_PROVIDER: ollama
+      DOTPOL_AI_MODEL: ""
+      DOTPOL_SEARCH_ENGINE: literal
+      DOTPOL_DATA_DIR: /tmp/dotpol-browser-data
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install local API and browser dependencies
+        run: |
+          python -m pip install -e '../../[test]'
+          npm ci --no-audit --no-fund
+          npx playwright install --with-deps chromium
+      - name: Build production web
+        run: npm run build
+      - name: Start local-only API and web
+        run: |
+          PYTHONPATH=../../platform/src:../../services/api python -m uvicorn app:app --host 127.0.0.1 --port 8765 > /tmp/dotpol-api.log 2>&1 &
+          npm run start > /tmp/dotpol-web.log 2>&1 &
+          for i in $(seq 1 45); do
+            if curl --fail --silent http://127.0.0.1:8765/health > /dev/null && curl --fail --silent http://127.0.0.1:3000/ > /dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          cat /tmp/dotpol-api.log /tmp/dotpol-web.log
+          exit 1
+      - name: Browser research acceptance
+        run: npm run test:e2e
+      - name: Upload browser failure evidence
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p1-browser-e2e-failures
+          path: |
+            apps/web/test-results/
+            apps/web/playwright-report/
+          if-no-files-found: ignore

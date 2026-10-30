@@ -2,6 +2,8 @@
 
 **Execution map:** P1 shared AI/research gateway; P2 GIS/statistics/election/psephology tools; P3 policy/media/simulation tools; P4 scoped team/field operations copilot; P5 automated monitoring and eval/release. The selected PydanticAI one-gateway architecture is unchanged. See [ROADMAP](ROADMAP.md). No model claims completion by being configured on a diagram.
 
+**AI-first requirement (2026-10-30):** AI must be integrated into each domain's user journey through the single gateway and typed authorized tools. See [AI-native capability contract](AI_NATIVE_CAPABILITY_CONTRACT.md) for P1–P5 domains, required evaluation gates and honest runtime status. A working preview must clearly distinguish real model generation from deterministic source excerpts.
+
 ## 1. Objective
 
 Dotpol is AI-native, but not AI-dependent for deterministic truth. AI should be embedded across research, search, GIS, surveys, policy, forecasting, media and operational workflows while critical calculations and state remain auditable.
