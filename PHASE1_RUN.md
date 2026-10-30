@@ -39,7 +39,7 @@ npm install
 npm run dev
 ```
 
-Open `http://127.0.0.1:3000` or `http://localhost:3000`. Create a project, import a source and ask about a phrase inside it. Open a saved artifact, inspect line/source hash and export JSON. Files are sent only to the local FastAPI process. Maximum input size is 1 MiB per file for this preview. Do not expose the service beyond localhost; no organization authentication is implemented.
+Open `http://127.0.0.1:3000` or `http://localhost:3000`. Create a project, import a source and ask about a phrase inside it. Open a saved artifact, inspect line/source hash, edit its text and save a new revision under the same artifact ID, review revision history, or export JSON. Human edits retain original evidence references but are explicitly labelled as human-authored; unchanged citations do not prove new claims. Files are sent only to the local FastAPI process. Maximum input size is 1 MiB per file for this preview. Do not expose the service beyond localhost; no organization authentication is implemented.
 
 ## Test
 
@@ -53,9 +53,17 @@ The browser build requires dependencies to have been installed; not yet verified
 ## P1 checklist status
 
 - **Implemented, locally tested:** SQLite persistence, import validation, scoped source records, SHA-256 lineage, exact-evidence citation checks, deterministic retrieval, no-evidence state, source withdrawal, API origin/host/mutation checks.
-- **Implemented, not yet browser-tested:** Next.js research workspace, file import, saved artifacts and JSON export.
+- **Implemented, not yet browser-tested:** Next.js research workspace, file import, saved artifacts, same-ID editing with revision history and JSON export.
 - **Implemented with mocked AI service tests (live model not verified):** PydanticAI local Ollama and opt-in HTTPS BYOAI adapter, source-grounded AI synthesis path, citation validation, model metadata and persistence, no-model fallback.
 - **Not implemented:** LanceDB hybrid retrieval, Docling PDF parsing, organization login, independent OS release and comprehensive security review. A live model run and browser build remain verification gates. Do not mark P1 verified or released.
+
+## Artifact editing and revision safety (P1.09)
+
+Artifacts retain a stable ID in chat, saved research and the workbench. The local API supports:
+- `GET /api/projects/{project_id}/artifacts/{artifact_id}/revisions` — original answer plus dated human revisions.
+- `POST /api/projects/{project_id}/artifacts/{artifact_id}/revisions` — `{"answer":"...","expected_revision":1}` with the required `X-Dotpol-Local: 1` header.
+
+A matching revision increments the version without changing the artifact ID, original source references, generation method or model provenance. A stale edit returns **409 revision-conflict**; invalid text/versions return 422, and cross-project artifact references return 404. Old SQLite databases are migrated in place and legacy artifacts backfilled as revision 1. This is single-user localhost editing, **not** multiuser permissions, a semantic citation checker or an externally audited collaborative editor. A user must re-check evidence after modifying content. Python API/migration regression tests cover this behavior; real-browser E2E acceptance is still outstanding.
 
 ## Trust boundaries
 
