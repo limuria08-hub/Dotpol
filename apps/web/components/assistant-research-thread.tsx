@@ -40,8 +40,7 @@ export function AssistantResearchThread({artifacts,onSubmit,onOpen,onDraftChange
  const onNew=useCallback(async (message:AppendMessage)=>{
   // An external-store action does not imply authorization to send evidence:
   // the host's existing one-request consent check applies to every request.
-  const text=message.content.filter((part):part is Extract<typeof part,{type:'text'}>=>part.type==='text')
-   .map(part=>part.text).join('\n').trim();
+  const text=message.content.map(part=>part.type==='text'?part.text:'').join('\n').trim();
   if(!text)return;
   await onSubmit(text);
  },[onSubmit]);
