@@ -8,6 +8,7 @@ attribution before publishing a distributable release.
 
 | Component | Installed version | SPDX licence | Upstream | Scope |
 |---|---|---|---|---|
+| @axe-core/playwright | 4.14.0 | MPL-2.0 | https://github.com/dequelabs/axe-core-npm | Development-only automated WCAG scan; no runtime import or bundled axe engine |
 | @assistant-ui/react | 0.15.32 | MIT | https://github.com/assistant-ui/assistant-ui | UI-03 ExternalStoreRuntime and Thread/Message/Composer primitives over existing Dotpol Artifact data; no hosted service or second thread store |
 | react-resizable-panels | 2.1.9 | MIT | https://github.com/bvaughn/react-resizable-panels | Desktop chat/artifact pane splitter only; keyboard resizing and local layout preference |
 | lucide-react | 0.469.0 | ISC (some icon designs derive from Feather/MIT) | https://github.com/lucide-icons/lucide | Visual icons on the splitter and artifact-opening action |
@@ -37,3 +38,30 @@ A complete transitive license inventory, SBOM/security audit and redistributable
 NOTICE review remain **outstanding release gates**; this ledger is not a
 complete supply-chain audit. Do **not** claim Lexical,
 Perspective or Kepler as installed, and do not claim real model inference.
+
+## UI-05 supply-chain findings and required manual review
+
+- **Exact lock:** `apps/web/package-lock.json`; the CI web, browser and
+  supply-chain jobs use `npm ci` on Node 22. The package-lock v3 records
+  resolution, integrity, SPDX metadata and platform-specific optionals.
+- **Runtime security:** `npm audit --omit=dev --audit-level=high` is a
+  failing CI gate. Next 15's older nested PostCSS triggered advisory
+  GHSA-qx2v-qp2m-jg93 and related source-map disclosure advisories. A
+  direct-version-matched npm override now forces `postcss@8.5.31`
+  throughout the tree, including Next's dependency. The exact patched
+  lockfile was validated by the npm audit and production build.
+- **Machine-readable inventory:** `node scripts/audit-lockfile.mjs`
+  records licence fields and flags review obligations; `npm sbom
+  --sbom-format=cyclonedx` produces a CycloneDX SBOM. Both are published
+  as temporary GitHub CI artifacts, not automatically distributed.
+- **Licence review remains open:** the lock contains LGPL-3.0-or-later
+  `@img/sharp-libvips-*` native optional binaries and Windows/WASM sharp
+  packages, `caniuse-lite` data (CC-BY-4.0), and MPL-2.0 tools including
+  build-only Lightning CSS and development-only axe-core. These are
+  **not all equivalent to MIT**. Deployment packaging, dynamic linking,
+  licence notices and applicable asset/data attributions require human
+  review. Machine inventory and passing CI do not waive legal duties.
+- **Runtime vs test separation:** axe-core is used only in Playwright
+  automated tests and is not an AI plugin, telemetry SDK or production
+  UI engine. No outside model, cloud account or third-party UI server
+  is necessary to run the local product.
