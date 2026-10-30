@@ -442,3 +442,37 @@ npm run test:e2e
 **Release status:** UI-05 automated controls are integrated. Full manual
 accessibility, exact redistributed licence texts/notices and deployed
 artifact review are still **release gates**, not marked complete.
+
+
+## P1.08/UI-06 — Lexical plain-text report editor with canonical revisions
+
+`apps/web/components/report-lexical-editor.tsx` embeds pinned
+`lexical@0.52.0` and `@lexical/react@0.52.0` (MIT) into the **existing**
+artifact workbench. Lexical owns only the active, unsaved editing session.
+It starts with the selected canonical Artifact's persisted `answer`, uses
+`PlainTextPlugin` + `HistoryPlugin` for keyboard editing and undo/redo,
+and emits plain text via `OnChangePlugin`. No Lexical JSON, HTML, external
+editor service or second document DB is persisted.
+
+**Persistence:** Save still calls
+`PATCH /api/projects/{project_id}/artifacts/{artifact_id}` with exactly
+`{answer, expected_revision}`. The server enforces project scope, UTF-8
+100,000-byte maximum, optimistic 409 conflict handling and immutable
+revision snapshots. The UI disables saving blank or oversized drafts.
+Source evidence, source hashes, original generation metadata, JSON export
+and history remain attached to the **same Artifact ID**; human edits retain
+`user-edited-unverified` rather than falsely certifying new claims.
+Cancel discards the unsaved Lexical session; a server rejection preserves
+the unsaved draft for correction.
+
+Browser tests in `apps/web/e2e/lexical.spec.ts` cover
+source-backed multiline editing, UTF-8 and literal markup handling, JSON
+export of the saved canonical artifact, cancel/reset, reload/reopen and
+oversized UTF-8 blocking. Existing multi-tab conflict and automated axe
+checks remain enabled. No remote provider or model download is required.
+
+**Limitation:** this is a **plain-text report editor**, intentionally
+matching the backend's existing answer contract. Rich formatting/embedded
+links/tables would require a reviewed and migrated canonical artifact format
+and MUST NOT be stored as an unversioned Lexical-specific sidecar.
+A successful browser test is not full accessibility certification.

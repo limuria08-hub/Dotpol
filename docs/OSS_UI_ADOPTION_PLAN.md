@@ -105,4 +105,12 @@ component parity, manual accessibility, transitive licence/security review
 and release signoff remain outstanding. The existing FastAPI/PydanticAI data
 contract and mandatory OpenClaw readiness are unaffected.
 
+**UI-06 integration checkpoint:** PR #11 now includes pinned
+`lexical@0.52.0` / `@lexical/react@0.52.0` PlainText and History
+plugins within the existing workbench. The existing SQLite Artifact
+answer/revision/evidence/JSON-export contract is untouched. Browser tests
+verify actual edit/reopen/export and UTF-8 limits. This intentionally
+**does not claim rich-text persistence or a separate Lexical document
+store**. Manual accessibility and broader release checks remain open.
+
 **Status:** This is a UI reuse blueprint. Do NOT mark these components integrated by adding them to a candidate list. Actual implementation and tests must be visible in separate PRs.
