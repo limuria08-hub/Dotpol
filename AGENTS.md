@@ -24,6 +24,15 @@ Before implementing anything, read:
 
 If a requested change conflicts with these documents, do not silently invent a new architecture. Create or propose an ADR under `docs/DECISIONS/`.
 
+## Open-source UI reuse contract
+
+- Before editing the Next.js shell, consult [OSS UI Adoption Plan](docs/OSS_UI_ADOPTION_PLAN.md). Use existing permissively licensed components for navigation, panels, forms and AI-thread presentation; **do not** copy complete competing products.
+- **Agent E (`apps/web`) is the sole owner of the shared UI shell and design tokens.** Agent B exposes the existing FastAPI/PydanticAI stream/REST contracts, never a parallel frontend AI server.
+- UI baseline: shadcn/ui + Radix-flavor accessible components + Lucide; react-resizable-panels for chat/workbench; evaluate assistant-ui custom adapter over current API. Vane is a source/citation UX donor only, not a second chat renderer. Validate versions/licences and React/Next compatibility first.
+- Later specialty UI: Perspective for tables, Kepler for GIS, SurveyJS Form Library for surveys; Lexical and React Flow only after justified integration spikes. One component owner per job.
+- UI is a view over canonical Project/Artifact/Source/RoleGrant IDs. A chat artifact and full workbench must be *the same persisted object*; no visual-only mock data or parallel stores.
+- Ship accessibility/mobile/keyboard and local/no-cloud tests; preserve remote AI consent and no-model behavior while replacing handcrafted UI.
+
 ## Five-phase execution contract
 
 - **P1** foundation + evidence-backed research; **P2** elections/GIS/statistics/psephology/field pilot; **P3** policy/media/simulation; **P4** recursive teams/mobile/war room; **P5** automations, optional services and release.
