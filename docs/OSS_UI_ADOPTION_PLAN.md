@@ -1,6 +1,6 @@
 # LiOS.Pol — Open-source UI assimilation plan
 
-**Status:** Proposed implementation guidance; no new UI package installed by this document.  
+**Status:** Canonical adoption guidance. PR #11 now contains an initial pinned Radix/Tailwind UI-02 subset, Lucide and resizable panels; remaining components are not implied installed.  
 **Date:** 2026-10-30  
 **Owner:** `apps/web` + `packages/ui`; API/AI remain owned by `services/api` and `platform/ai`.  
 **Related:** [Five-phase plan](ROADMAP.md), [AI-native contract](AI_NATIVE_CAPABILITY_CONTRACT.md), [donor matrix](DONOR_MATRIX.md), [P1 foundation PR #11](https://github.com/limuria08-hub/Dotpol/pull/11).
@@ -89,5 +89,15 @@ LiOS.Pol [Projects / Chats / Research / Elections / Map / Surveys / Teams / Libr
 | Specialized workspaces | No extra database/gateway or duplicate map/chart/form ownership |
 | Keyboard/a11y | Focus visible, dialogs accessible, split controls operable, labels readable |
 | Zero-cost local | No mandatory telemetry, external render/data fetch, paid account or CDN |
+
+**Verified-in-code checkpoint (PR #11):** UI-01 browser fixtures, UI-04
+canonical artifact split view, and a **partial UI-02** Radix/shadcn-style control
+subset are implemented on the branch, alongside Lucide and a Tailwind v4
+PostCSS theme. UI-05 includes a committed npm lockfile, `npm ci`, provenance
+dialog focus/keyboard browser checks and a direct dependency notice ledger.
+UI-03 assistant-ui is **not** installed or claimed compatible, and full
+component parity, manual accessibility, transitive licence/security review and
+release signoff remain outstanding. The existing FastAPI/PydanticAI data
+contract and mandatory OpenClaw readiness are unaffected.
 
 **Status:** This is a UI reuse blueprint. Do NOT mark these components integrated by adding them to a candidate list. Actual implementation and tests must be visible in separate PRs.
