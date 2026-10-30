@@ -60,6 +60,8 @@ Optional team/server mode later:
 PostgreSQL + shared object storage + central gateway
 ```
 
+**Reusable UI components:** [Open-source UI adoption plan](docs/OSS_UI_ADOPTION_PLAN.md) defines the selected component roles, conditional chat renderer, ownership, accessibility gates, and UI-01–UI-09 tasks. The existing Phase 1 React UI stays operational until its replacement passes tests.
+
 ## Five-phase delivery
 
 | Execution phase | Scope |

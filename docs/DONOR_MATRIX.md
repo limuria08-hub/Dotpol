@@ -3,6 +3,23 @@
 **IMPLEMENTATION SELECTION:** Follow the [one-stack decision](SINGLE_STACK_SELECTION.md) and [selected_stack.yml](../architecture/selected_stack.yml), not the historical candidate alternatives in this matrix. Adopted planning [ADR-0002](DECISIONS/0002-one-stack-per-capability.md) controls any deliberate architectural changes.
 
 
+## Open-source UI adoption (2026-10-30)
+
+Read [UI adoption plan](OSS_UI_ADOPTION_PLAN.md). The existing **Next.js + FastAPI + PydanticAI** architecture is unchanged; the projects below are UI-focused candidates, not new backends or already integrated dependencies.
+
+| Upstream | UI responsibility | Integration class | Status |
+|---|---|---|---|
+| `shadcn-ui/ui` + `radix-ui/primitives` | accessible shell components, dialogs, controls | selective source/components | proposed; exact pins/notice/test pending |
+| `assistant-ui/assistant-ui` | chat thread/AI tool renderers over Dotpol FastAPI REST adapter | candidate dependency | prove adapter and consent/citation states; do not use Assistant Cloud |
+| `bvaughn/react-resizable-panels` | split chat/workbench | candidate dependency | proposed, test narrow screens |
+| `lucide-icons/lucide` | icon system | candidate dependency | proposed, retain ISC/derived notices |
+| `facebook/lexical` | report edit surface | P1/P3 candidate | artifact persistence contract required |
+| `xyflow/xyflow` | team and entity graph visualization | P3/P4 candidate | not authoritative relationship DB |
+| `kiranvbiim-coder/Vane` | source/citation/progress patterns, not duplicate chat thread | **existing fork** | not yet assimilated |
+| `perspective-dev/perspective`, `keplergl/kepler.gl`, `surveyjs/survey-library` | analyst grid / GIS / web surveys | existing selected domain UI engines | defer to relevant phases; retain original owner |
+
+Avoid installing TanStack Table as a second analytical workbench, MapLibre as a second standalone map or additional chat server runtimes. The frontend uses the existing Dotpol gateway; this section does not approve any unreviewed dependency.
+
 ## Five-phase catalogue extension (2026-10-29; NOT adopted by this plan)
 
 Follow the existing single selected stack (ADR-0002) and [five-phase master plan](MASTER_PLAN.md). These are optional/candidate/ref-only supplements, *not* 17 new core services or forks. All have `integrated: false` and `component_license_reviewed: false` in [candidate registry](../architecture/donor-candidates.yml) pending actual independent checks.

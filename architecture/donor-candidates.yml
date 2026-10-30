@@ -723,3 +723,87 @@ candidates:
     integrated: false
     forked: false
     rationale: "Default optional service profiles; not mandated for local app"
+
+  - id: "ui-shadcn"
+    upstream: "shadcn-ui/ui"
+    execution_phase: P1
+    classification: "source-component-candidate"
+    license_signal: "MIT reported; component rights verify"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Permissive shell components; choose Radix flavor and add only needed source components"
+
+  - id: "ui-radix"
+    upstream: "radix-ui/primitives"
+    execution_phase: P1
+    classification: "dependency-candidate"
+    license_signal: "MIT reported; exact ref verify"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Accessible primitives shared by shadcn and assistant UI"
+
+  - id: "ui-assistant"
+    upstream: "assistant-ui/assistant-ui"
+    execution_phase: P1
+    classification: "dependency-candidate"
+    license_signal: "MIT reported; optional managed cloud excluded"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Client chat renderer ONLY, custom adapter to Dotpol FastAPI, no second agent backend"
+
+  - id: "ui-panels"
+    upstream: "bvaughn/react-resizable-panels"
+    execution_phase: P1
+    classification: "dependency-candidate"
+    license_signal: "MIT reported; exact ref verify"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "One resizable chat to workbench layout"
+
+  - id: "ui-lucide"
+    upstream: "lucide-icons/lucide"
+    execution_phase: P1
+    classification: "dependency-candidate"
+    license_signal: "ISC reported; derived Feather notices"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "One icon set, no copyrighted brand icon bundles"
+
+  - id: "ui-editor"
+    upstream: "facebook/lexical"
+    execution_phase: P1
+    classification: "dependency-candidate"
+    license_signal: "MIT reported; exact ref verify"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Reports use canonical artifacts, never separate persisted DB"
+
+  - id: "ui-graph"
+    upstream: "xyflow/xyflow"
+    execution_phase: P4
+    classification: "dependency-candidate"
+    license_signal: "MIT reported; exact ref verify"
+    status: "candidate"
+    exact_upstream_ref: null
+    component_license_reviewed: false
+    integrated: false
+    forked: false
+    rationale: "Graph visualization for permission-scoped teams and political relationships"
