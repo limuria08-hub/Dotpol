@@ -2,6 +2,10 @@
 import {useEffect, useRef, useState} from 'react';
 import {PanelRightOpen} from 'lucide-react';
 import {ResearchSplit} from '../components/research-split';
+import {Button} from '../components/ui/button';
+import {Input} from '../components/ui/input';
+import {Label} from '../components/ui/label';
+import {SourceDetailsDialog} from '../components/source-details-dialog';
 
 const API='http://127.0.0.1:8765';
 function toBase64(bytes:Uint8Array){let data='';for(let i=0;i<bytes.length;i+=16384)data+=String.fromCharCode(...bytes.subarray(i,i+16384));return btoa(data)}
@@ -129,8 +133,8 @@ export default function Home(){
  }
  return <div className="shell">
   <aside className="sidebar"><div className="brand">LiOS<span>.Pol</span></div><p className="eyebrow">POLITICAL INTELLIGENCE</p>
-   <div className="side-section"><h3>Projects</h3><input aria-label="New project name" value={title} onChange={e=>setTitle(e.target.value)} maxLength={180}/>
-    <button disabled={loading} onClick={create}>+ New project</button></div>
+   <div className="side-section"><h3>Projects</h3><Label htmlFor="new-project-name" className="mt-3 block">Project name</Label><Input id="new-project-name" aria-label="New project name" value={title} onChange={e=>setTitle(e.target.value)} maxLength={180}/>
+    <Button variant="primary" disabled={loading} onClick={create}>+ New project</Button></div>
    <div className="project-list">{projects.map(p=><button key={p.id} className={project?.id===p.id?'active':''} onClick={()=>load(p)}>{p.title}</button>)}</div>
    <section className="gateway-status" aria-label="Required OpenClaw gateway">
     <div className="gateway-title"><strong>OpenClaw</strong><span>Required</span></div>
@@ -154,15 +158,15 @@ export default function Home(){
    {!project?<section className="empty"><h2>Create or open a project</h2><p>Import authorized source data and examine verifiable research excerpts. No paid API or cloud account required.</p></section>:
    <div className="columns">
     <section className="pane"><h2>Sources</h2><p className="hint">TXT, CSV, JSON, PDF or DOCX. PDF/DOCX require optional local Docling.</p>
-    <div className="upload-control"><button type="button" className="upload" disabled={loading} onClick={()=>sourceInputRef.current?.click()}>Import source</button><input ref={sourceInputRef} className="file-input-hidden" type="file" tabIndex={-1} accept=".txt,.csv,.json,.pdf,.docx" disabled={loading} onChange={e=>{void importFile(e.target.files?.[0]||null);e.target.value=''}} /></div>
-    <ul className="source-list">{sources.map(s=><li key={s.id}><strong>{s.name}</strong><small>{s.kind.toUpperCase()} · {s.status}<br/>SHA-256: {s.sha256.slice(0,16)}…</small></li>)}</ul>
+    <div className="upload-control"><Button variant="secondary" className="upload" disabled={loading} onClick={()=>sourceInputRef.current?.click()}>Import source</Button><input ref={sourceInputRef} className="file-input-hidden" type="file" tabIndex={-1} accept=".txt,.csv,.json,.pdf,.docx" disabled={loading} onChange={e=>{void importFile(e.target.files?.[0]||null);e.target.value=''}} /></div>
+    <ul className="source-list">{sources.map(s=><li key={s.id}><strong>{s.name}</strong><small>{s.kind.toUpperCase()} · {s.status}<br/>SHA-256: {s.sha256.slice(0,16)}…</small><SourceDetailsDialog source={s}/></li>)}</ul>
     <h2>Saved research</h2><div className="artifact-list">{artifacts.map(a=><button key={a.id} onClick={()=>{void openArtifact(a)}}>{a.question}<small>{new Date(a.updated_at||a.created_at).toLocaleString()} · rev {a.revision}</small></button>)}</div>
    </section>
     <ResearchSplit showWorkbench={Boolean(selected)}
       conversation={<section className="workspace"><h2>Ask LiOS.Pol AI</h2><p className="hint">AI uses retrieved project sources and verifiable citations. If no model is configured, evidence-only research remains available.</p><div className="ai-control"><label><input type="checkbox" checked={evidenceOnly} onChange={e=>{setEvidenceOnly(e.target.checked);setRemoteConsent(false)}}/> Evidence only (skip AI)</label><span>{ai?.configured?`Provider: ${ai.provider}`:'Connect local Ollama to enable AI synthesis'}</span></div>
     {ai?.provider==='ollama'&&ai.configured?<div className="ai-control"><button type="button" disabled={loading} onClick={()=>{void probe()}}>Check local model</button><span role="status">{probeStatus}</span></div>:null}
     {ai?.provider==='openai-compatible' && ai.configured && !evidenceOnly?<label className="ai-control remote-consent"><input type="checkbox" checked={remoteConsent} onChange={e=>setRemoteConsent(e.target.checked)}/> Approve sending the retrieved source excerpts and question to my configured external model for this one request.</label>:null}
-    <div className="ask"><input aria-label="Research question" placeholder="Search local political datasets and documents" value={question} onChange={e=>{setQuestion(e.target.value);setRemoteConsent(false)}} onKeyDown={e=>{if(e.key==='Enter')void ask()}} /><button disabled={loading||!question.trim()||(ai?.configured===true&&ai.provider==='openai-compatible'&&!evidenceOnly&&!remoteConsent)} onClick={ask}>{loading?'Working…':'Ask AI'}</button></div>
+    <div className="ask"><Input aria-label="Research question" placeholder="Search local political datasets and documents" value={question} onChange={e=>{setQuestion(e.target.value);setRemoteConsent(false)}} onKeyDown={e=>{if(e.key==='Enter')void ask()}} /><Button variant="primary" disabled={loading||!question.trim()||(ai?.configured===true&&ai.provider==='openai-compatible'&&!evidenceOnly&&!remoteConsent)} onClick={ask}>{loading?'Working…':'Ask AI'}</Button></div>
         <section className="thread-list" aria-label="Research conversation">
      <h3>Research conversation</h3>
      {artifacts.length?artifacts.slice(0,12).map(a=><div className="thread-item" key={a.id}>
