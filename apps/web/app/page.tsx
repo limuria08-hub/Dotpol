@@ -7,6 +7,7 @@ type Project={id:string,title:string,created_at:string};
 type Source={id:string,name:string,sha256:string,kind:string,status:string,origin:string};
 type Evidence={source_id:string,source_name:string,sha256:string,line:number,excerpt:string};
 type Artifact={id:string,question:string,answer:string,evidence:Evidence[],created_at:string,generation_method:string,model_id:string|null,revision:number,updated_at:string,review_status:string};
+type ArtifactRevision={revision:number,answer:string,saved_at:string,origin:'generated'|'user-edited'};
 type ModelStatus={status:string,configured:boolean,provider?:string,model?:string|null,message:string};
 async function api<T>(path:string,method='GET',body?:unknown):Promise<T> {
  const response=await fetch(API+path,{method,headers:{'Content-Type':'application/json','X-Dotpol-Local':'1'},body:body?JSON.stringify(body):undefined,cache:'no-store'});
@@ -21,6 +22,7 @@ export default function Home(){
  const [sources,setSources]=useState<Source[]>([]);
  const [artifacts,setArtifacts]=useState<Artifact[]>([]);
  const [selected,setSelected]=useState<Artifact|null>(null);
+ const [revisions,setRevisions]=useState<ArtifactRevision[]>([]);
  const [editing,setEditing]=useState(false);
  const [draft,setDraft]=useState('');
  const [title,setTitle]=useState('Political research');
@@ -36,7 +38,7 @@ export default function Home(){
   setMessage('Local research engine connected.');
   const state=await api<ModelStatus>('/api/ai/status');setAi(state);
  }catch(e){setMessage((e as Error).message)}}
- async function load(p:Project){setProject(p);setSelected(null);setEditing(false);setDraft('');setRemoteConsent(false);
+ async function load(p:Project){setProject(p);setSelected(null);setRevisions([]);setEditing(false);setDraft('');setRemoteConsent(false);
   try {const [s,a]=await Promise.all([api<Source[]>(`/api/projects/${p.id}/sources`),api<Artifact[]>(`/api/projects/${p.id}/artifacts`)]);
    setSources(s);setArtifacts(a);
   }catch(e){setMessage((e as Error).message)}
@@ -61,12 +63,18 @@ export default function Home(){
  }
  async function ask(){if(!project||!question.trim())return;setLoading(true);
   try{const res=await api<{artifact:Artifact,retrieval_mode?:string,retrieval_degraded?:string|null}>(`/api/projects/${project.id}/research`,'POST',{question,mode:evidenceOnly?'extractive':'auto',allow_remote_evidence:remoteConsent && ai?.provider==='openai-compatible'});
-   openArtifact(res.artifact);setArtifacts(old=>[res.artifact,...old]);setQuestion('');setRemoteConsent(false);setMessage(res.artifact.generation_method==='ai-synthesis'?'AI research saved with verified source references.':res.artifact.generation_method==='no-evidence'?'No matching evidence. No political claims were generated.':'Source evidence saved. Configure a model to enable AI synthesis.');
+   void openArtifact(res.artifact);setArtifacts(old=>[res.artifact,...old]);setQuestion('');setRemoteConsent(false);setMessage(res.artifact.generation_method==='ai-synthesis'?'AI research saved with verified source references.':res.artifact.generation_method==='no-evidence'?'No matching evidence. No political claims were generated.':'Source evidence saved. Configure a model to enable AI synthesis.');
    if(res.retrieval_degraded)setProbeStatus(res.retrieval_degraded);
   }catch(e){setMessage((e as Error).message)}finally{setLoading(false)}
  }
  async function probe(){try{setProbeStatus('Checking local Ollama…');const result=await api<{status:string,detail:string,ready:boolean}>('/api/ai/probe-local','POST',{});setProbeStatus(`${result.status}: ${result.detail}`)}catch(e){setProbeStatus((e as Error).message)}}
- function openArtifact(a:Artifact){setSelected(a);setDraft(a.answer);setEditing(false)}
+ async function openArtifact(a:Artifact){
+  setSelected(a);setDraft(a.answer);setEditing(false);setRevisions([]);
+  if(!project)return;
+  try{
+   setRevisions(await api<ArtifactRevision[]>(`/api/projects/${project.id}/artifacts/${a.id}/revisions`));
+  }catch(e){setMessage((e as Error).message)}
+ }
  async function saveRevision(){
   if(!project||!selected||!draft.trim()||loading)return;
   setLoading(true);
@@ -75,6 +83,7 @@ export default function Home(){
     {answer:draft,expected_revision:selected.revision});
    setSelected(updated);setArtifacts(old=>old.map(a=>a.id===updated.id?updated:a));
    setEditing(false);setMessage(`Saved artifact revision ${updated.revision}. Human edits are not automatically evidence-verified.`);
+   setRevisions(await api<ArtifactRevision[]>(`/api/projects/${project.id}/artifacts/${updated.id}/revisions`));
   }catch(e){setMessage((e as Error).message + ' Your unsaved draft is preserved.');}
   finally{setLoading(false)}
  }
@@ -95,7 +104,7 @@ export default function Home(){
    <div className="columns"><section className="pane"><h2>Sources</h2><p className="hint">TXT, CSV, JSON, PDF or DOCX. PDF/DOCX require optional local Docling.</p>
     <label className="upload">Import source<input type="file" accept=".txt,.csv,.json,.pdf,.docx" disabled={loading} onChange={e=>{void importFile(e.target.files?.[0]||null);e.target.value=''}} /></label>
     <ul className="source-list">{sources.map(s=><li key={s.id}><strong>{s.name}</strong><small>{s.kind.toUpperCase()} · {s.status}<br/>SHA-256: {s.sha256.slice(0,16)}…</small></li>)}</ul>
-    <h2>Saved research</h2><div className="artifact-list">{artifacts.map(a=><button key={a.id} onClick={()=>openArtifact(a)}>{a.question}<small>{new Date(a.created_at).toLocaleString()}</small></button>)}</div>
+    <h2>Saved research</h2><div className="artifact-list">{artifacts.map(a=><button key={a.id} onClick={()=>{void openArtifact(a)}}>{a.question}<small>{new Date(a.updated_at||a.created_at).toLocaleString()} · rev {a.revision}</small></button>)}</div>
    </section><section className="workspace"><h2>Ask LiOS.Pol AI</h2><p className="hint">AI uses retrieved project sources and verifiable citations. If no model is configured, evidence-only research remains available.</p><div className="ai-control"><label><input type="checkbox" checked={evidenceOnly} onChange={e=>setEvidenceOnly(e.target.checked)}/> Evidence only (skip AI)</label><span>{ai?.configured?`Provider: ${ai.provider}`:'Connect local Ollama to enable AI synthesis'}</span></div>
     {ai?.provider==='ollama'&&ai.configured?<div className="ai-control"><button type="button" disabled={loading} onClick={()=>{void probe()}}>Check local model</button><span role="status">{probeStatus}</span></div>:null}
     {ai?.provider==='openai-compatible' && ai.configured && !evidenceOnly?<label className="ai-control remote-consent"><input type="checkbox" checked={remoteConsent} onChange={e=>setRemoteConsent(e.target.checked)}/> Approve sending the retrieved source excerpts and question to my configured external model for this one request.</label>:null}
@@ -106,6 +115,7 @@ export default function Home(){
     {editing?<textarea aria-label="Edit research artifact" className="artifact-editor" value={draft} onChange={e=>setDraft(e.target.value)} maxLength={100000} />:<pre>{selected.answer}</pre>}
     <h4>Source evidence and provenance</h4>
      {selected.evidence.length?selected.evidence.map((e,i)=><details key={`${e.source_id}-${e.line}-${i}`}><summary>[{i+1}] {e.source_name} · line {e.line}</summary><blockquote>{e.excerpt}</blockquote><small>Source ID: {e.source_id} · SHA-256: {e.sha256}</small></details>):<p className="hint">No matching evidence. The system did not invent an answer.</p>}
+     <details><summary>Revision history ({revisions.length})</summary>{revisions.map(rev=><div className="revision-entry" key={rev.revision}><strong>Revision {rev.revision} · {rev.origin}</strong><small>{new Date(rev.saved_at).toLocaleString()}</small><pre>{rev.answer}</pre></div>)}</details>
     </article>:<div className="empty"><h3>Start with a source</h3><p>Upload a text or table file, ask a question, and open a saved evidence-linked artifact here.</p></div>}
    </section></div>}
    <footer>Phase 1 · AI-native research foundation · Local-first · Evidence verification required</footer>
