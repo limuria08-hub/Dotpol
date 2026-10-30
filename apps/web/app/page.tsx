@@ -212,7 +212,7 @@ export default function Home(){
       <div className="thread-question">{a.question}</div>
       <p className="thread-preview">{a.answer.slice(0,350)}{a.answer.length>350?'…':''}</p>
       <div className="thread-item-footer"><small>{a.generation_method==='ai-synthesis'?'AI synthesis':a.generation_method==='no-evidence'?'No evidence':'Evidence only'} · revision {a.revision}</small>
-       <button type="button" aria-current={selected?.id===a.id?'true':undefined} aria-label={`Open artifact ${a.id} in workbench`} onClick={()=>{void openArtifact(a)}}><PanelRightOpen size={15} aria-hidden="true"/> Open in workbench</button>
+       <button type="button" aria-current={selected?.id===a.id?'true':undefined} aria-label={`Open in workbench for artifact ${a.id}`} onClick={()=>{void openArtifact(a)}}><PanelRightOpen size={15} aria-hidden="true"/> Open in workbench</button>
       </div>
      </div>):<p className="hint">Import a source and ask a question to begin an evidence-linked conversation.</p>}
     </section></>}
