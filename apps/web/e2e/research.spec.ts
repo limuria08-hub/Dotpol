@@ -310,7 +310,7 @@ test('Radix source provenance dialog stays local, keyboard-dismissible and retur
   await expect(dialog).toBeVisible();
   await expect(dialog).toContainText('provenance.txt');
   await expect(dialog).toContainText('Content SHA-256');
-  await expect(dialog).toContainText(/\b[a-f0-9]{64}\b/);
+  await expect(dialog.locator('dd.font-mono').nth(1)).toHaveText(/^[a-f0-9]{64}$/);
   await page.keyboard.press('Escape');
   await expect(dialog).toHaveCount(0);
   await expect(inspect).toBeFocused();
