@@ -24,6 +24,10 @@ Before implementing anything, read:
 
 If a requested change conflicts with these documents, do not silently invent a new architecture. Create or propose an ADR under `docs/DECISIONS/`.
 
+## AI-native product mandate
+
+**Every product domain must integrate AI as a primary user-facing interface, not an optional decorative chatbot.** The ONE shared model gateway and typed tools are owned by platform/ai; domains cannot create competing provider clients or hide calculations inside prompts. Every AI output must be backed by permitted source/evidence records and deterministic computation where applicable. Read [AI Native Capability Contract](docs/AI_NATIVE_CAPABILITY_CONTRACT.md) before adding AI-facing work. Non-model data inspection remains supported in zero-cost/local mode; never label extracts as generated AI.
+
 ## Five-phase execution contract
 
 - **P1** foundation + evidence-backed research; **P2** elections/GIS/statistics/psephology/field pilot; **P3** policy/media/simulation; **P4** recursive teams/mobile/war room; **P5** automations, optional services and release.
