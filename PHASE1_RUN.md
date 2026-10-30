@@ -139,3 +139,20 @@ The Next.js shell now includes a compact **OpenClaw · Required** status control
 
 Automated tests mock the OpenClaw CLI and cover missing installation, startup, errors, timeouts, sanitized health, and rejected remote origins. **Real installed gateway integration remains pending** until live local test and P4/P5 acceptance. Avoid claiming complete OpenClaw integration based solely on this status endpoint.
 
+
+
+## P1.05/P1.07 — Explicit real-model verification and grounded synthesis screening
+
+The **existing** PydanticAI gateway now screens every nonempty model-answer sentence for a valid project-retrieved bracketed citation. Each numeric token and directly quoted string in that sentence must occur in the **cited** source excerpts; wrong-source references, missing citations, fabricated numbers/years or fabricated exact quotations return HTTP 422 and **no AI artifact is saved**. The canonical SQLite store continues to independently verify project-scoped source IDs, line numbers, exact excerpts, active status and hashes. New synthetic regression tests cover plausible-looking fabricated statistics and adversarial source instructions; these are **mocked model tests**, not real inference.
+
+**Important limitation:** this rule is a deterministic safety screen, **not semantic entailment or independent fact-checking**. It cannot establish that interpretations, inferred causation, named-entity claims or paraphrases are correct merely because citation IDs and numeric tokens match. The strict sentence-level citation requirement may reject otherwise acceptable model prose; this is deliberate fail-closed preview behavior. Human reviewers must verify material political claims against primary sources.
+
+### Opt-in real local Ollama smoke test (not yet verified)
+
+This test is **skipped in ordinary CI** and does not install a model or contact a hosted provider. Explicitly install/start Ollama and pull a compatible local model first, then run from the repository root:
+
+```bash
+DOTPOL_LIVE_OLLAMA_TEST=1 DOTPOL_AI_PROVIDER=ollama DOTPOL_AI_MODEL='<your-installed-model>' python -m pytest tests/test_live_ollama_inference.py -q -rs
+```
+
+A successful run must list the configured model, actually invoke PydanticAI against the loopback Ollama API, and return a generated answer with valid saved-evidence references. Because the model response is nondeterministic, a rejected uncited/unfounded answer makes this acceptance test fail rather than silently switching to extractive mode. A real local-model pass has **not** been observed in the GitHub-hosted checks; do not mark the P1.05 live inference gate complete.
